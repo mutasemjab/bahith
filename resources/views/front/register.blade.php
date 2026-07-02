@@ -63,13 +63,21 @@
                    autocomplete="name" required>
           </div>
 
+          <div class="auth-field">
+            <label for="national_id">{{ app()->getLocale() === 'ar' ? 'الرقم الوطني *' : 'National ID *' }}</label>
+            <input type="text" id="national_id" name="national_id"
+                   value="{{ old('national_id') }}"
+                   placeholder="{{ app()->getLocale() === 'ar' ? 'أدخل رقمك الوطني' : 'Enter your national ID' }}"
+                   required>
+          </div>
+
           <div class="auth-field-row">
             <div class="auth-field">
-              <label for="email">{{ __('front.auth_email_label') }}</label>
+              <label for="email">{{ __('front.auth_email_label') }} <small style="opacity:.6">({{ app()->getLocale() === 'ar' ? 'اختياري' : 'optional' }})</small></label>
               <input type="email" id="email" name="email"
                      value="{{ old('email') }}"
                      placeholder="email@example.com"
-                     autocomplete="email" required>
+                     autocomplete="email">
             </div>
             <div class="auth-field">
               <label for="phone">{{ __('front.auth_phone_label') }}</label>
@@ -79,23 +87,6 @@
             </div>
           </div>
 
-          <div class="auth-field">
-            <label for="grade_level">{{ app()->getLocale() === 'ar' ? 'الصف الدراسي' : 'Grade Level' }}</label>
-            <select id="grade_level" name="grade_level">
-              <option value="">{{ app()->getLocale() === 'ar' ? 'اختر صفك...' : 'Choose your grade...' }}</option>
-              @for ($g = 1; $g <= 10; $g++)
-                <option value="{{ $g }}" {{ old('grade_level') == $g ? 'selected' : '' }}>
-                  {{ app()->getLocale() === 'ar' ? 'الصف ' . $g : 'Grade ' . $g }}
-                </option>
-              @endfor
-              <option value="11" {{ old('grade_level') == 11 ? 'selected' : '' }}>
-                {{ app()->getLocale() === 'ar' ? 'الحادي عشر (توجيهي)' : 'Grade 11 (Tawjihi)' }}
-              </option>
-              <option value="12" {{ old('grade_level') == 12 ? 'selected' : '' }}>
-                {{ app()->getLocale() === 'ar' ? 'الثاني عشر (توجيهي)' : 'Grade 12 (Tawjihi)' }}
-              </option>
-            </select>
-          </div>
 
           <div class="auth-field">
             <label for="password">{{ __('front.auth_password_label') }}</label>

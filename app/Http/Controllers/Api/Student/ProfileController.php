@@ -29,6 +29,7 @@ class ProfileController extends Controller
         return $this->success([
             'id'             => $student->id,
             'name'           => $student->name,
+            'national_id'    => $student->national_id,
             'email'          => $student->email,
             'phone'          => $student->phone,
             'gender'         => $student->gender,
@@ -50,6 +51,8 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name'          => ['sometimes', 'string', 'max:200'],
+            'national_id'   => ['sometimes', 'nullable', 'string', 'max:50', 'unique:students,national_id,' . $student->id],
+            'email'         => ['sometimes', 'nullable', 'email', 'max:200', 'unique:students,email,' . $student->id],
             'phone'         => ['sometimes', 'nullable', 'string', 'max:20'],
             'gender'        => ['sometimes', 'nullable', 'in:male,female'],
             'date_of_birth' => ['sometimes', 'nullable', 'date'],
@@ -60,14 +63,12 @@ class ProfileController extends Controller
             'current_password' => ['required_with:password'],
         ]);
 
-        // Verify current password before changing
         if (isset($validated['password'])) {
             if (! \Illuminate\Support\Facades\Hash::check($request->current_password, $student->password)) {
                 return $this->error('كلمة المرور الحالية غير صحيحة', 422);
             }
         }
 
-        // Handle avatar upload
         if ($request->hasFile('avatar')) {
             $validated['avatar'] = uploadImage('assets/uploads/students', $request->file('avatar'));
         }
@@ -78,6 +79,7 @@ class ProfileController extends Controller
         return $this->success([
             'id'            => $student->id,
             'name'          => $student->name,
+            'national_id'   => $student->national_id,
             'email'         => $student->email,
             'phone'         => $student->phone,
             'gender'        => $student->gender,
@@ -141,15 +143,13 @@ class ProfileController extends Controller
             ->paginate(15);
 
         $items = collect($attempts->items())->map(fn ($a) => [
-            'attempt_id'      => $a->id,
-            'score'           => $a->score,
-            'total_marks'     => $a->total_marks,
-            'percentage'      => $a->percentage,
-            'correct_answers' => $a->correct_answers,
-            'wrong_answers'   => $a->wrong_answers,
-            'is_passed'       => $a->is_passed,
-            'time_taken'      => $a->time_taken_minutes,
-            'submitted_at'    => $a->submitted_at?->format('Y-m-d H:i'),
+            'attempt_id'         => $a->id,
+            'score'              => $a->score,
+            'total_marks'        => $a->total_marks,
+            'percentage'         => (float) $a->percentage,
+            'is_passed'          => $a->is_passed,
+            'time_taken_minutes' => $a->time_taken_seconds ? (int) ceil($a->time_taken_seconds / 60) : null,
+            'submitted_at'       => $a->submitted_at?->format('Y-m-d H:i'),
             'exam' => [
                 'id'        => $a->exam?->id,
                 'title'     => $a->exam?->title,

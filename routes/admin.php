@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\CardController;
 use App\Http\Controllers\Admin\CardNumberController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\EnrollmentController;
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\LoginController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PosController;
 use App\Http\Controllers\Admin\PreviousYearExamController;
 use App\Http\Controllers\Admin\QuestionBankController;
@@ -111,6 +113,13 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::delete('lessons/{id}',         [CourseContentController::class, 'destroyLesson'])->name('admin.courses.lessons.destroy');
         Route::post('units/{id}/materials',   [CourseContentController::class, 'storeMaterial'])->name('admin.courses.materials.store');
         Route::delete('materials/{id}',       [CourseContentController::class, 'destroyMaterial'])->name('admin.courses.materials.destroy');
+
+        // ── Announcements ─────────────────────────────────────────────
+        Route::resource('announcements', AnnouncementController::class, ['as' => 'admin']);
+
+        // ── Push Notifications ────────────────────────────────────────
+        Route::get('notifications/send',  [NotificationController::class, 'sendForm'])->name('admin.notifications.send');
+        Route::post('notifications/send', [NotificationController::class, 'send'])->name('admin.notifications.send.post');
 
         // ── Site Settings ─────────────────────────────────────────────
         Route::get('site-settings',  [SiteSettingController::class, 'edit'])->name('admin.site-settings.edit');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class StudentAuthController extends Controller
@@ -20,22 +21,36 @@ class StudentAuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+        $request->validate([
+            'login'    => ['required', 'string'],
             'password' => ['required'],
         ]);
 
-        $remember = $request->boolean('remember');
+        $identifier = trim($request->login);
 
-        if (Auth::guard('student')->attempt($credentials, $remember)) {
-            $request->session()->regenerate();
+        // Try national_id first, then email
+        $student = Student::where('national_id', $identifier)
+            ->orWhere('email', $identifier)
+            ->first();
 
-            return redirect()->intended(route('home'));
+        if (! $student || ! Hash::check($request->password, $student->password)) {
+            return back()
+                ->withInput($request->only('login'))
+                ->withErrors(['login' => __('front.auth_login_error')]);
         }
 
-        return back()
-            ->withInput($request->only('email'))
-            ->withErrors(['email' => __('front.auth_login_error')]);
+        if (! $student->is_active) {
+            return back()
+                ->withInput($request->only('login'))
+                ->withErrors(['login' => app()->getLocale() === 'ar'
+                    ? 'الحساب موقوف، تواصل مع الإدارة'
+                    : 'Account is suspended. Contact admin.']);
+        }
+
+        Auth::guard('student')->login($student, $request->boolean('remember'));
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('home'));
     }
 
     public function showRegister()
@@ -50,20 +65,20 @@ class StudentAuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name'                  => ['required', 'string', 'max:200'],
-            'email'                 => ['required', 'email', 'max:200', 'unique:students,email'],
-            'phone'                 => ['nullable', 'string', 'max:20'],
-            'password'              => ['required', 'confirmed', Password::min(8)],
-            'grade_level'           => ['nullable', 'integer', 'min:1', 'max:12'],
-            'terms'                 => ['accepted'],
+            'name'        => ['required', 'string', 'max:200'],
+            'national_id' => ['required', 'string', 'max:50', 'unique:students,national_id'],
+            'email'       => ['nullable', 'email', 'max:200', 'unique:students,email'],
+            'phone'       => ['nullable', 'string', 'max:20'],
+            'password'    => ['required', 'confirmed', Password::min(8)],
+            'terms'       => ['accepted'],
         ]);
 
         $student = Student::create([
             'name'        => $validated['name'],
-            'email'       => $validated['email'],
+            'national_id' => $validated['national_id'],
+            'email'       => $validated['email'] ?? null,
             'phone'       => $validated['phone'] ?? null,
             'password'    => $validated['password'],
-            'grade_level' => $validated['grade_level'] ?? null,
             'is_active'   => true,
         ]);
 

@@ -36,7 +36,7 @@
     <div class="panel-card-body p-0">
         <table class="data-table">
             <thead>
-                <tr><th>#</th><th>{{ __('messages.student') }}</th><th>{{ __('messages.phone_label') }}</th><th>{{ __('messages.table_grade_level') }}</th><th>{{ __('messages.courses') }}</th><th>{{ __('messages.Status') }}</th><th>{{ __('messages.joined') }}</th><th>{{ __('messages.Actions') }}</th></tr>
+                <tr><th>#</th><th>{{ __('messages.student') }}</th><th>{{ __('messages.phone_label') }}</th><th>{{ __('messages.courses') }}</th><th>{{ __('messages.Status') }}</th><th>{{ __('messages.joined') }}</th><th>{{ __('messages.Actions') }}</th></tr>
             </thead>
             <tbody>
                 @forelse($students as $student)
@@ -56,9 +56,7 @@
                         </div>
                     </td>
                     <td style="color:var(--muted)">{{ $student->phone ?: '—' }}</td>
-                    <td style="color:var(--muted)">
-                        {{ $student->grade_level ? __('messages.grade_level').' '.$student->grade_level : ($student->university ?: '—') }}
-                    </td>
+                
                     <td>{{ $student->enrollments_count }}</td>
                     <td><span class="pill {{ $student->is_active ? 'pill-success' : 'pill-neutral' }}">{{ $student->is_active ? __('messages.Active') : __('messages.Inactive') }}</span></td>
                     <td style="color:var(--muted)">{{ $student->created_at->format('M d, Y') }}</td>

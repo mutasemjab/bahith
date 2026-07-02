@@ -52,11 +52,11 @@
           @csrf
 
           <div class="auth-field">
-            <label for="email">{{ __('front.auth_email_label') }}</label>
-            <input type="email" id="email" name="email"
-                   value="{{ old('email') }}"
-                   placeholder="email@example.com"
-                   autocomplete="email" required>
+            <label for="login">{{ app()->getLocale() === 'ar' ? 'الرقم الوطني أو البريد الإلكتروني' : 'National ID or Email' }}</label>
+            <input type="text" id="login" name="login"
+                   value="{{ old('login') }}"
+                   placeholder="{{ app()->getLocale() === 'ar' ? 'أدخل رقمك الوطني' : 'Enter your national ID' }}"
+                   autocomplete="username" required>
           </div>
 
           <div class="auth-field">

@@ -42,8 +42,6 @@
                     @if($student->phone)<div class="d-flex justify-content-between mb-2"><span style="color:var(--muted)">{{ __('messages.phone_label') }}</span><span>{{ $student->phone }}</span></div>@endif
                     @if($student->gender)<div class="d-flex justify-content-between mb-2"><span style="color:var(--muted)">{{ __('messages.gender_label') }}</span><span>{{ $student->gender === 'male' ? __('messages.male') : __('messages.female') }}</span></div>@endif
                     @if($student->nationality)<div class="d-flex justify-content-between mb-2"><span style="color:var(--muted)">{{ __('messages.nationality') }}</span><span>{{ $student->nationality }}</span></div>@endif
-                    @if($student->grade_level)<div class="d-flex justify-content-between mb-2"><span style="color:var(--muted)">{{ __('messages.grade_level') }}</span><span>{{ $student->grade_level }}</span></div>@endif
-                    @if($student->university)<div class="d-flex justify-content-between mb-2"><span style="color:var(--muted)">{{ __('messages.school') }}</span><span>{{ Str::limit($student->university, 25) }}</span></div>@endif
                     <div class="d-flex justify-content-between"><span style="color:var(--muted)">{{ __('messages.joined') }}</span><span>{{ $student->created_at->format('M d, Y') }}</span></div>
                 </div>
             </div>

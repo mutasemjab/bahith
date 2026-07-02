@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Controllers\Api\Student\AnnouncementController;
 use App\Http\Controllers\Api\Student\AuthController;
 use App\Http\Controllers\Api\Student\CategoryController;
+use App\Http\Controllers\Api\Student\CourseActivationController;
 use App\Http\Controllers\Api\Student\CourseController;
 use App\Http\Controllers\Api\Student\EducationalNoteController;
 use App\Http\Controllers\Api\Student\ExamController;
 use App\Http\Controllers\Api\Student\HomeController;
+use App\Http\Controllers\Api\Student\LessonController;
+use App\Http\Controllers\Api\Student\NotificationController;
 use App\Http\Controllers\Api\Student\PreviousYearExamController;
 use App\Http\Controllers\Api\Student\ProfileController;
 use App\Http\Controllers\Api\Student\QuestionBankController;
@@ -37,41 +41,38 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
     Route::get('home', [HomeController::class, 'index']);
 
     // ── Category tree navigation ───────────────────────────────────────────
-    // GET /categories                      → root categories
-    // GET /categories/{id}                 → category + its children + subjects
-    // GET /subjects/{id}                   → subject + its courses
     Route::get('categories',        [CategoryController::class, 'index']);
     Route::get('categories/{id}',   [CategoryController::class, 'show']);
     Route::get('subjects/{id}',     [CategoryController::class, 'subject']);
 
     // ── Courses ────────────────────────────────────────────────────────────
-    // Filters: category_id, subject_id, teacher_id, search, featured, trending
     Route::get('courses',       [CourseController::class, 'index']);
     Route::get('courses/{id}',  [CourseController::class, 'show']);
+
+    // ── Course units + lesson content (auth optional — needed for locked check) ──
+    // GET /courses/{id}/units        → units + lessons list (locked/free based on enrollment)
+    // GET /lessons/{id}              → lesson detail (video_url, file_url) — 403 if locked
+    // GET /units/{id}/exams          → exams attached to a unit
+    Route::get('courses/{id}/units', [LessonController::class, 'courseUnits'])->middleware('auth:sanctum');
+    Route::get('lessons/{id}',       [LessonController::class, 'show'])->middleware('auth:sanctum');
+    Route::get('units/{id}/exams',   [LessonController::class, 'unitExams'])->middleware('auth:sanctum');
 
     // ── Teachers ───────────────────────────────────────────────────────────
     Route::get('teachers',      [TeacherController::class, 'index']);
     Route::get('teachers/{id}', [TeacherController::class, 'show']);
 
     // ── Exams (public list + detail) ───────────────────────────────────────
-    // Filters: course_id, subject_id, exam_type, search
     Route::get('exams',      [ExamController::class, 'index']);
     Route::get('exams/{id}', [ExamController::class, 'show']);
 
-    // ── Previous Year Exams ────────────────────────────────────────────────
-    // Filters: subject_id, year, search
+    // ── Files (3 types: previous_year_exams / question_banks / worksheets) ─
+    // Filters: subject_id, year (pye+ws), search
     Route::get('previous-year-exams',       [PreviousYearExamController::class, 'index']);
     Route::get('previous-year-exams/{id}',  [PreviousYearExamController::class, 'show']);
-
-    // ── Question Bank ──────────────────────────────────────────────────────
-    // Filters: subject_id, search
-    Route::get('question-banks',      [QuestionBankController::class, 'index']);
-    Route::get('question-banks/{id}', [QuestionBankController::class, 'show']);
-
-    // ── Worksheets ─────────────────────────────────────────────────────────
-    // Filters: subject_id, year, search
-    Route::get('worksheets',      [WorksheetController::class, 'index']);
-    Route::get('worksheets/{id}', [WorksheetController::class, 'show']);
+    Route::get('question-banks',            [QuestionBankController::class, 'index']);
+    Route::get('question-banks/{id}',       [QuestionBankController::class, 'show']);
+    Route::get('worksheets',                [WorksheetController::class, 'index']);
+    Route::get('worksheets/{id}',           [WorksheetController::class, 'show']);
 
     // ── Protected routes (require Bearer token) ────────────────────────────
     Route::middleware('auth:sanctum')->group(function () {
@@ -90,10 +91,28 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
         Route::get('my-exams', [ProfileController::class, 'myExams']);
 
         // Exam flow
-        Route::post('exams/{id}/start',           [ExamController::class, 'start']);
-        Route::post('attempts/{attempt}/submit',  [ExamController::class, 'submit']);
+        Route::post('exams/{id}/start',          [ExamController::class, 'start']);
+        Route::post('attempts/{attempt}/submit', [ExamController::class, 'submit']);
+
+        // Course activation via card code
+        // POST /courses/{id}/activate   body: { card_code: "XXXX-XXXX" }
+        Route::post('courses/{id}/activate', [CourseActivationController::class, 'activate']);
 
         // Educational notes (المفكرة التعليمية — filtered by student's class)
         Route::get('educational-notes', [EducationalNoteController::class, 'index']);
+
+        // Announcements (الإعلانات — filtered by student's class or global)
+        Route::get('announcements',      [AnnouncementController::class, 'index']);
+        Route::get('announcements/{id}', [AnnouncementController::class, 'show']);
+
+        // Push notifications
+        // POST /device-token          body: { fcm_token: "..." }
+        // GET  /notifications         → list + unread_count
+        // POST /notifications/{id}/read
+        // POST /notifications/read-all
+        Route::post('device-token',               [NotificationController::class, 'saveToken']);
+        Route::get('notifications',               [NotificationController::class, 'index']);
+        Route::post('notifications/read-all',     [NotificationController::class, 'markAllRead']);
+        Route::post('notifications/{id}/read',    [NotificationController::class, 'markRead']);
     });
 });
