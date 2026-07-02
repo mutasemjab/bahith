@@ -131,9 +131,6 @@ class ExamController extends Controller
 
         DB::transaction(function () use ($attempt, $exam, $request) {
             $score = 0;
-            $correct = 0;
-            $wrong = 0;
-            $unanswered = $exam->total_questions;
 
             foreach ($request->answers as $ans) {
                 $question = $exam->questions->find($ans['question_id']);
@@ -141,8 +138,8 @@ class ExamController extends Controller
                     continue;
                 }
 
-                $option = $question->options->find($ans['option_id']);
-                $isCorrect = $option && $option->is_correct;
+                $option      = $question->options->find($ans['option_id']);
+                $isCorrect   = $option && $option->is_correct;
                 $marksEarned = $isCorrect ? ($question->marks ?? 1) : 0;
 
                 StudentAnswer::updateOrCreate(
@@ -155,23 +152,19 @@ class ExamController extends Controller
                 );
 
                 $score += $marksEarned;
-                $isCorrect ? $correct++ : $wrong++;
-                $unanswered--;
             }
 
             $totalMarks  = $exam->total_marks ?: $exam->total_questions;
             $percentage  = $totalMarks > 0 ? round(($score / $totalMarks) * 100, 2) : 0;
             $isPassed    = $percentage >= ($exam->pass_marks ?? 50);
-            $timeTaken   = now()->diffInMinutes($attempt->started_at);
+            // store as seconds (matches actual column name)
+            $timeTakenSeconds = now()->diffInSeconds($attempt->started_at);
 
             $attempt->update([
                 'score'               => $score,
                 'total_marks'         => $totalMarks,
                 'percentage'          => $percentage,
-                'correct_answers'     => $correct,
-                'wrong_answers'       => $wrong,
-                'unanswered'          => max(0, $unanswered),
-                'time_taken_minutes'  => $timeTaken,
+                'time_taken_seconds'  => $timeTakenSeconds,
                 'status'              => 'submitted',
                 'is_passed'           => $isPassed,
                 'submitted_at'        => now(),
@@ -180,28 +173,36 @@ class ExamController extends Controller
 
         $attempt->refresh();
 
+        // Compute stats from student_answers (source of truth)
+        $answers = $attempt->answers()->with('question.options')->get();
+
+        $correct   = $answers->where('is_correct', true)->count();
+        $wrong     = $answers->where('is_correct', false)->count();
+        $unanswered = max(0, ($exam->total_questions ?? 0) - $answers->count());
+
         $result = [
             'attempt_id'      => $attempt->id,
             'score'           => $attempt->score,
             'total_marks'     => $attempt->total_marks,
-            'percentage'      => $attempt->percentage,
-            'correct_answers' => $attempt->correct_answers,
-            'wrong_answers'   => $attempt->wrong_answers,
-            'unanswered'      => $attempt->unanswered,
+            'percentage'      => (float) $attempt->percentage,
+            'correct_answers' => $correct,
+            'wrong_answers'   => $wrong,
+            'unanswered'      => $unanswered,
             'is_passed'       => $attempt->is_passed,
-            'time_taken'      => $attempt->time_taken_minutes,
+            'time_taken_minutes' => (int) ceil($attempt->time_taken_seconds / 60),
         ];
 
         // Show correct answers if exam setting allows
         if ($exam->show_result_immediately) {
-            $result['answers'] = $attempt->answers->load('question.options')->map(fn ($a) => [
-                'question_id'       => $a->question_id,
-                'question_text'     => $a->question?->question_text,
-                'selected_option_id'=> $a->selected_option_id,
-                'is_correct'        => $a->is_correct,
-                'marks_earned'      => $a->marks_earned,
-                'correct_option'    => $a->question?->correctOption?->option_text,
-                'explanation'       => $a->question?->explanation,
+            $result['answers'] = $answers->map(fn ($a) => [
+                'question_id'        => $a->question_id,
+                'question_text'      => $a->question?->question_text,
+                'selected_option_id' => $a->selected_option_id,
+                'is_correct'         => $a->is_correct,
+                'marks_earned'       => $a->marks_earned,
+                'correct_option_id'  => $a->question?->correctOption?->id,
+                'correct_option'     => $a->question?->correctOption?->option_text,
+                'explanation'        => $a->question?->explanation,
             ])->values();
         }
 

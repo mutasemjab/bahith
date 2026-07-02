@@ -9,8 +9,7 @@ class ExamAttempt extends Model
     protected $fillable = [
         'exam_id', 'student_id',
         'score', 'total_marks', 'percentage',
-        'correct_answers', 'wrong_answers', 'unanswered',
-        'time_taken_minutes', 'status', 'is_passed',
+        'time_taken_seconds', 'status', 'is_passed',
         'started_at', 'submitted_at',
     ];
 
