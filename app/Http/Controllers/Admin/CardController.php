@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Card;
+use App\Models\POS;
+use Illuminate\Http\Request;
+
+class CardController extends Controller
+{
+    public function index(Request $request)
+    {
+        $cards = Card::with('pos.city')
+            ->withCount('cardNumbers')
+            ->when($request->search, fn ($q, $s) => $q
+                ->where('name_ar', 'like', "%{$s}%")
+                ->orWhere('name_en', 'like', "%{$s}%")
+            )
+            ->when($request->pos_id, fn ($q, $p) => $q->where('pos_id', $p))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        $posList = POS::orderBy('name_en')->get();
+
+        return view('admin.cards.index', compact('cards', 'posList'));
+    }
+
+    public function create()
+    {
+        $posList = POS::with('city')->orderBy('name_en')->get();
+
+        return view('admin.cards.create', compact('posList'));
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'pos_id'          => 'nullable|exists:p_o_s,id',
+            'name_ar'         => 'required|string|max:200',
+            'name_en'         => 'required|string|max:200',
+            'selling_price'   => 'required|numeric|min:0',
+            'number_of_cards' => 'required|numeric|min:0',
+            'photo'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('photo')) {
+            $data['photo'] = uploadImage('public/uploads/cards', $request->file('photo'));
+        }
+
+        Card::create($data);
+
+        return redirect()->route('admin.cards.index')
+            ->with('success', 'Card created successfully.');
+    }
+
+    public function edit(Card $card)
+    {
+        $posList = POS::with('city')->orderBy('name_en')->get();
+
+        return view('admin.cards.edit', compact('card', 'posList'));
+    }
+
+    public function update(Request $request, Card $card)
+    {
+        $data = $request->validate([
+            'pos_id'          => 'nullable|exists:p_o_s,id',
+            'name_ar'         => 'required|string|max:200',
+            'name_en'         => 'required|string|max:200',
+            'selling_price'   => 'required|numeric|min:0',
+            'number_of_cards' => 'required|numeric|min:0',
+            'photo'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('photo')) {
+            $data['photo'] = uploadImage('public/uploads/cards', $request->file('photo'));
+        }
+
+        $card->update($data);
+
+        return redirect()->route('admin.cards.index')
+            ->with('success', 'Card updated successfully.');
+    }
+
+    public function destroy(Card $card)
+    {
+        $card->delete();
+
+        return redirect()->route('admin.cards.index')
+            ->with('success', 'Card deleted successfully.');
+    }
+}

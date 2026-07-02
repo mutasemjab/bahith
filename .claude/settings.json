@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\ahlan\\\\app\\\\Http\\\\Controllers\\\\Api\" -Recurse -Force)",
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\ahlan\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(php artisan *)",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\orchid\" -Directory)",
+      "Bash(Sort-Object Name)",
+      "Read(//c/xampp/htdocs/orchid/**)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\orchid\" | Where-Object { $_.PSIsContainer } | Select-Object Name)",
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\zaidonfull\" -Recurse)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Sort-Object FullName)",
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\zaidonfull\\\\resources\\\\views\\\\admin\", \"c:\\\\xampp\\\\htdocs\\\\zaidonfull\\\\resources\\\\views\\\\teacher\", \"c:\\\\xampp\\\\htdocs\\\\zaidonfull\\\\resources\\\\views\\\\student\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\zaidonfull\\\\resources\\\\views\" -Recurse -Filter \"*.blade.php\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "PowerShell(& \"C:\\\\xampp\\\\mysql\\\\bin\\\\mysqladmin.exe\" -u root ping 2>&1)",
+      "PowerShell(Start-Process \"C:\\\\xampp\\\\mysql\\\\bin\\\\mysqld.exe\" -ArgumentList \"--console\" -WindowStyle Hidden)",
+      "Bash(php -r \"require 'vendor/autoload.php'; echo 'OK';\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\xampp\\\\htdocs\\\\zaidonfull\\\\app\\\\Http\\\\Controllers\\\\Admin\" -Name)",
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\zaidonfull\\\\database\\\\migrations\" -File)",
+      "Bash(Get-Content database/migrations/*.php)",
+      "Bash(Select-String -Pattern \"follow\" -i)"
+    ]
+  }
+}
