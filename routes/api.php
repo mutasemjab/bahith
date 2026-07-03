@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Student\AnnouncementController;
+use App\Http\Controllers\Api\Student\BannerController;
 use App\Http\Controllers\Api\Student\AuthController;
 use App\Http\Controllers\Api\Student\CategoryController;
 use App\Http\Controllers\Api\Student\CourseActivationController;
@@ -39,6 +40,9 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
 
     // ── Home ───────────────────────────────────────────────────────────────
     Route::get('home', [HomeController::class, 'index']);
+
+    // ── Banners (slider images — no auth needed) ────────────────────────────
+    Route::get('banners', [BannerController::class, 'index']);
 
     // ── Category tree navigation ───────────────────────────────────────────
     Route::get('categories',        [CategoryController::class, 'index']);
