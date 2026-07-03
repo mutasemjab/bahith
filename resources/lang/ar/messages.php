@@ -845,4 +845,6 @@ return [
     'class_label'  => 'الفصل',
     'select_class' => 'اختر الفصل',
     'classes'      => 'الفصول الدراسية',
+    'banners'      => 'البنرات الدعائية',
+    'announcements'      => 'الإعلانات',
 ];

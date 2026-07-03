@@ -20,7 +20,12 @@
 
 @php
 function sv($settings, $key, $col = 'value_ar') {
-    return old("{$key}_{$col === 'value_ar' ? 'ar' : 'en'}", $settings->get($key)?->{$col} ?? '');
+    $item = $settings->get($key);
+
+    return old(
+        "{$key}_" . ($col === 'value_ar' ? 'ar' : 'en'),
+        $item ? $item->{$col} : ''
+    );
 }
 @endphp
 

@@ -138,6 +138,24 @@
                             <span>{{ __('messages.worksheets') }}</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.announcements.index') }}"
+                           class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
+                            <span>{{ __('messages.announcements') }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.banners.index') }}"
+                           class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
+                            <span>{{ __('messages.banners') }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.notifications.send') }}"
+                           class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
+                            <span>{{ __('messages.notifications') }}</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
 

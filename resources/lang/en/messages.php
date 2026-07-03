@@ -845,4 +845,6 @@ return [
     'class_label'  => 'Class',
     'select_class' => 'Select Class',
     'classes'      => 'Classes',
+    'banners'      => 'Banners',
+    'announcements'      => 'Announcements',
 ];
