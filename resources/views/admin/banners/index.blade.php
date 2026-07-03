@@ -45,7 +45,7 @@
                     <tr>
                         <td>{{ $banner->id }}</td>
                         <td>
-                            <img src="{{ asset('assets/uploads/' . $banner->image) }}"
+                            <img src="{{ asset('assets/uploads/banners/' . $banner->image) }}"
                                  alt="banner"
                                  style="height:60px;width:160px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0">
                         </td>

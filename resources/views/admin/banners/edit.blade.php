@@ -32,7 +32,7 @@
 
             <div class="col-12">
                 <label class="form-label">الصورة الحالية</label><br>
-                <img src="{{ asset('assets/uploads/' . $banner->image) }}"
+                <img src="{{ asset('assets/uploads/banners/' . $banner->image) }}"
                      id="previewImg"
                      style="width:100%;max-height:220px;object-fit:cover;border-radius:10px;border:1px solid #e2e8f0">
             </div>

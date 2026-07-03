@@ -16,7 +16,7 @@ class BannerController extends Controller
     {
         $banners = Banner::active()->get()->map(fn ($b) => [
             'id'          => $b->id,
-            'image'       => asset('assets/uploads/' . $b->image),
+            'image'       => asset('assets/uploads/banners/' . $b->image),
             'order_index' => $b->order_index,
         ]);
 

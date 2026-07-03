@@ -82,7 +82,7 @@ class AuthController extends Controller
             'national_id' => $student->national_id,
             'email'       => $student->email,
             'phone'       => $student->phone,
-            'avatar'      => $student->avatar ? asset('assets/uploads/' . $student->avatar) : null,
+            'avatar'      => $student->avatar ? asset('assets/uploads/students/' . $student->avatar) : null,
             'class'       => $student->schoolClass?->name,
             'class_id'    => $student->class_id,
             'gender'      => $student->gender,

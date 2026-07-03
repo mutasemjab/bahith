@@ -35,7 +35,7 @@ class ProfileController extends Controller
             'gender'         => $student->gender,
             'date_of_birth'  => $student->date_of_birth?->format('Y-m-d'),
             'nationality'    => $student->nationality,
-            'avatar'         => $student->avatar ? asset('assets/uploads/' . $student->avatar) : null,
+            'avatar'         => $student->avatar ? asset('assets/uploads/students/' . $student->avatar) : null,
             'class'          => $student->schoolClass?->name,
             'class_id'       => $student->class_id,
             'is_active'      => $student->is_active,
@@ -110,7 +110,7 @@ class ProfileController extends Controller
             'course' => [
                 'id'               => $e->course?->id,
                 'title'            => $e->course?->title,
-                'thumbnail'        => $e->course?->thumbnail ? asset('assets/uploads/' . $e->course->thumbnail) : null,
+                'thumbnail'        => $e->course?->thumbnail ? asset('assets/uploads/courses/' . $e->course->thumbnail) : null,
                 'duration_hours'   => $e->course?->duration_hours,
                 'difficulty_level' => $e->course?->difficulty_level,
                 'teacher'          => $e->course?->teacher?->name,

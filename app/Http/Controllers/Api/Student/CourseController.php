@@ -66,7 +66,7 @@ class CourseController extends Controller
             'title_ar'         => $course->title_ar,
             'title_en'         => $course->title_en,
             'description'      => $course->description,
-            'thumbnail'        => $course->thumbnail ? asset('assets/uploads/' . $course->thumbnail) : null,
+            'thumbnail'        => $course->thumbnail ? asset('assets/uploads/courses/' . $course->thumbnail) : null,
             'price'            => $course->price,
             'old_price'        => $course->old_price,
             'is_free'          => $course->is_free,
@@ -79,7 +79,7 @@ class CourseController extends Controller
             'teacher' => [
                 'id'     => $course->teacher?->id,
                 'name'   => $course->teacher?->name,
-                'avatar' => $course->teacher?->avatar ? asset('assets/uploads/' . $course->teacher->avatar) : null,
+                'avatar' => $course->teacher?->avatar ? asset('assets/uploads/teachers/' . $course->teacher->avatar) : null,
             ],
             'category' => ['id' => $course->category?->id, 'name' => $course->category?->name],
             'subject'  => ['id' => $course->subject?->id,  'name' => $course->subject?->name],
