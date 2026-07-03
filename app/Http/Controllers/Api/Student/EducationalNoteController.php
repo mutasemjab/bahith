@@ -38,11 +38,11 @@ class EducationalNoteController extends Controller
             'description' => $note->description,
             'type'        => $note->type,
             'date'        => $note->date?->format('Y-m-d'),
-            'attachment'  => $note->attachment ? asset('assets/uploads/' . $note->attachment) : null,
+            'attachment'  => $note->attachment ? asset('assets/uploads/educational_notes/' . $note->attachment) : null,
             'teacher' => [
                 'id'     => $note->teacher?->id,
                 'name'   => $note->teacher?->name,
-                'avatar' => $note->teacher?->avatar ? asset('assets/uploads/' . $note->teacher->avatar) : null,
+                'avatar' => $note->teacher?->avatar ? asset('assets/uploads/teachers/' . $note->teacher->avatar) : null,
             ],
             'class' => $note->schoolClass?->name,
         ]);

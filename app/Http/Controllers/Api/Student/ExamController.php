@@ -63,7 +63,7 @@ class ExamController extends Controller
             'question_en'   => $q->question_en,
             'question_type' => $q->question_type,
             'marks'         => $q->marks,
-            'image'         => $q->image ? asset('assets/uploads/' . $q->image) : null,
+            'image'         => $q->image ? asset('assets/uploads/questions/' . $q->image) : null,
             'options'       => ($exam->shuffle_options ? $q->options->shuffle() : $q->options)
                 ->map(fn ($o) => [
                     'id'          => $o->id,

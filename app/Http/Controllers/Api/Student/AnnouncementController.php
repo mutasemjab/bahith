@@ -27,7 +27,7 @@ class AnnouncementController extends Controller
             'id'           => $a->id,
             'title'        => $a->title,
             'body'         => $a->body,
-            'image'        => $a->image ? asset('assets/uploads/' . $a->image) : null,
+            'image'        => $a->image ? asset('assets/uploads/announcements/' . $a->image) : null,
             'class_id'     => $a->class_id,
             'published_at' => $a->published_at?->format('Y-m-d H:i') ?? $a->created_at->format('Y-m-d H:i'),
         ]);
@@ -60,7 +60,7 @@ class AnnouncementController extends Controller
             'id'           => $announcement->id,
             'title'        => $announcement->title,
             'body'         => $announcement->body,
-            'image'        => $announcement->image ? asset('assets/uploads/' . $announcement->image) : null,
+            'image'        => $announcement->image ? asset('assets/uploads/announcements/' . $announcement->image) : null,
             'class_id'     => $announcement->class_id,
             'published_at' => $announcement->published_at?->format('Y-m-d H:i') ?? $announcement->created_at->format('Y-m-d H:i'),
         ]);
