@@ -15,7 +15,7 @@
         <ul>
             <li class="nav-item">
                 <a href="{{ route('admin.dashboard') }}"
-                   class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-speedometer2"></i>
                     <span>{{ __('messages.dashboard') }}</span>
                 </a>
@@ -26,21 +26,21 @@
         <ul>
             <li class="nav-item">
                 <a href="{{ route('admin.students.index') }}"
-                   class="nav-link {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-mortarboard"></i>
                     <span>{{ __('messages.students') }}</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('admin.teachers.index') }}"
-                   class="nav-link {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-person-workspace"></i>
                     <span>{{ __('messages.teachers') }}</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('admin.enrollments.index') }}"
-                   class="nav-link {{ request()->routeIs('admin.enrollments.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.enrollments.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-journal-check"></i>
                     <span>{{ __('messages.enrollments') }}</span>
                 </a>
@@ -52,9 +52,8 @@
 
             {{-- Courses --}}
             <li class="nav-item">
-                <a href="#courses-menu" class="nav-link"
-                   data-submenu="courses-menu"
-                   aria-expanded="{{ request()->routeIs('admin.courses.*') ? 'true' : 'false' }}">
+                <a href="#courses-menu" class="nav-link" data-submenu="courses-menu"
+                    aria-expanded="{{ request()->routeIs('admin.courses.*') ? 'true' : 'false' }}">
                     <i class="nav-icon bi bi-book"></i>
                     <span>{{ __('messages.courses') }}</span>
                     <i class="nav-arrow bi bi-chevron-right"></i>
@@ -81,7 +80,7 @@
             {{-- Subjects --}}
             <li class="nav-item">
                 <a href="{{ route('admin.subjects.index') }}"
-                   class="nav-link {{ request()->routeIs('admin.subjects.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.subjects.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-journals"></i>
                     <span>{{ __('messages.subjects') }}</span>
                 </a>
@@ -89,9 +88,8 @@
 
             {{-- Exams --}}
             <li class="nav-item">
-                <a href="#exams-menu" class="nav-link"
-                   data-submenu="exams-menu"
-                   aria-expanded="{{ request()->routeIs('admin.exams.*') ? 'true' : 'false' }}">
+                <a href="#exams-menu" class="nav-link" data-submenu="exams-menu"
+                    aria-expanded="{{ request()->routeIs('admin.exams.*') ? 'true' : 'false' }}">
                     <i class="nav-icon bi bi-clipboard-check"></i>
                     <span>{{ __('messages.exams') }}</span>
                     <i class="nav-arrow bi bi-chevron-right"></i>
@@ -112,57 +110,59 @@
 
             {{-- PDF Files --}}
             <li class="nav-item">
-                <a href="#pdf-menu" class="nav-link"
-                   data-submenu="pdf-menu"
-                   aria-expanded="{{ (request()->routeIs('admin.question-banks.*') || request()->routeIs('admin.previous-year-exams.*') || request()->routeIs('admin.worksheets.*')) ? 'true' : 'false' }}">
+                <a href="#pdf-menu" class="nav-link" data-submenu="pdf-menu"
+                    aria-expanded="{{ request()->routeIs('admin.question-banks.*') || request()->routeIs('admin.previous-year-exams.*') || request()->routeIs('admin.worksheets.*') ? 'true' : 'false' }}">
                     <i class="nav-icon bi bi-file-earmark-pdf"></i>
                     <span>{{ __('messages.pdf_files') }}</span>
                     <i class="nav-arrow bi bi-chevron-right"></i>
                 </a>
-                <ul class="nav-submenu {{ (request()->routeIs('admin.question-banks.*') || request()->routeIs('admin.previous-year-exams.*') || request()->routeIs('admin.worksheets.*')) ? 'show' : '' }}" id="pdf-menu">
+                <ul class="nav-submenu {{ request()->routeIs('admin.question-banks.*') || request()->routeIs('admin.previous-year-exams.*') || request()->routeIs('admin.worksheets.*') ? 'show' : '' }}"
+                    id="pdf-menu">
                     <li class="nav-item">
                         <a href="{{ route('admin.question-banks.index') }}"
-                           class="nav-link {{ request()->routeIs('admin.question-banks.*') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('admin.question-banks.*') ? 'active' : '' }}">
                             <span>{{ __('messages.question_banks') }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('admin.previous-year-exams.index') }}"
-                           class="nav-link {{ request()->routeIs('admin.previous-year-exams.*') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('admin.previous-year-exams.*') ? 'active' : '' }}">
                             <span>{{ __('messages.previous_year_exams') }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('admin.worksheets.index') }}"
-                           class="nav-link {{ request()->routeIs('admin.worksheets.*') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('admin.worksheets.*') ? 'active' : '' }}">
                             <span>{{ __('messages.worksheets') }}</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="{{ route('admin.announcements.index') }}"
-                           class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
-                            <span>{{ __('messages.announcements') }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('admin.banners.index') }}"
-                           class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
-                            <span>{{ __('messages.banners') }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('admin.notifications.send') }}"
-                           class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
-                            <span>{{ __('messages.notifications') }}</span>
-                        </a>
-                    </li>
+
                 </ul>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{ route('admin.announcements.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
+                    <span>{{ __('messages.announcements') }}</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.banners.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
+                    <span>{{ __('messages.banners') }}</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.notifications.send') }}"
+                    class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
+                    <span>{{ __('messages.notifications') }}</span>
+                </a>
             </li>
 
             {{-- Educational Notes --}}
             <li class="nav-item">
                 <a href="{{ route('admin.educational-notes.index') }}"
-                   class="nav-link {{ request()->routeIs('admin.educational-notes.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.educational-notes.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-journal-text"></i>
                     <span>{{ __('messages.educational_notes') }}</span>
                 </a>
@@ -174,14 +174,14 @@
         <ul>
             <li class="nav-item">
                 <a href="{{ route('admin.cards.index') }}"
-                   class="nav-link {{ request()->routeIs('admin.cards.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.cards.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-credit-card"></i>
                     <span>{{ __('messages.cards') }}</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('admin.card-numbers.index') }}"
-                   class="nav-link {{ request()->routeIs('admin.card-numbers.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.card-numbers.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-upc-scan"></i>
                     <span>{{ __('messages.card_numbers') }}</span>
                 </a>
@@ -192,21 +192,21 @@
         <ul>
             <li class="nav-item">
                 <a href="{{ route('admin.role.index') }}"
-                   class="nav-link {{ request()->routeIs('admin.role.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.role.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-shield-check"></i>
                     <span>{{ __('messages.roles_permissions') }}</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('admin.contact_messages.index') }}"
-                   class="nav-link {{ request()->routeIs('admin.contact_messages.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.contact_messages.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-envelope"></i>
                     <span>{{ __('messages.contact_messages') }}</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('admin.site-settings.edit') }}"
-                   class="nav-link {{ request()->routeIs('admin.site-settings.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('admin.site-settings.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-gear"></i>
                     <span>{{ __('messages.site_settings') }}</span>
                 </a>
@@ -226,7 +226,7 @@
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link"
-                   onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
+                    onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
                     <i class="nav-icon bi bi-box-arrow-right"></i>
                     <span>{{ __('messages.sign_out') }}</span>
                 </a>
