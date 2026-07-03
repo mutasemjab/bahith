@@ -80,7 +80,7 @@
             </div>
             <div class="col-md-6">
                 @if($student->avatar)
-                <img src="{{ asset('uploads/students/'.$student->avatar) }}" class="rounded-circle mb-2" style="width:60px;height:60px;object-fit:cover">
+                <img src="{{ asset('assets/uploads/students/'.$student->avatar) }}" class="rounded-circle mb-2" style="width:60px;height:60px;object-fit:cover">
                 @endif
                 <label class="form-label d-block">{{ __('messages.avatar_label') }}</label>
                 <input type="file" name="avatar" accept="image/*" class="form-control">

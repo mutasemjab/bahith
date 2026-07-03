@@ -45,7 +45,7 @@
                     <td>
                         <div class="d-flex align-items-center gap-2">
                             @if($student->avatar)
-                                <img src="{{ asset('uploads/students/'.$student->avatar) }}" class="avatar avatar-sm" alt="">
+                                <img src="{{ asset('assets/uploads/students/'.$student->avatar) }}" class="avatar avatar-sm" alt="">
                             @else
                                 <div class="avatar avatar-sm" style="background:#f5f3ff;color:#7c3aed">{{ strtoupper(substr($student->name,0,1)) }}</div>
                             @endif

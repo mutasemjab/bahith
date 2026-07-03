@@ -21,7 +21,7 @@
         <div class="panel-card mb-3">
             <div class="panel-card-body text-center">
                 @if($student->avatar)
-                    <img src="{{ asset('uploads/students/'.$student->avatar) }}" class="rounded-circle mb-3" style="width:90px;height:90px;object-fit:cover">
+                    <img src="{{ asset('assets/uploads/students/'.$student->avatar) }}" class="rounded-circle mb-3" style="width:90px;height:90px;object-fit:cover">
                 @else
                     <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width:90px;height:90px;background:linear-gradient(135deg,#7c3aed,#6d28d9)">
                         <span style="color:#fff;font-size:1.8rem;font-weight:700">{{ strtoupper(substr($student->name, 0, 1)) }}</span>
