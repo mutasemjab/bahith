@@ -100,6 +100,13 @@ class StudentController extends Controller
             ->with('success', 'Student updated successfully.');
     }
 
+    public function resetDevice(Student $student)
+    {
+        $student->update(['deviceId' => null]);
+
+        return back()->with('success', 'تم إعادة تعيين الجهاز. يمكن للطالب الآن تسجيل الدخول من جهاز جديد.');
+    }
+
     public function destroy(Student $student)
     {
         $student->delete();

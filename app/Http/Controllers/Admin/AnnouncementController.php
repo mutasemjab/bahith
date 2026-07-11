@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\FCMController;
 use App\Models\Announcement;
 use App\Models\SchoolClass;
 use Illuminate\Http\Request;
@@ -47,10 +48,15 @@ class AnnouncementController extends Controller
         $data['is_active']    = $request->boolean('is_active', true);
         $data['published_at'] = $data['published_at'] ?? now();
 
-        Announcement::create($data);
+        $announcement = Announcement::create($data);
+
+        if ($announcement->is_active) {
+            $target = $announcement->class_id ? (int) $announcement->class_id : null;
+            FCMController::sendToStudents($announcement->title, $announcement->body, $target, 'announcements');
+        }
 
         return redirect()->route('admin.announcements.index')
-            ->with('success', 'تم إضافة الإعلان بنجاح.');
+            ->with('success', 'تم إضافة الإعلان وإرسال الإشعار بنجاح.');
     }
 
     public function edit(Announcement $announcement)

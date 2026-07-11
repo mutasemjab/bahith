@@ -74,6 +74,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         // ── Students ──────────────────────────────────────────────────
         Route::resource('students', StudentController::class, ['as' => 'admin']);
+        Route::post('students/{student}/reset-device', [StudentController::class, 'resetDevice'])->name('admin.students.reset-device');
 
         // ── Categories (tree) ─────────────────────────────────────────
         Route::get('categories/{id}/children', [CategoryController::class, 'children'])->name('admin.categories.children');

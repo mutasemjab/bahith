@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description_en')->nullable();
             $table->unsignedSmallInteger('order_index')->default(0);
             $table->boolean('is_free_preview')->default(false);
+             $table->boolean('is_published')->default(true);
             $table->timestamps();
         });
     }
