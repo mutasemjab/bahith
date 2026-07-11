@@ -10,7 +10,7 @@ class LessonProgress extends Model
 
     protected $fillable = [
         'student_id', 'lesson_id',
-        'watched_minutes', 'is_completed', 'completed_at',
+        'watch_seconds', 'is_completed', 'completed_at',
     ];
 
     protected $casts = [

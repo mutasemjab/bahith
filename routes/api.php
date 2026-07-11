@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Student\EducationalNoteController;
 use App\Http\Controllers\Api\Student\ExamController;
 use App\Http\Controllers\Api\Student\HomeController;
 use App\Http\Controllers\Api\Student\LessonController;
+use App\Http\Controllers\Api\Student\LessonProgressController;
 use App\Http\Controllers\Api\Student\NotificationController;
 use App\Http\Controllers\Api\Student\PreviousYearExamController;
 use App\Http\Controllers\Api\Student\ProfileController;
@@ -101,6 +102,12 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
         // Course activation via card code
         // POST /courses/{id}/activate   body: { card_code: "XXXX-XXXX" }
         Route::post('courses/{id}/activate', [CourseActivationController::class, 'activate']);
+
+        // Lesson progress
+        // POST /lessons/{id}/progress   body: { watch_seconds: 340, is_completed: true }
+        // GET  /courses/{id}/my-progress
+        Route::post('lessons/{id}/progress',       [LessonProgressController::class, 'update']);
+        Route::get('courses/{id}/my-progress',     [LessonProgressController::class, 'courseProgress']);
 
         // Educational notes (المفكرة التعليمية — filtered by student's class)
         Route::get('educational-notes', [EducationalNoteController::class, 'index']);
