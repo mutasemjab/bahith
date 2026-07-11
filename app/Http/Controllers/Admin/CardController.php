@@ -42,9 +42,8 @@ class CardController extends Controller
             'name_ar'         => 'required|string|max:200',
             'name_en'         => 'required|string|max:200',
             'selling_price'   => 'required|numeric|min:0',
-            'number_of_cards' => 'required|numeric|min:0',
+            'number_of_cards' => 'required|integer|min:1|max:1000',
             'photo'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'generate_count'  => 'required|integer|min:1|max:1000',
             'code_length'     => 'nullable|integer|min:8|max:32',
         ]);
 
@@ -52,9 +51,9 @@ class CardController extends Controller
             $data['photo'] = uploadImage('public/uploads/cards', $request->file('photo'));
         }
 
-        $generateCount = $data['generate_count'];
+        $generateCount = $data['number_of_cards'];
         $codeLength    = $data['code_length'] ?? 16;
-        unset($data['generate_count'], $data['code_length']);
+        unset($data['code_length']);
 
         $card = Card::create($data);
 

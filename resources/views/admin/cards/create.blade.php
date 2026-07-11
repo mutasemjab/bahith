@@ -52,25 +52,10 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label">{{ __('messages.number_of_cards') }} <span class="text-danger">*</span></label>
-                <input type="number" name="number_of_cards" value="{{ old('number_of_cards', 0) }}"
-                       min="0" class="form-control @error('number_of_cards') is-invalid @enderror" required>
-                @error('number_of_cards')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-            <div class="col-12">
-                <label class="form-label">{{ __('messages.photo_label') }}</label>
-                <input type="file" name="photo" accept="image/*" class="form-control @error('photo') is-invalid @enderror">
-                @error('photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="col-12"><hr class="my-1"></div>
-
-            <div class="col-md-6">
-                <label class="form-label">عدد الأرقام المراد توليدها <span class="text-danger">*</span></label>
-                <input type="number" name="generate_count" value="{{ old('generate_count', 10) }}"
-                       min="1" max="1000"
-                       class="form-control @error('generate_count') is-invalid @enderror" required>
+                <input type="number" name="number_of_cards" value="{{ old('number_of_cards', 10) }}"
+                       min="1" max="1000" class="form-control @error('number_of_cards') is-invalid @enderror" required>
                 <div class="form-text">سيتم توليد هذا العدد من أرقام البطاقات تلقائياً عند الحفظ.</div>
-                @error('generate_count')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                @error('number_of_cards')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
             <div class="col-md-6">
                 <label class="form-label">طول الرقم (عدد الأحرف)</label>
@@ -78,7 +63,11 @@
                        min="8" max="32" class="form-control">
                 <div class="form-text">الافتراضي 16 حرفاً.</div>
             </div>
-
+            <div class="col-12">
+                <label class="form-label">{{ __('messages.photo_label') }}</label>
+                <input type="file" name="photo" accept="image/*" class="form-control @error('photo') is-invalid @enderror">
+                @error('photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
             <div class="col-12">
                 <button type="submit" class="btn-primary-sm"><i class="bi bi-save"></i> حفظ وتوليد الأرقام</button>
             </div>
