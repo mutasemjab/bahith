@@ -48,7 +48,7 @@ class CardController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $data['photo'] = uploadImage('public/uploads/cards', $request->file('photo'));
+            $data['photo'] = uploadImage('assets/uploads/cards', $request->file('photo'));
         }
 
         $generateCount = $data['number_of_cards'];
@@ -98,7 +98,7 @@ class CardController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $data['photo'] = uploadImage('public/uploads/cards', $request->file('photo'));
+            $data['photo'] = uploadImage('assets/uploads/cards', $request->file('photo'));
         }
 
         $card->update($data);

@@ -58,7 +58,7 @@
             </div>
             <div class="col-12">
                 @if($card->photo)
-                    <img src="{{ asset('uploads/cards/'.$card->photo) }}" class="mb-2"
+                    <img src="{{ asset('assets/uploads/cards/'.$card->photo) }}" class="mb-2"
                          style="width:70px;height:70px;object-fit:cover;border-radius:8px">
                 @endif
                 <label class="form-label d-block">{{ __('messages.photo_label') }}</label>

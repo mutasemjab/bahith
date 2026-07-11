@@ -179,13 +179,6 @@
                     <span>{{ __('messages.cards') }}</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.card-numbers.index') }}"
-                    class="nav-link {{ request()->routeIs('admin.card-numbers.*') ? 'active' : '' }}">
-                    <i class="nav-icon bi bi-upc-scan"></i>
-                    <span>{{ __('messages.card_numbers') }}</span>
-                </a>
-            </li>
         </ul>
 
         <div class="nav-label">{{ __('messages.system') }}</div>
