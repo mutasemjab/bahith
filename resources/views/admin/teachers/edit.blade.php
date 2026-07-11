@@ -100,7 +100,7 @@
             
                 <hr>
                 @if($teacher->avatar)
-                    <img src="{{ asset('uploads/teachers/'.$teacher->avatar) }}" class="img-fluid rounded mb-2" alt="">
+                    <img src="{{ asset('assets/uploads/teachers/'.$teacher->avatar) }}" class="img-fluid rounded mb-2" alt="">
                 @endif
                 <label class="form-label">{{ __('messages.profile_photo') }}</label>
                 <input type="file" name="avatar" accept="image/*" class="form-control mb-3">
