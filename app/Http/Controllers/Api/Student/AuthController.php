@@ -63,10 +63,10 @@ class AuthController extends Controller
             return $this->error('الحساب موقوف، تواصل مع الإدارة', 403);
         }
 
-        // Device lock: if student already has a uuid, it must match
-        if ($student->deviceId && $student->deviceId !== $request->deviceId) {
-            return $this->error('هذا الحساب مسجّل على جهاز آخر، لا يمكن تسجيل الدخول من جهاز مختلف. تواصل مع الإدارة لإعادة تعيين الجهاز.', 403);
-        }
+        // // Device lock: if student already has a uuid, it must match
+        // if ($student->deviceId && $student->deviceId !== $request->deviceId) {
+        //     return $this->error('هذا الحساب مسجّل على جهاز آخر، لا يمكن تسجيل الدخول من جهاز مختلف. تواصل مع الإدارة لإعادة تعيين الجهاز.', 403);
+        // }
 
         // First login after migration: save the uuid
         if (! $student->deviceId) {
