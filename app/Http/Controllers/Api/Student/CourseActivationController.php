@@ -35,16 +35,42 @@ class CourseActivationController extends Controller
             return $this->error('أنت مسجل في هذه الدورة بالفعل', 422);
         }
 
-        // Find valid card: active, not used, sold
-        $card = CardNumber::where('number', trim($request->card_code))
+        // Find valid card number: active, not used, not yet sold
+        $cardNumber = CardNumber::with('card')
+            ->where('number', trim($request->card_code))
             ->where('activate', 1)
             ->where('status', 2)
             ->where('sell', 2)
             ->first();
 
-        if (! $card) {
+        if (! $cardNumber || ! $cardNumber->card) {
             return $this->error('رمز البطاقة غير صحيح أو تم استخدامه مسبقاً', 422);
         }
+
+        $parentCard = $cardNumber->card;
+
+        // Validate activation type
+        switch ($parentCard->activation_type) {
+            case 'course':
+                if ((int) $parentCard->linked_course_id !== $courseId) {
+                    return $this->error('هذه البطاقة مخصصة لدورة أخرى ولا يمكن استخدامها لتفعيل هذه الدورة', 422);
+                }
+                break;
+
+            case 'teacher':
+                if ((int) $course->teacher_id !== (int) $parentCard->linked_teacher_id) {
+                    return $this->error('هذه البطاقة مخصصة لدورات معلم آخر ولا تصلح لتفعيل هذه الدورة', 422);
+                }
+                break;
+
+            case 'price':
+                if ((float) $course->price !== (float) $parentCard->selling_price) {
+                    return $this->error('سعر هذه الدورة لا يتطابق مع قيمة البطاقة', 422);
+                }
+                break;
+        }
+
+        $card = $cardNumber;
 
         DB::transaction(function () use ($student, $courseId, $card) {
             Enrollment::create([

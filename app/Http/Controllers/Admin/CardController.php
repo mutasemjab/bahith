@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Card;
 use App\Models\CardNumber;
+use App\Models\Course;
 use App\Models\POS;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 
 class CardController extends Controller
@@ -30,22 +32,38 @@ class CardController extends Controller
 
     public function create()
     {
-        $posList = POS::with('city')->orderBy('name_en')->get();
+        $posList  = POS::with('city')->orderBy('name_en')->get();
+        $courses  = Course::published()->with('teacher')->orderBy('title_ar')->get();
+        $teachers = Teacher::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.cards.create', compact('posList'));
+        return view('admin.cards.create', compact('posList', 'courses', 'teachers'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'pos_id'          => 'nullable|exists:p_o_s,id',
-            'name_ar'         => 'required|string|max:200',
-            'name_en'         => 'required|string|max:200',
-            'selling_price'   => 'required|numeric|min:0',
-            'number_of_cards' => 'required|integer|min:1|max:1000',
-            'photo'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'code_length'     => 'nullable|integer|min:8|max:32',
+            'pos_id'            => 'nullable|exists:p_o_s,id',
+            'name_ar'           => 'required|string|max:200',
+            'name_en'           => 'required|string|max:200',
+            'selling_price'     => 'required|numeric|min:0',
+            'number_of_cards'   => 'required|integer|min:1|max:1000',
+            'photo'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'code_length'       => 'nullable|integer|min:8|max:32',
+            'activation_type'   => 'required|in:course,teacher,price',
+            'linked_course_id'  => 'nullable|exists:courses,id',
+            'linked_teacher_id' => 'nullable|exists:teachers,id',
         ]);
+
+        if ($data['activation_type'] === 'course' && empty($data['linked_course_id'])) {
+            return back()->withErrors(['linked_course_id' => 'يجب اختيار الدورة المرتبطة بهذا النوع من البطاقات.'])->withInput();
+        }
+        if ($data['activation_type'] === 'teacher' && empty($data['linked_teacher_id'])) {
+            return back()->withErrors(['linked_teacher_id' => 'يجب اختيار المعلم المرتبط بهذا النوع من البطاقات.'])->withInput();
+        }
+
+        // Clear irrelevant FK based on type
+        if ($data['activation_type'] !== 'course')  $data['linked_course_id']  = null;
+        if ($data['activation_type'] !== 'teacher') $data['linked_teacher_id'] = null;
 
         if ($request->hasFile('photo')) {
             $data['photo'] = uploadImage('assets/uploads/cards', $request->file('photo'));
@@ -81,21 +99,36 @@ class CardController extends Controller
 
     public function edit(Card $card)
     {
-        $posList = POS::with('city')->orderBy('name_en')->get();
+        $posList  = POS::with('city')->orderBy('name_en')->get();
+        $courses  = Course::published()->with('teacher')->orderBy('title_ar')->get();
+        $teachers = Teacher::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.cards.edit', compact('card', 'posList'));
+        return view('admin.cards.edit', compact('card', 'posList', 'courses', 'teachers'));
     }
 
     public function update(Request $request, Card $card)
     {
         $data = $request->validate([
-            'pos_id'          => 'nullable|exists:p_o_s,id',
-            'name_ar'         => 'required|string|max:200',
-            'name_en'         => 'required|string|max:200',
-            'selling_price'   => 'required|numeric|min:0',
-            'number_of_cards' => 'required|numeric|min:0',
-            'photo'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'pos_id'            => 'nullable|exists:p_o_s,id',
+            'name_ar'           => 'required|string|max:200',
+            'name_en'           => 'required|string|max:200',
+            'selling_price'     => 'required|numeric|min:0',
+            'number_of_cards'   => 'required|numeric|min:0',
+            'photo'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'activation_type'   => 'required|in:course,teacher,price',
+            'linked_course_id'  => 'nullable|exists:courses,id',
+            'linked_teacher_id' => 'nullable|exists:teachers,id',
         ]);
+
+        if ($data['activation_type'] === 'course' && empty($data['linked_course_id'])) {
+            return back()->withErrors(['linked_course_id' => 'يجب اختيار الدورة المرتبطة.'])->withInput();
+        }
+        if ($data['activation_type'] === 'teacher' && empty($data['linked_teacher_id'])) {
+            return back()->withErrors(['linked_teacher_id' => 'يجب اختيار المعلم المرتبط.'])->withInput();
+        }
+
+        if ($data['activation_type'] !== 'course')  $data['linked_course_id']  = null;
+        if ($data['activation_type'] !== 'teacher') $data['linked_teacher_id'] = null;
 
         if ($request->hasFile('photo')) {
             $data['photo'] = uploadImage('assets/uploads/cards', $request->file('photo'));
@@ -104,7 +137,7 @@ class CardController extends Controller
         $card->update($data);
 
         return redirect()->route('admin.cards.index')
-            ->with('success', 'Card updated successfully.');
+            ->with('success', 'تم تحديث البطاقة بنجاح.');
     }
 
     public function destroy(Card $card)

@@ -143,18 +143,21 @@
             <li class="nav-item">
                 <a href="{{ route('admin.announcements.index') }}"
                     class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-megaphone"></i>
                     <span>{{ __('messages.announcements') }}</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('admin.banners.index') }}"
                     class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-images"></i>
                     <span>{{ __('messages.banners') }}</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('admin.notifications.send') }}"
                     class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-bell"></i>
                     <span>{{ __('messages.notifications') }}</span>
                 </a>
             </li>

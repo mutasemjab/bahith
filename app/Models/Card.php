@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Card extends Model
 {
-    protected $fillable = ['pos_id', 'name_en', 'name_ar', 'selling_price', 'number_of_cards', 'photo'];
+    protected $fillable = [
+        'pos_id', 'name_en', 'name_ar', 'selling_price', 'number_of_cards', 'photo',
+        'activation_type', 'linked_course_id', 'linked_teacher_id',
+    ];
 
     protected $casts = [
         'selling_price'   => 'decimal:2',
@@ -28,5 +31,15 @@ class Card extends Model
     public function cardNumbers()
     {
         return $this->hasMany(CardNumber::class, 'card_id');
+    }
+
+    public function linkedCourse()
+    {
+        return $this->belongsTo(\App\Models\Course::class, 'linked_course_id');
+    }
+
+    public function linkedTeacher()
+    {
+        return $this->belongsTo(\App\Models\Teacher::class, 'linked_teacher_id');
     }
 }

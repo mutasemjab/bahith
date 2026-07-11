@@ -65,6 +65,68 @@
                 <input type="file" name="photo" accept="image/*" class="form-control @error('photo') is-invalid @enderror">
                 @error('photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
+            {{-- ── Activation Type ── --}}
+            <div class="col-12"><hr class="my-1"></div>
+            <div class="col-12">
+                <label class="form-label fw-semibold">نوع تفعيل البطاقة <span class="text-danger">*</span></label>
+                @php $currentType = old('activation_type', $card->activation_type ?? 'price'); @endphp
+                <div class="d-flex flex-wrap gap-3 mt-1">
+                    <label class="d-flex align-items-center gap-2 p-3 rounded border cursor-pointer activation-option {{ $currentType === 'course'  ? 'border-primary' : '' }}" style="min-width:160px">
+                        <input type="radio" name="activation_type" value="course"
+                               {{ $currentType === 'course' ? 'checked' : '' }}
+                               class="activation-radio" style="accent-color:var(--primary)">
+                        <div>
+                            <div style="font-weight:600;font-size:.9rem">دورة محددة</div>
+                            <div style="font-size:.75rem;color:var(--muted)">تفعّل دورة واحدة فقط</div>
+                        </div>
+                    </label>
+                    <label class="d-flex align-items-center gap-2 p-3 rounded border cursor-pointer activation-option {{ $currentType === 'teacher' ? 'border-primary' : '' }}" style="min-width:160px">
+                        <input type="radio" name="activation_type" value="teacher"
+                               {{ $currentType === 'teacher' ? 'checked' : '' }}
+                               class="activation-radio" style="accent-color:var(--primary)">
+                        <div>
+                            <div style="font-weight:600;font-size:.9rem">معلم محدد</div>
+                            <div style="font-size:.75rem;color:var(--muted)">تفعّل أي دورة لهذا المعلم</div>
+                        </div>
+                    </label>
+                    <label class="d-flex align-items-center gap-2 p-3 rounded border cursor-pointer activation-option {{ $currentType === 'price'   ? 'border-primary' : '' }}" style="min-width:160px">
+                        <input type="radio" name="activation_type" value="price"
+                               {{ $currentType === 'price'   ? 'checked' : '' }}
+                               class="activation-radio" style="accent-color:var(--primary)">
+                        <div>
+                            <div style="font-weight:600;font-size:.9rem">حسب السعر</div>
+                            <div style="font-size:.75rem;color:var(--muted)">تفعّل أي دورة بنفس سعر البيع</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-12" id="pick-course" style="{{ $currentType === 'course' ? '' : 'display:none' }}">
+                <label class="form-label">اختر الدورة <span class="text-danger">*</span></label>
+                <select name="linked_course_id" class="form-select @error('linked_course_id') is-invalid @enderror">
+                    <option value="">— اختر دورة —</option>
+                    @foreach($courses as $c)
+                        <option value="{{ $c->id }}" @selected(old('linked_course_id', $card->linked_course_id) == $c->id)>
+                            {{ $c->title_ar }} — {{ $c->teacher?->name ?? '' }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('linked_course_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="col-12" id="pick-teacher" style="{{ $currentType === 'teacher' ? '' : 'display:none' }}">
+                <label class="form-label">اختر المعلم <span class="text-danger">*</span></label>
+                <select name="linked_teacher_id" class="form-select @error('linked_teacher_id') is-invalid @enderror">
+                    <option value="">— اختر معلماً —</option>
+                    @foreach($teachers as $t)
+                        <option value="{{ $t->id }}" @selected(old('linked_teacher_id', $card->linked_teacher_id) == $t->id)>
+                            {{ $t->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('linked_teacher_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
             <div class="col-12">
                 <button type="submit" class="btn-primary-sm"><i class="bi bi-save"></i> {{ __('messages.save_changes') }}</button>
             </div>
@@ -74,5 +136,18 @@
 </form>
 </div>
 </div>
+
+@push('scripts')
+<script>
+document.querySelectorAll('.activation-radio').forEach(radio => {
+    radio.addEventListener('change', function () {
+        document.getElementById('pick-course').style.display  = this.value === 'course'  ? '' : 'none';
+        document.getElementById('pick-teacher').style.display = this.value === 'teacher' ? '' : 'none';
+        document.querySelectorAll('.activation-option').forEach(el => el.classList.remove('border-primary'));
+        this.closest('.activation-option').classList.add('border-primary');
+    });
+});
+</script>
+@endpush
 
 @endsection
