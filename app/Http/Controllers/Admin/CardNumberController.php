@@ -11,7 +11,7 @@ class CardNumberController extends Controller
 {
     public function index(Request $request)
     {
-        $cardNumbers = CardNumber::with('card.pos')
+        $cardNumbers = CardNumber::with('card.pos', 'assignedUser')
             ->when($request->search, fn ($q, $s) => $q->where('number', 'like', "%{$s}%"))
             ->when($request->card_id,  fn ($q, $c) => $q->where('card_id', $c))
             ->when($request->activate !== null && $request->activate !== '',

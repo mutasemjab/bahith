@@ -114,6 +114,7 @@
                     <th>{{ __('messages.activate_label') }}</th>
                     <th>{{ __('messages.Status') }}</th>
                     <th>{{ __('messages.sell_label') }}</th>
+                    <th>الطالب المفعِّل</th>
                     <th>{{ __('messages.Actions') }}</th>
                 </tr>
             </thead>
@@ -139,6 +140,14 @@
                         </span>
                     </td>
                     <td>
+                        @if($cn->assignedUser)
+                            <div style="font-weight:500;font-size:.85rem">{{ $cn->assignedUser->name }}</div>
+                            <div style="font-size:.75rem;color:var(--muted)">{{ $cn->assignedUser->national_id }}</div>
+                        @else
+                            <span style="color:var(--muted)">—</span>
+                        @endif
+                    </td>
+                    <td>
                         <div class="d-flex gap-1">
                             <a href="{{ route('admin.card-numbers.edit', $cn->id) }}" class="btn-outline-sm" style="padding:4px 8px"><i class="bi bi-pencil"></i></a>
                             <form action="{{ route('admin.card-numbers.destroy', $cn->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.delete_number_confirm') }}')">
@@ -149,7 +158,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="7" class="text-center py-4" style="color:var(--muted)">{{ __('messages.no_card_numbers_yet') }}</td></tr>
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--muted)">{{ __('messages.no_card_numbers_yet') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

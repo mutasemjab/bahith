@@ -89,7 +89,7 @@ class LessonController extends Controller
             'title_en'         => $lesson->title_en,
             'lesson_type'      => $lesson->lesson_type,
             'video_url'        => $lesson->video_url,    // YouTube URL — use WebView
-            'file_url'         => $lesson->file_path ? asset('assets/uploads/' . $lesson->file_path) : null,
+            'file_url'         => $lesson->file_path ? asset('assets/uploads/lessons/' . $lesson->file_path) : null,
             'duration_minutes' => $lesson->duration_minutes,
             'is_free'          => $lesson->is_free,
             'is_enrolled'      => $isEnrolled,
@@ -147,7 +147,7 @@ class LessonController extends Controller
             'is_locked'        => $locked,
             // Only expose URLs for accessible lessons
             'video_url'        => $locked ? null : $lesson->video_url,
-            'file_url'         => ($locked || ! $lesson->file_path) ? null : asset('assets/uploads/' . $lesson->file_path),
+            'file_url'         => ($locked || ! $lesson->file_path) ? null : asset('assets/uploads/lessons/' . $lesson->file_path),
         ];
     }
 }

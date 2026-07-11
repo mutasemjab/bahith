@@ -58,6 +58,7 @@ class CourseActivationController extends Controller
 
             $card->update([
                 'status'           => 1,
+                'sell'           => 1,
                 'assigned_user_id' => $student->id,
             ]);
         });
