@@ -46,7 +46,7 @@
                             <input type="text" name="title" class="form-control" value="{{ old('title') }}" required>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">{{ __('messages.description') }}</label>
+                            <label class="form-label">{{ __('messages.descriptions') }}</label>
                             <textarea name="description" class="form-control" rows="4">{{ old('description') }}</textarea>
                         </div>
                     </div>
