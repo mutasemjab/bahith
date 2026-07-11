@@ -90,7 +90,7 @@ class HomeController extends Controller
             'title'            => $course->title,
             'title_ar'         => $course->title_ar,
             'title_en'         => $course->title_en,
-            'thumbnail'        => $course->thumbnail ? asset('assets/uploads/courses' . $course->thumbnail) : null,
+            'thumbnail'        => $course->thumbnail ? asset('assets/uploads/courses/' . $course->thumbnail) : null,
             'price'            => $course->price,
             'old_price'        => $course->old_price,
             'is_free'          => $course->is_free,
