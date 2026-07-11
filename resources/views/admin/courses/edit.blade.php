@@ -170,7 +170,7 @@
             <div class="panel-card-header"><h2 class="panel-card-title">{{ __('messages.thumbnail') }}</h2></div>
             <div class="panel-card-body">
                 @if($course->thumbnail)
-                    <img src="{{ asset('uploads/courses/' . $course->thumbnail) }}" class="img-fluid rounded mb-2" alt="">
+                    <img src="{{ asset('assets/uploads/courses/' . $course->thumbnail) }}" class="img-fluid rounded mb-2" alt="">
                 @endif
                 <input type="file" name="thumbnail" accept="image/*" class="form-control">
                 <small class="text-muted">{{ __('messages.leave_empty_keep_image') }}</small>

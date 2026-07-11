@@ -56,7 +56,7 @@ class TeacherController extends Controller
             ->map(fn ($c) => [
                 'id'               => $c->id,
                 'title'            => $c->title,
-                'thumbnail'        => $c->thumbnail ? asset('assets/uploads/' . $c->thumbnail) : null,
+                'thumbnail'        => $c->thumbnail ? asset('assets/uploads/teachers/' . $c->thumbnail) : null,
                 'price'            => $c->price,
                 'is_free'          => $c->is_free,
                 'average_rating'   => $c->average_rating,
@@ -80,7 +80,7 @@ class TeacherController extends Controller
             'id'                  => $teacher->id,
             'name'                => $teacher->name,
             'specialization'      => $teacher->specialization,
-            'avatar'              => $teacher->avatar ? asset('assets/uploads/' . $teacher->avatar) : null,
+            'avatar'              => $teacher->avatar ? asset('assets/uploads/teachers/' . $teacher->avatar) : null,
             'years_of_experience' => $teacher->years_of_experience,
             'average_rating'      => round($teacher->average_rating ?? 4.8, 1),
             'total_students'      => $teacher->total_students ?? 0,

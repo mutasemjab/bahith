@@ -7,7 +7,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class CourseService
 {
-    private string $uploadFolder = 'public/uploads/courses';
+    private string $uploadFolder = 'assets/uploads/courses';
 
     public function list(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
