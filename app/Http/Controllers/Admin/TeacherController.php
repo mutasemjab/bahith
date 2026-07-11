@@ -53,7 +53,7 @@ class TeacherController extends Controller
         $data['is_verified']          = $request->boolean('is_verified');
 
         if ($request->hasFile('avatar')) {
-            $data['avatar'] = uploadImage('public/uploads/teachers', $request->file('avatar'));
+            $data['avatar'] = uploadImage('assets/uploads/teachers', $request->file('avatar'));
         }
 
         Teacher::create($data);
@@ -104,7 +104,7 @@ class TeacherController extends Controller
         }
 
         if ($request->hasFile('avatar')) {
-            $data['avatar'] = uploadImage('public/uploads/teachers', $request->file('avatar'));
+            $data['avatar'] = uploadImage('assets/uploads/teachers', $request->file('avatar'));
         }
 
         $teacher->update($data);
