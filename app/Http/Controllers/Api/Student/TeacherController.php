@@ -56,7 +56,7 @@ class TeacherController extends Controller
             ->map(fn ($c) => [
                 'id'               => $c->id,
                 'title'            => $c->title,
-                'thumbnail'        => $c->thumbnail ? asset('assets/uploads/teachers/' . $c->thumbnail) : null,
+                'thumbnail'        => $c->thumbnail ? asset('assets/uploads/courses/' . $c->thumbnail) : null,
                 'price'            => $c->price,
                 'is_free'          => $c->is_free,
                 'average_rating'   => $c->average_rating,
