@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Card;
+use App\Models\CardNumber;
 use App\Models\POS;
 use Illuminate\Http\Request;
 
@@ -43,16 +44,40 @@ class CardController extends Controller
             'selling_price'   => 'required|numeric|min:0',
             'number_of_cards' => 'required|numeric|min:0',
             'photo'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'generate_count'  => 'required|integer|min:1|max:1000',
+            'code_length'     => 'nullable|integer|min:8|max:32',
         ]);
 
         if ($request->hasFile('photo')) {
             $data['photo'] = uploadImage('public/uploads/cards', $request->file('photo'));
         }
 
-        Card::create($data);
+        $generateCount = $data['generate_count'];
+        $codeLength    = $data['code_length'] ?? 16;
+        unset($data['generate_count'], $data['code_length']);
 
-        return redirect()->route('admin.cards.index')
-            ->with('success', 'Card created successfully.');
+        $card = Card::create($data);
+
+        // Auto-generate card numbers
+        $generated = 0;
+        $attempts  = 0;
+        while ($generated < $generateCount && $attempts < $generateCount * 5) {
+            $number = strtoupper(substr(bin2hex(random_bytes((int) ceil($codeLength / 2))), 0, $codeLength));
+            if (! CardNumber::where('number', $number)->exists()) {
+                CardNumber::create([
+                    'card_id'  => $card->id,
+                    'number'   => $number,
+                    'activate' => 1,
+                    'status'   => 2,
+                    'sell'     => 2,
+                ]);
+                $generated++;
+            }
+            $attempts++;
+        }
+
+        return redirect()->route('admin.card-numbers.index', ['card_id' => $card->id])
+            ->with('success', "تم إنشاء البطاقة وتوليد {$generated} رقم بطاقة بنجاح.");
     }
 
     public function edit(Card $card)

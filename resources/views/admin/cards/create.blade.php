@@ -61,8 +61,26 @@
                 <input type="file" name="photo" accept="image/*" class="form-control @error('photo') is-invalid @enderror">
                 @error('photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
+
+            <div class="col-12"><hr class="my-1"></div>
+
+            <div class="col-md-6">
+                <label class="form-label">عدد الأرقام المراد توليدها <span class="text-danger">*</span></label>
+                <input type="number" name="generate_count" value="{{ old('generate_count', 10) }}"
+                       min="1" max="1000"
+                       class="form-control @error('generate_count') is-invalid @enderror" required>
+                <div class="form-text">سيتم توليد هذا العدد من أرقام البطاقات تلقائياً عند الحفظ.</div>
+                @error('generate_count')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">طول الرقم (عدد الأحرف)</label>
+                <input type="number" name="code_length" value="{{ old('code_length', 16) }}"
+                       min="8" max="32" class="form-control">
+                <div class="form-text">الافتراضي 16 حرفاً.</div>
+            </div>
+
             <div class="col-12">
-                <button type="submit" class="btn-primary-sm"><i class="bi bi-save"></i> {{ __('messages.save_card') }}</button>
+                <button type="submit" class="btn-primary-sm"><i class="bi bi-save"></i> حفظ وتوليد الأرقام</button>
             </div>
         </div>
     </div>
