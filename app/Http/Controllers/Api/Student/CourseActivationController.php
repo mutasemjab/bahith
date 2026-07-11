@@ -39,7 +39,7 @@ class CourseActivationController extends Controller
         $card = CardNumber::where('number', trim($request->card_code))
             ->where('activate', 1)
             ->where('status', 2)
-            ->where('sell', 1)
+            ->where('sell', 2)
             ->first();
 
         if (! $card) {
