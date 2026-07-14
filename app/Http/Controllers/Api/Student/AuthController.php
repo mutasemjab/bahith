@@ -87,6 +87,16 @@ class AuthController extends Controller
         return $this->success(null, 'تم تسجيل الخروج');
     }
 
+    public function deleteAccount(Request $request): JsonResponse
+    {
+        $student = $request->user();
+
+        $student->update(['is_active' => false]);
+        $student->tokens()->delete();
+
+        return $this->success(null, 'تم حذف الحساب بنجاح');
+    }
+
     private function studentData(Student $student): array
     {
         return [

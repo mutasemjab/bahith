@@ -5,7 +5,32 @@
 
 <div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-3">
     <div><h1 class="page-title">{{ __('messages.teachers_title') }}</h1><p class="page-sub">{{ __('messages.manage_teachers_desc') }}</p></div>
-    <a href="{{ route('admin.teachers.create') }}" class="btn-primary-sm"><i class="bi bi-plus-circle"></i> {{ __('messages.add_teacher') }}</a>
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{{ route('admin.teachers.export') }}?{{ http_build_query(request()->all()) }}" class="btn-outline-sm">
+            <i class="bi bi-file-earmark-arrow-down"></i> تصدير Excel
+        </a>
+        <button class="btn-outline-sm" type="button" data-bs-toggle="collapse" data-bs-target="#import-panel">
+            <i class="bi bi-file-earmark-arrow-up"></i> استيراد Excel
+        </button>
+        <a href="{{ route('admin.teachers.create') }}" class="btn-primary-sm"><i class="bi bi-plus-circle"></i> {{ __('messages.add_teacher') }}</a>
+    </div>
+</div>
+
+{{-- Import panel --}}
+<div class="collapse mb-3" id="import-panel">
+    <div class="panel-card">
+        <div class="panel-card-header"><h2 class="panel-card-title"><i class="bi bi-file-earmark-arrow-up"></i> استيراد المعلمين من Excel</h2></div>
+        <div class="panel-card-body">
+            <p class="text-muted small mb-2">الأعمدة المطلوبة: <strong>الاسم</strong> (إلزامي)، البريد_الإلكتروني، الهاتف، التخصص، كلمة_المرور (افتراضي: Pass@1234)</p>
+            <form action="{{ route('admin.teachers.import') }}" method="POST" enctype="multipart/form-data" class="d-flex gap-2 align-items-end flex-wrap">
+                @csrf
+                <div>
+                    <input type="file" name="file" class="form-control form-control-sm" accept=".xlsx,.xls,.csv" required>
+                </div>
+                <button type="submit" class="btn-primary-sm"><i class="bi bi-upload"></i> استيراد</button>
+            </form>
+        </div>
+    </div>
 </div>
 
 @if(session('success'))

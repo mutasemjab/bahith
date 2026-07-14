@@ -87,4 +87,17 @@ class SiteSettingController extends Controller
         return redirect()->route('admin.site-settings.edit')
             ->with('success', __('messages.updated_successfully'));
     }
+
+    public function togglePriceDisplay()
+    {
+        $current = SiteSetting::raw('show_price') ?: '1';
+        $new     = $current === '1' ? '2' : '1';
+
+        SiteSetting::set('show_price', $new, $new, 'app');
+        SiteSetting::clearCache();
+
+        $label = $new === '1' ? 'مفعّل (يظهر السعر)' : 'معطّل (مخفي في App Store)';
+
+        return back()->with('success', "تم تغيير إعداد السعر: {$label}");
+    }
 }

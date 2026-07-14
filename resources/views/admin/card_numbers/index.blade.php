@@ -12,6 +12,9 @@
         <button class="btn-outline-sm" type="button" data-bs-toggle="collapse" data-bs-target="#bulk-gen-panel">
             <i class="bi bi-lightning-charge"></i> {{ __('messages.bulk_generate') }}
         </button>
+        <a href="{{ route('admin.card-numbers.print') }}?{{ http_build_query(request()->all()) }}" target="_blank" class="btn-outline-sm">
+            <i class="bi bi-printer"></i> طباعة
+        </a>
         <a href="{{ route('admin.card-numbers.create') }}" class="btn-primary-sm"><i class="bi bi-plus-circle"></i> {{ __('messages.add_number') }}</a>
     </div>
 </div>

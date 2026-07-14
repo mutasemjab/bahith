@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\StudentsExport;
 use App\Http\Controllers\Controller;
+use App\Imports\StudentsImport;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -113,5 +116,29 @@ class StudentController extends Controller
 
         return redirect()->route('admin.students.index')
             ->with('success', 'Student deleted successfully.');
+    }
+
+    public function export(Request $request)
+    {
+        $filters = $request->only(['search', 'is_active']);
+        $filename = 'students_' . now()->format('Y-m-d') . '.xlsx';
+
+        return Excel::download(new StudentsExport($filters), $filename);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        $importer = new StudentsImport();
+        Excel::import($importer, $request->file('file'));
+
+        $msg = "تم استيراد {$importer->imported} طالب بنجاح.";
+        if ($importer->skipped)  $msg .= " تم تخطي {$importer->skipped}.";
+        if ($importer->errors)   $msg .= ' أخطاء: ' . implode(' | ', $importer->errors);
+
+        return back()->with('success', $msg);
     }
 }

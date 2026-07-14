@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\TeachersExport;
 use App\Http\Controllers\Controller;
+use App\Imports\TeachersImport;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TeacherController extends Controller
 {
@@ -119,5 +122,29 @@ class TeacherController extends Controller
 
         return redirect()->route('admin.teachers.index')
             ->with('success', 'Teacher deleted successfully.');
+    }
+
+    public function export(Request $request)
+    {
+        $filters  = $request->only(['search', 'is_active']);
+        $filename = 'teachers_' . now()->format('Y-m-d') . '.xlsx';
+
+        return Excel::download(new TeachersExport($filters), $filename);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        $importer = new TeachersImport();
+        Excel::import($importer, $request->file('file'));
+
+        $msg = "تم استيراد {$importer->imported} معلم بنجاح.";
+        if ($importer->skipped) $msg .= " تم تخطي {$importer->skipped}.";
+        if ($importer->errors)  $msg .= ' أخطاء: ' . implode(' | ', $importer->errors);
+
+        return back()->with('success', $msg);
     }
 }

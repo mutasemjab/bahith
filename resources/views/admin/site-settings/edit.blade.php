@@ -29,6 +29,29 @@ function sv($settings, $key, $col = 'value_ar') {
 }
 @endphp
 
+{{-- App Store price visibility toggle --}}
+@php $showPrice = \App\Models\SiteSetting::raw('show_price') ?: '1'; @endphp
+<div class="panel-card mb-4">
+    <div class="panel-card-header">
+        <h2 class="panel-card-title"><i class="bi bi-phone me-2"></i>إعدادات تطبيق الجوال</h2>
+    </div>
+    <div class="panel-card-body">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="fw-semibold">إظهار / إخفاء السعر في App Store</div>
+                <small class="text-muted">التطبيق سيُخفي أسعار الدورات عند إيقاف هذا الخيار</small>
+            </div>
+            <form action="{{ route('admin.site-settings.toggle-price') }}" method="POST" class="m-0">
+                @csrf
+                <button type="submit" class="btn btn-{{ $showPrice === '1' ? 'success' : 'secondary' }} d-flex align-items-center gap-2">
+                    <i class="bi bi-{{ $showPrice === '1' ? 'eye' : 'eye-slash' }}"></i>
+                    {{ $showPrice === '1' ? 'مفعّل — السعر ظاهر' : 'معطّل — السعر مخفي' }}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <form action="{{ route('admin.site-settings.update') }}" method="POST" enctype="multipart/form-data">
     @csrf @method('PUT')
 

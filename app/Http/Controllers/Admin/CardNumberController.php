@@ -83,6 +83,26 @@ class CardNumberController extends Controller
             ->with('success', 'Card number deleted successfully.');
     }
 
+    public function printView(Request $request)
+    {
+        $cardNumbers = CardNumber::with('card.pos', 'assignedUser')
+            ->when($request->search,  fn ($q, $s) => $q->where('number', 'like', "%{$s}%"))
+            ->when($request->card_id, fn ($q, $c) => $q->where('card_id', $c))
+            ->when($request->activate !== null && $request->activate !== '',
+                fn ($q) => $q->where('activate', $request->activate))
+            ->when($request->status !== null && $request->status !== '',
+                fn ($q) => $q->where('status', $request->status))
+            ->when($request->sell !== null && $request->sell !== '',
+                fn ($q) => $q->where('sell', $request->sell))
+            ->orderBy('card_id')
+            ->orderBy('id')
+            ->get();
+
+        $cards = Card::orderBy('name_en')->get();
+
+        return view('admin.card_numbers.print', compact('cardNumbers', 'cards'));
+    }
+
     public function bulkGenerate(Request $request)
     {
         $data = $request->validate([

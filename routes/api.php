@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Student\AnnouncementController;
+use App\Http\Controllers\Api\Student\AppSettingController;
 use App\Http\Controllers\Api\Student\BannerController;
 use App\Http\Controllers\Api\Student\AuthController;
 use App\Http\Controllers\Api\Student\CategoryController;
@@ -38,6 +39,9 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
     // ── Auth (public) ──────────────────────────────────────────────────────
     Route::post('auth/register', [AuthController::class, 'register']);
     Route::post('auth/login',    [AuthController::class, 'login']);
+
+    // ── App settings (public — no auth) ───────────────────────────────────
+    Route::get('app-settings', [AppSettingController::class, 'index']);
 
     // ── Home ───────────────────────────────────────────────────────────────
     Route::get('home', [HomeController::class, 'index']);
@@ -83,7 +87,8 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
 
         // Auth
-        Route::post('auth/logout', [AuthController::class, 'logout']);
+        Route::post('auth/logout',          [AuthController::class, 'logout']);
+        Route::delete('auth/delete-account', [AuthController::class, 'deleteAccount']);
 
         // Profile
         Route::get('profile', [ProfileController::class, 'show']);

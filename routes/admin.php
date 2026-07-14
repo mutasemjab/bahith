@@ -70,9 +70,13 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::resource('educational-notes', EducationalNoteController::class, ['as' => 'admin']);
 
         // ── Teachers ──────────────────────────────────────────────────
+        Route::get('teachers/export',  [TeacherController::class, 'export'])->name('admin.teachers.export');
+        Route::post('teachers/import', [TeacherController::class, 'import'])->name('admin.teachers.import');
         Route::resource('teachers', TeacherController::class, ['as' => 'admin']);
 
         // ── Students ──────────────────────────────────────────────────
+        Route::get('students/export',  [StudentController::class, 'export'])->name('admin.students.export');
+        Route::post('students/import', [StudentController::class, 'import'])->name('admin.students.import');
         Route::resource('students', StudentController::class, ['as' => 'admin']);
         Route::post('students/{student}/reset-device', [StudentController::class, 'resetDevice'])->name('admin.students.reset-device');
 
@@ -97,6 +101,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         // ── Card Numbers ──────────────────────────────────────────────
         Route::post('card-numbers/bulk-generate', [CardNumberController::class, 'bulkGenerate'])->name('admin.card-numbers.bulk');
+        Route::get('card-numbers/print',          [CardNumberController::class, 'printView'])->name('admin.card-numbers.print');
         Route::resource('card-numbers', CardNumberController::class, ['as' => 'admin']);
 
         // ── Subjects ──────────────────────────────────────────────────
@@ -128,8 +133,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('notifications/send', [NotificationController::class, 'send'])->name('admin.notifications.send.post');
 
         // ── Site Settings ─────────────────────────────────────────────
-        Route::get('site-settings',  [SiteSettingController::class, 'edit'])->name('admin.site-settings.edit');
-        Route::put('site-settings',  [SiteSettingController::class, 'update'])->name('admin.site-settings.update');
+        Route::get('site-settings',           [SiteSettingController::class, 'edit'])->name('admin.site-settings.edit');
+        Route::put('site-settings',           [SiteSettingController::class, 'update'])->name('admin.site-settings.update');
+        Route::post('site-settings/toggle-price-display', [SiteSettingController::class, 'togglePriceDisplay'])->name('admin.site-settings.toggle-price');
 
         // ── Contact Messages ──────────────────────────────────────────
         Route::get('contact-messages',              [ContactMessageController::class, 'index'])->name('admin.contact_messages.index');
