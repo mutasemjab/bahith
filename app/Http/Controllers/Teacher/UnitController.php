@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\{Course, Lesson, Material, Unit};
+use App\Services\ContentNotificationService;
 use Illuminate\Http\Request;
 
 class UnitController extends Controller
@@ -31,6 +32,8 @@ class UnitController extends Controller
         $data['order_index'] ??= $course->units()->max('order_index') + 1;
 
         $course->units()->create($data);
+
+        ContentNotificationService::onNewUnit($course, $data['title_ar']);
 
         return back()->with('success', 'Unit added.');
     }
@@ -109,6 +112,8 @@ class UnitController extends Controller
 
         unset($data['lesson_file']);
         $unit->lessons()->create($data);
+
+        ContentNotificationService::onNewLesson($unit->course, $data['title_ar'], $data['lesson_type']);
 
         return back()->with('success', __('messages.lesson_added'));
     }
@@ -194,6 +199,8 @@ class UnitController extends Controller
 
         $unit->materials()->create($data);
         $unit->increment('total_pdfs');
+
+        ContentNotificationService::onNewMaterial($unit->course, $data['title_ar']);
 
         return back()->with('success', 'Material uploaded.');
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\StudentsExport;
 use App\Http\Controllers\Controller;
 use App\Imports\StudentsImport;
+use App\Models\AdminActivityLog;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -53,7 +54,8 @@ class StudentController extends Controller
             $data['avatar'] = uploadImage('public/uploads/students', $request->file('avatar'));
         }
 
-        Student::create($data);
+        $student = Student::create($data);
+        AdminActivityLog::log('create', "إضافة طالب: {$student->name}", 'students', $student->id);
 
         return redirect()->route('admin.students.index')
             ->with('success', 'Student created successfully.');
@@ -98,6 +100,7 @@ class StudentController extends Controller
         }
 
         $student->update($data);
+        AdminActivityLog::log('update', "تعديل طالب: {$student->name}", 'students', $student->id);
 
         return redirect()->route('admin.students.index')
             ->with('success', 'Student updated successfully.');
@@ -112,6 +115,7 @@ class StudentController extends Controller
 
     public function destroy(Student $student)
     {
+        AdminActivityLog::log('delete', "حذف طالب: {$student->name}", 'students', $student->id);
         $student->delete();
 
         return redirect()->route('admin.students.index')

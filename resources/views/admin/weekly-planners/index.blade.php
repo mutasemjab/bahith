@@ -27,6 +27,8 @@
                     <th>#</th>
                     <th>الصورة</th>
                     <th>العنوان</th>
+                    <th>المعلم</th>
+                    <th>الصف</th>
                     <th>من تاريخ</th>
                     <th>إلى تاريخ</th>
                     <th>الحالة</th>
@@ -42,6 +44,8 @@
                              style="width:80px;height:55px;object-fit:cover;border-radius:6px;">
                     </td>
                     <td>{{ $planner->title ?: '—' }}</td>
+                    <td style="font-size:.85rem">{{ $planner->teacher?->name ?: '—' }}</td>
+                    <td style="font-size:.85rem">{{ $planner->schoolClass?->name ?: '—' }}</td>
                     <td>{{ $planner->start_date->format('Y-m-d') }}</td>
                     <td>{{ $planner->end_date->format('Y-m-d') }}</td>
                     <td>
@@ -69,7 +73,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center text-muted py-4">لا توجد مفكرات بعد.</td>
+                    <td colspan="9" class="text-center text-muted py-4">لا توجد مفكرات بعد.</td>
                 </tr>
                 @endforelse
             </tbody>

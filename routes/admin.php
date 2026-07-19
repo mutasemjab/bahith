@@ -1,5 +1,6 @@
-<?php
+﻿<?php
 
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\WeeklyPlannerController;
 use App\Http\Controllers\Admin\BannerController;
@@ -142,6 +143,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('site-settings/toggle-price-display', [SiteSettingController::class, 'togglePriceDisplay'])->name('admin.site-settings.toggle-price');
 
         // ── Contact Messages ──────────────────────────────────────────
+
+        // Activity Log
+        Route::get('activity-log',         [ActivityLogController::class, 'index'])->name('admin.activity-log.index');
+        Route::delete('activity-log/{id}', [ActivityLogController::class, 'destroy'])->name('admin.activity-log.destroy');
         Route::get('contact-messages',              [ContactMessageController::class, 'index'])->name('admin.contact_messages.index');
         Route::get('contact-messages/{contactMessage}', [ContactMessageController::class, 'show'])->name('admin.contact_messages.show');
         Route::post('contact-messages/{contactMessage}/reply', [ContactMessageController::class, 'reply'])->name('admin.contact_messages.reply');

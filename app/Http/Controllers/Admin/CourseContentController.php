@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Material;
 use App\Models\Unit;
+use App\Services\ContentNotificationService;
 use Illuminate\Http\Request;
 
 class CourseContentController extends Controller
@@ -26,6 +27,8 @@ class CourseContentController extends Controller
         $data['order_index'] = $data['order_index'] ?? ($course->units()->max('order_index') + 1);
 
         $course->units()->create($data);
+
+        ContentNotificationService::onNewUnit($course, $data['title_ar']);
 
         return back()->with('success', __('messages.unit_added'));
     }
@@ -77,6 +80,8 @@ class CourseContentController extends Controller
 
         $unit->lessons()->create($data);
         $unit->increment('total_videos');
+
+        ContentNotificationService::onNewLesson($unit->course, $data['title_ar'], $lessonType);
 
         return back()->with('success', __('messages.lesson_added'));
     }
@@ -160,6 +165,8 @@ class CourseContentController extends Controller
 
         $unit->materials()->create($data);
         $unit->increment('total_pdfs');
+
+        ContentNotificationService::onNewMaterial($unit->course, $data['title_ar']);
 
         return back()->with('success', __('messages.material_added'));
     }

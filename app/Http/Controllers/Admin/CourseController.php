@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\{Category, Course, Subject, Teacher};
+use App\Models\AdminActivityLog;
 use App\Services\CourseService;
 use Illuminate\Http\Request;
 
@@ -59,7 +60,8 @@ class CourseController extends Controller
         $data['is_free']           = $request->boolean('is_free');
         $data['sequential_videos'] = $request->boolean('sequential_videos');
 
-        $this->courses->create($data, $request->file('thumbnail'));
+        $course = $this->courses->create($data, $request->file('thumbnail'));
+        AdminActivityLog::log('create', "إضافة دورة: {$data['title_ar']}", 'courses', $course->id);
 
         return redirect()->route('admin.courses.index')
             ->with('success', 'Course created successfully.');
@@ -115,6 +117,7 @@ class CourseController extends Controller
         $data['sequential_videos'] = $request->boolean('sequential_videos');
 
         $this->courses->update($course, $data, $request->file('thumbnail'));
+        AdminActivityLog::log('update', "تعديل دورة: {$course->title_ar}", 'courses', $course->id);
 
         return redirect()->route('admin.courses.index')
             ->with('success', 'Course updated successfully.');
@@ -132,7 +135,9 @@ class CourseController extends Controller
 
     public function destroy(int $id)
     {
-        $this->courses->delete(Course::findOrFail($id));
+        $course = Course::findOrFail($id);
+        AdminActivityLog::log('delete', "حذف دورة: {$course->title_ar}", 'courses', $course->id);
+        $this->courses->delete($course);
 
         return redirect()->route('admin.courses.index')
             ->with('success', 'Course deleted successfully.');

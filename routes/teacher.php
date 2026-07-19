@@ -9,6 +9,7 @@ use App\Http\Controllers\Teacher\QuestionBankController;
 use App\Http\Controllers\Teacher\LoginController;
 use App\Http\Controllers\Teacher\ProfileController;
 use App\Http\Controllers\Teacher\UnitController;
+use App\Http\Controllers\Teacher\WeeklyPlannerController;
 use App\Http\Controllers\Teacher\WorksheetController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -68,6 +69,9 @@ Route::group([
 
         // ── Educational Notes ─────────────────────────────────────────
         Route::resource('educational-notes', EducationalNoteController::class, ['as' => 'teacher']);
+
+        // ── Weekly Planners ───────────────────────────────────────────
+        Route::resource('weekly-planners', WeeklyPlannerController::class, ['as' => 'teacher']);
 
         // ── Exams ─────────────────────────────────────────────────────
         Route::resource('exams', ExamController::class, ['as' => 'teacher']);

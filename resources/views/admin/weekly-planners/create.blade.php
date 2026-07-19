@@ -29,6 +29,32 @@
     <div class="panel-card-body">
         <div class="row g-3">
 
+            <div class="col-md-6">
+                <label class="form-label">المعلم</label>
+                <select name="teacher_id" class="form-select @error('teacher_id') is-invalid @enderror">
+                    <option value="">— اختر المعلم —</option>
+                    @foreach($teachers as $teacher)
+                        <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>
+                            {{ $teacher->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('teacher_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">الصف</label>
+                <select name="class_id" class="form-select @error('class_id') is-invalid @enderror">
+                    <option value="">— اختر الصف —</option>
+                    @foreach($classes as $class)
+                        <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
+                            {{ $class->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('class_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
             <div class="col-12">
                 <label class="form-label">العنوان <span class="text-muted">(اختياري)</span></label>
                 <input type="text" name="title" value="{{ old('title') }}"

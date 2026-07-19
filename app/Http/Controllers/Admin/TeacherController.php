@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\TeachersExport;
 use App\Http\Controllers\Controller;
 use App\Imports\TeachersImport;
+use App\Models\AdminActivityLog;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -37,7 +38,8 @@ class TeacherController extends Controller
     {
         $data = $request->validate([
             'name'              => 'required|string|max:200',
-            'email'             => 'required|email|unique:teachers,email',
+            'national_id'       => 'required|string|max:50|unique:teachers,national_id',
+            'email'             => 'nullable|email|unique:teachers,email',
             'phone'             => 'nullable|string|max:20',
             'password'          => 'required|string|min:8|confirmed',
             'specialization_ar' => 'nullable|string|max:255',
@@ -59,7 +61,8 @@ class TeacherController extends Controller
             $data['avatar'] = uploadImage('assets/uploads/teachers', $request->file('avatar'));
         }
 
-        Teacher::create($data);
+        $teacher = Teacher::create($data);
+        AdminActivityLog::log('create', "إضافة معلم: {$teacher->name}", 'teachers', $teacher->id);
 
         return redirect()->route('admin.teachers.index')
             ->with('success', 'Teacher created successfully.');
@@ -81,7 +84,8 @@ class TeacherController extends Controller
     {
         $data = $request->validate([
             'name'              => 'required|string|max:200',
-            'email'             => 'required|email|unique:teachers,email,' . $teacher->id,
+            'national_id'       => 'required|string|max:50|unique:teachers,national_id,' . $teacher->id,
+            'email'             => 'nullable|email|unique:teachers,email,' . $teacher->id,
             'phone'             => 'nullable|string|max:20',
             'password'          => 'nullable|string|min:8|confirmed',
             'specialization_ar' => 'nullable|string|max:255',
@@ -111,6 +115,7 @@ class TeacherController extends Controller
         }
 
         $teacher->update($data);
+        AdminActivityLog::log('update', "تعديل معلم: {$teacher->name}", 'teachers', $teacher->id);
 
         return redirect()->route('admin.teachers.index')
             ->with('success', 'Teacher updated successfully.');
@@ -118,6 +123,7 @@ class TeacherController extends Controller
 
     public function destroy(Teacher $teacher)
     {
+        AdminActivityLog::log('delete', "حذف معلم: {$teacher->name}", 'teachers', $teacher->id);
         $teacher->delete();
 
         return redirect()->route('admin.teachers.index')

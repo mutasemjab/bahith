@@ -202,6 +202,13 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="{{ route('admin.activity-log.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.activity-log.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-clock-history"></i>
+                    <span>سجل النشاطات</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route('admin.contact_messages.index') }}"
                     class="nav-link {{ request()->routeIs('admin.contact_messages.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-envelope"></i>

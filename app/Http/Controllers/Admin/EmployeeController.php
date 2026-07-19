@@ -76,7 +76,7 @@ class EmployeeController extends Controller
                 foreach ($request->roles as $role) {
                     DB::table('model_has_roles')->insert([
                         'role_id' => $role,
-                        'model_type' => 'App\Models\admin',
+                        'model_type' => 'App\Models\Admin',
                         'model_id' => $admin->id
                     ]);
                 }
@@ -107,7 +107,7 @@ class EmployeeController extends Controller
             DB::beginTransaction();
             try {
                 Admin::find($id)->delete();
-                DB::table('model_has_roles')->where('model_type', 'App\Models\admin')->where('model_id', $id)->delete();
+                DB::table('model_has_roles')->where('model_type', 'App\Models\Admin')->where('model_id', $id)->delete();
                 DB::commit();
                 return redirect()->route('admin.employee.index')
                     ->with('success', 'Admin deleted successfully');
@@ -168,12 +168,12 @@ class EmployeeController extends Controller
                     $admin->password = Hash::make($request->password);
                 }
                 $admin->save();
-                DB::table('model_has_roles')->where('model_type', 'App\Models\admin')
+                DB::table('model_has_roles')->where('model_type', 'App\Models\Admin')
                     ->where('model_id', $id)->delete();
                 foreach ($request->roles as $role) {
                     DB::table('model_has_roles')->insert([
                         'role_id' => $role,
-                        'model_type' => 'App\Models\admin',
+                        'model_type' => 'App\Models\Admin',
                         'model_id' => $admin->id
                     ]);
                 }
@@ -203,13 +203,13 @@ class EmployeeController extends Controller
         DB::beginTransaction();
         try {
             Admin::find($id)->delete();
-            DB::table('model_has_roles')->where('model_type', 'App\Models\admin')->where('model_id', $id)->delete();
+            DB::table('model_has_roles')->where('model_type', 'App\Models\Admin')->where('model_id', $id)->delete();
             DB::commit();
-            return redirect()->route('admins.index')
+            return redirect()->route('admin.employee.index')
                 ->with('success', 'Admin deleted successfully');
         } catch (Exception $e) {
             DB::rollback();
-            return redirect()->route('admins.index')
+            return redirect()->route('admin.employee.index')
                 ->with('error', 'Something Error');
         }
     }

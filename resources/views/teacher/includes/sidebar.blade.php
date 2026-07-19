@@ -84,6 +84,13 @@
                     <span>{{ __('messages.educational_notes') }}</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('teacher.weekly-planners.index') }}"
+                   class="nav-link {{ request()->routeIs('teacher.weekly-planners.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-calendar-week"></i>
+                    <span>المفكرة الأسبوعية</span>
+                </a>
+            </li>
         </ul>
 
     </nav>

@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('teacher.layouts.app')
 @section('title', 'تعديل المفكرة الأسبوعية')
 
 @section('content')
@@ -8,7 +8,7 @@
         <h1 class="page-title">تعديل المفكرة الأسبوعية</h1>
         <p class="page-sub">{{ $weeklyPlanner->title ?: 'تحديث بيانات المفكرة' }}</p>
     </div>
-    <a href="{{ route('admin.weekly-planners.index') }}" class="btn-outline-sm">
+    <a href="{{ route('teacher.weekly-planners.index') }}" class="btn-outline-sm">
         <i class="bi bi-arrow-left"></i> رجوع
     </a>
 </div>
@@ -21,7 +21,7 @@
 
 <div class="row g-3">
 <div class="col-12 col-xl-7">
-<form action="{{ route('admin.weekly-planners.update', $weeklyPlanner) }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('teacher.weekly-planners.update', $weeklyPlanner) }}" method="POST" enctype="multipart/form-data">
 @csrf @method('PUT')
 
 <div class="panel-card">
@@ -29,20 +29,7 @@
     <div class="panel-card-body">
         <div class="row g-3">
 
-            <div class="col-md-6">
-                <label class="form-label">المعلم</label>
-                <select name="teacher_id" class="form-select @error('teacher_id') is-invalid @enderror">
-                    <option value="">— اختر المعلم —</option>
-                    @foreach($teachers as $teacher)
-                        <option value="{{ $teacher->id }}" {{ old('teacher_id', $weeklyPlanner->teacher_id) == $teacher->id ? 'selected' : '' }}>
-                            {{ $teacher->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('teacher_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
-
-            <div class="col-md-6">
+            <div class="col-12">
                 <label class="form-label">الصف</label>
                 <select name="class_id" class="form-select @error('class_id') is-invalid @enderror">
                     <option value="">— اختر الصف —</option>
@@ -106,7 +93,7 @@
         <button type="submit" class="btn-primary-sm">
             <i class="bi bi-check-circle"></i> حفظ التعديلات
         </button>
-        <a href="{{ route('admin.weekly-planners.index') }}" class="btn-outline-sm">إلغاء</a>
+        <a href="{{ route('teacher.weekly-planners.index') }}" class="btn-outline-sm">إلغاء</a>
     </div>
 </div>
 

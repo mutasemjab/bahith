@@ -384,23 +384,24 @@
         <form method="POST" action="{{ route('teacher.login') }}" autocomplete="off">
             @csrf
 
-            {{-- Email --}}
+            {{-- National ID --}}
             <div class="form-group">
-                <label class="form-label" for="email">Email Address</label>
+                <label class="form-label" for="national_id">الرقم الوطني</label>
                 <div class="input-wrap">
-                    <i class="input-icon bi bi-envelope"></i>
+                    <i class="input-icon bi bi-person-badge"></i>
                     <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        class="form-input {{ $errors->has('email') ? 'is-invalid' : '' }}"
-                        placeholder="teacher@school.com"
-                        value="{{ old('email') }}"
+                        id="national_id"
+                        name="national_id"
+                        type="text"
+                        class="form-input {{ $errors->has('national_id') ? 'is-invalid' : '' }}"
+                        placeholder="أدخل رقمك الوطني"
+                        value="{{ old('national_id') }}"
                         required
                         autofocus
+                        dir="ltr"
                     >
                 </div>
-                @error('email')
+                @error('national_id')
                     <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
             </div>
@@ -430,7 +431,7 @@
             {{-- Remember Me --}}
             <div class="form-check">
                 <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                <label for="remember">Keep me signed in for 30 days</label>
+                <label for="remember">ابقَ متصلاً لمدة 30 يوماً</label>
             </div>
 
             <button type="submit" class="btn-login">
