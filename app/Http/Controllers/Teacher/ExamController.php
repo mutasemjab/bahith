@@ -190,12 +190,12 @@ class ExamController extends Controller
         ])->all();
 
         $this->exams->addQuestion($exam, [
-            'question_text_ar' => $data['question_text_ar'],
-            'question_text_en' => $data['question_text_en'] ?? null,
-            'question_type'    => $data['question_type'],
-            'difficulty'       => $data['difficulty'] ?? 'medium',
-            'marks'            => $data['marks'],
-            'explanation_ar'   => $data['explanation_ar'] ?? null,
+            'question_ar'    => $data['question_text_ar'],
+            'question_en'    => $data['question_text_en'] ?? null,
+            'question_type'  => $data['question_type'],
+            'difficulty'     => $data['difficulty'] ?? 'medium',
+            'marks'          => $data['marks'],
+            'explanation_ar' => $data['explanation_ar'] ?? null,
         ], $options);
 
         return back()->with('success', 'Question added.');
