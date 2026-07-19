@@ -130,38 +130,73 @@ class HomeController extends Controller
             }
         }
 
-        // ── Tawjihi streams from category tree ───────────────────────────
+        // ── Tawjihi: grade 11 (direct subjects) + grade 12 (streams → sub-cats → subjects) ─
         // Root: Tawjihi (level=0, order_index=2)
-        // Children: streams (level=1), each with two sub-cats:
-        //   order_index=1 → مواد وزارية (is_elective=false)
-        //   order_index=2 → مواد مدرسية  (is_elective=true)
+        // After migration children are:
+        //   Grade 11 (order=10) → subjects attached directly, no stream children
+        //   Grade 12 (order=20) → stream children → sub-cats (وزارية/مدرسية) → subjects
 
         $tawjihiRoot = Category::with([
-            'children'                   => fn ($q) => $q->where('is_active', true)->orderBy('order_index'),
-            'children.children'          => fn ($q) => $q->where('is_active', true)->orderBy('order_index'),
-            'children.children.subjects' => fn ($q) => $q->where('is_active', true)->orderBy('order_index'),
+            'children'                              => fn ($q) => $q->where('is_active', true)->orderBy('order_index'),
+            'children.subjects'                     => fn ($q) => $q->where('is_active', true)->orderBy('order_index'),
+            'children.children'                     => fn ($q) => $q->where('is_active', true)->orderBy('order_index'),
+            'children.children.children'            => fn ($q) => $q->where('is_active', true)->orderBy('order_index'),
+            'children.children.children.subjects'   => fn ($q) => $q->where('is_active', true)->orderBy('order_index'),
         ])->whereNull('parent_id')->where('order_index', 2)->first();
 
-        $fields = collect();
+        $tawjihiGrades = collect();
+        $fields        = collect();
+
         if ($tawjihiRoot) {
-            foreach ($tawjihiRoot->children as $stream) {
-                $allSubjects = collect();
-                foreach ($stream->children as $sub) {
-                    $allSubjects = $allSubjects->concat($sub->subjects);
+            foreach ($tawjihiRoot->children as $grade) {
+                $directSubjects = $grade->subjects;
+                $gradeChildren  = $grade->children;
+
+                if ($directSubjects->isNotEmpty() && $gradeChildren->isEmpty()) {
+                    // Grade 11: subjects attached directly to the grade category
+                    $tawjihiGrades->push([
+                        'id'       => $grade->id,
+                        'label'    => $grade->name_ar,
+                        'label_en' => $grade->name_en,
+                        'type'     => 'subjects',
+                        'subjects' => $directSubjects->map($toChip)->values(),
+                    ]);
+                } else {
+                    // Grade 12 (or similar): children are streams → each stream has sub-cats
+                    $gradeFields = collect();
+                    foreach ($gradeChildren as $stream) {
+                        $allSubjects = collect();
+                        if ($stream->children->isNotEmpty()) {
+                            foreach ($stream->children as $subCat) {
+                                $allSubjects = $allSubjects->concat($subCat->subjects);
+                            }
+                        } else {
+                            $allSubjects = $stream->subjects;
+                        }
+                        $gradeFields->push([
+                            'id'       => $stream->id,
+                            'label'    => $stream->name_ar,
+                            'label_en' => $stream->name_en,
+                            'icon'     => $stream->icon ?? '📚',
+                            'sub'      => null,
+                            'sub_en'   => null,
+                            'comp'     => $allSubjects->where('is_elective', false)->map(fn ($s) => $toChip($s))->values(),
+                            'elec'     => $allSubjects->where('is_elective', true)->map(fn ($s) => $toChip($s))->values(),
+                        ]);
+                    }
+                    $tawjihiGrades->push([
+                        'id'       => $grade->id,
+                        'label'    => $grade->name_ar,
+                        'label_en' => $grade->name_en,
+                        'type'     => 'fields',
+                        'fields'   => $gradeFields->values(),
+                    ]);
+                    $fields = $fields->concat($gradeFields);
                 }
-                $fields->push([
-                    'id'       => $stream->id,
-                    'label'    => $stream->name_ar,
-                    'label_en' => $stream->name_en,
-                    'icon'     => $stream->icon,
-                    'sub'      => null,
-                    'sub_en'   => null,
-                    'comp'     => $allSubjects->where('is_elective', false)->map(fn ($s) => $toChip($s))->values(),
-                    'elec'     => $allSubjects->where('is_elective', true)->map(fn ($s) => $toChip($s))->values(),
-                ]);
             }
         }
-        $fields = $fields->values();
+        $tawjihiGrades = $tawjihiGrades->values();
+        $fields        = $fields->values();
 
         // ── Previous-year exam generations ────────────────────────────────
 
@@ -181,10 +216,11 @@ class HomeController extends Controller
             ->toArray();
 
         return [
-            'grades'      => $grades,
-            'fields'      => $fields,
-            'generations' => $generations,
-            'coursesUrl'  => route('courses.index'),
+            'grades'        => $grades,
+            'tawjihiGrades' => $tawjihiGrades,
+            'fields'        => $fields,
+            'generations'   => $generations,
+            'coursesUrl'    => route('courses.index'),
         ];
     }
 

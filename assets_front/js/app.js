@@ -4,18 +4,20 @@
 const APP = (() => {
 
   /* ─── DATA (injected by Blade) ─── */
-  const DATA        = window.APP_DATA || {};
-  const GRADES_DATA = DATA.grades      || [];
-  const FIELDS      = DATA.fields      || [];
-  const GENERATIONS = DATA.generations || [];
-  const COURSES_URL = DATA.coursesUrl  || '/courses';
+  const DATA           = window.APP_DATA || {};
+  const GRADES_DATA    = DATA.grades        || [];
+  const TAWJIHI_GRADES = DATA.tawjihiGrades || [];
+  const FIELDS         = DATA.fields        || [];
+  const GENERATIONS    = DATA.generations   || [];
+  const COURSES_URL    = DATA.coursesUrl    || '/courses';
 
   const ORDINALS = ['','الأول','الثاني','الثالث','الرابع','الخامس',
                     'السادس','السابع','الثامن','التاسع','العاشر'];
 
   /* ─── STATE ─── */
   let stack = [];
-  let cur = { page: null, gradeN: null, sem: null, subj: null, subjSlug: null, genY: null, fieldId: null };
+  let cur = { page: null, gradeN: null, sem: null, subj: null, subjSlug: null,
+              genY: null, fieldId: null, tawjihiGradeId: null };
 
   /* ─── HELPERS ─── */
   const $  = id => document.getElementById(id);
@@ -47,12 +49,17 @@ const APP = (() => {
       if (pg === 'subjects') crumbs.push({ l:'الصف '+ORDINALS[cur.gradeN], p:'subjects' });
     } else if (pg === 'grades') {
       crumbs.push({ l:'الصفوف', p:'grades' });
-    } else if (['tawjihi','fields','fsubjects'].includes(pg)) {
+    } else if (['tawjihi','tsubjects','fields','fsubjects'].includes(pg)) {
       crumbs.push({ l:'التوجيهي', p:'tawjihi' });
-      if (cur.genY) crumbs.push({ l:'جيل '+cur.genY, p:'fields' });
-      if (cur.fieldId) {
+      if (cur.tawjihiGradeId) {
+        const tg = TAWJIHI_GRADES.find(x => x.id === cur.tawjihiGradeId);
+        if (tg && (pg === 'tsubjects' || pg === 'fields' || pg === 'fsubjects')) {
+          crumbs.push({ l: tg.label, p: tg.type === 'subjects' ? 'tsubjects' : 'fields' });
+        }
+      }
+      if (pg === 'fsubjects' && cur.fieldId) {
         const f = FIELDS.find(x => x.id === cur.fieldId);
-        if (f) crumbs.push({ l: f.icon+' '+f.label.substring(0,14), p:'fsubjects' });
+        if (f) crumbs.push({ l: (f.icon||'')+ ' ' + f.label.substring(0,14), p:'fsubjects' });
       }
     }
     $('ov-bc').innerHTML = crumbs.map(function(c, i) {
@@ -96,7 +103,6 @@ const APP = (() => {
     $('ov-tab-1').classList.toggle('active', cur.sem === 1);
     $('ov-tab-2').classList.toggle('active', cur.sem === 2);
 
-    // subjects are semester-specific: g.semesters[1] and g.semesters[2]
     const subjects = (g && g.semesters && g.semesters[cur.sem]) ? g.semesters[cur.sem] : [];
     $('ov-subj-list').innerHTML = subjects.map(s => {
       const count = s.courses_count > 0 ? `${s.courses_count} دورة` : 'استعرض الدورات';
@@ -112,30 +118,56 @@ const APP = (() => {
     animStagger('#ov-subj-list .ov-subj-chip');
   }
 
-  function renderGenerations() {
-    if (GENERATIONS.length === 0) {
-      $('ov-gen-list').innerHTML = '<p style="color:#94a3b8;padding:24px;text-align:center">لا توجد امتحانات سابقة متاحة حالياً</p>';
-      return;
-    }
-    $('ov-gen-list').innerHTML = GENERATIONS.map(g => `
-      <div class="ov-gen-card ${g.hot ? 'ogn-hot' : ''}" onclick="APP.go('fields','${g.year}')">
-        <div class="ogn-year">${g.year}</div>
-        <div class="ogn-label">${g.label}</div>
-        <span class="ogn-pill">${g.pill}</span>
+  /* Tawjihi grade picker (11 / 12) */
+  function renderTawjihiGrades() {
+    const icons = { subjects: '📖', fields: '🎯' };
+    $('ov-tw-grade-list').innerHTML = TAWJIHI_GRADES.map(g => `
+      <div class="ov-grade-card" onclick="APP.go('tawjihi-grade',${g.id})">
+        <div class="ogc-num">${g.type === 'subjects' ? '11' : '12'}</div>
+        <div class="ogc-ord">${g.label}</div>
+        <div class="ogc-label">${g.type === 'subjects' ? 'مواد مباشرة' : 'فروع متعددة'}</div>
+        <div class="ogc-sub">التوجيهي</div>
+        <div class="ogc-footer">
+          <span class="ogc-badge">${g.type === 'subjects' ? g.subjects.length + ' مادة' : g.fields.length + ' فرع'}</span>
+          <div class="ogc-arrow">→</div>
+        </div>
       </div>
     `).join('');
-    animStagger('#ov-gen-list .ov-gen-card');
+    animStagger('#ov-tw-grade-list .ov-grade-card');
+  }
+
+  /* Grade 11 direct subjects */
+  function renderTsubjects() {
+    const tg = TAWJIHI_GRADES.find(x => x.id === cur.tawjihiGradeId);
+    if (!tg) return;
+    $('ts-ey').textContent  = 'التوجيهي — ' + tg.label;
+    $('ts-ttl').textContent = 'مواد ' + tg.label;
+    const subjects = tg.subjects || [];
+    $('ov-ts-subj-list').innerHTML = subjects.map(s => {
+      const count = s.courses_count > 0 ? `${s.courses_count} دورة` : 'استعرض الدورات';
+      return `
+        <div class="ov-subj-chip" onclick="APP.goToCourses(${s.id})">
+          <div class="ov-subj-icon ${s.bg}">${s.e}</div>
+          <div>
+            <div class="ov-subj-label">${s.l}</div>
+            <div class="ov-subj-count">${count}</div>
+          </div>
+        </div>`;
+    }).join('');
+    animStagger('#ov-ts-subj-list .ov-subj-chip');
   }
 
   function renderFields() {
-    $('fld-ey').textContent = `جيل ${cur.genY} — اختر الفرع`;
-    $('ov-field-list').innerHTML = FIELDS.map(f => `
+    const tg = TAWJIHI_GRADES.find(g => g.id === cur.tawjihiGradeId);
+    const gradeFields = (tg && tg.fields) ? tg.fields : FIELDS;
+    $('fld-ey').textContent = (tg ? tg.label : 'الصف الثاني عشر') + ' — اختر الفرع';
+    $('ov-field-list').innerHTML = gradeFields.map(f => `
       <div class="ov-field-card" onclick="APP.go('fsubjects',${f.id})">
         <div class="ov-field-overlay"></div>
         <div class="ov-field-content">
-          <div class="ov-field-icon">${f.icon}</div>
+          <div class="ov-field-icon">${f.icon || '📚'}</div>
           <div class="ov-field-title">${f.label}</div>
-          <div class="ov-field-sub">${f.sub}</div>
+          <div class="ov-field-sub">${f.sub || ''}</div>
         </div>
       </div>
     `).join('');
@@ -143,11 +175,15 @@ const APP = (() => {
   }
 
   function renderFsubjects() {
-    const f = FIELDS.find(x => x.id === cur.fieldId);
+    const tg = TAWJIHI_GRADES.find(g => g.id === cur.tawjihiGradeId);
+    // Find field in the current grade's fields (or fall back to global FIELDS)
+    const fieldsList = (tg && tg.fields) ? tg.fields : FIELDS;
+    const f = fieldsList.find(x => x.id === cur.fieldId);
     if (!f) return;
-    $('fs-ey').textContent = `جيل ${cur.genY} — ${f.label}`;
-    $('fs-ttl').innerHTML  = `${f.icon} <span class="a-blue">${f.label}</span>`;
-    $('fs-sb').textContent = f.sub;
+
+    $('fs-ey').textContent = (tg ? tg.label + ' — ' : '') + f.label;
+    $('fs-ttl').innerHTML  = `${f.icon || '📚'} <span class="a-blue">${f.label}</span>`;
+    $('fs-sb').textContent = f.sub || '';
 
     const chipHtml = list => list.map(s => {
       const count = s.courses_count > 0 ? `${s.courses_count} دورة` : 'استعرض الدورات';
@@ -162,18 +198,25 @@ const APP = (() => {
     }).join('');
 
     $('ov-comp-count').textContent = `${f.comp.length} مادة`;
-    $('ov-elec-count').textContent = `${f.elec.length} مادة`;
     $('ov-comp-list').innerHTML = chipHtml(f.comp);
-    $('ov-elec-list').innerHTML = chipHtml(f.elec);
     animStagger('#ov-comp-list .ov-subj-chip');
-    setTimeout(() => animStagger('#ov-elec-list .ov-subj-chip'), 120);
+
+    // Hide elective section when empty (e.g. Grade 11 subjects)
+    const elecSec = $('ov-elec-sec');
+    if (elecSec) elecSec.style.display = f.elec.length > 0 ? '' : 'none';
+    if (f.elec.length > 0) {
+      $('ov-elec-count').textContent = `${f.elec.length} مادة`;
+      $('ov-elec-list').innerHTML = chipHtml(f.elec);
+      setTimeout(() => animStagger('#ov-elec-list .ov-subj-chip'), 120);
+    }
   }
 
   /* ─── PUBLIC API ─── */
   return {
     open(type) {
       stack = [];
-      Object.assign(cur, { page:null, gradeN:null, sem:null, subj:null, subjSlug:null, genY:null, fieldId:null });
+      Object.assign(cur, { page:null, gradeN:null, sem:null, subj:null, subjSlug:null,
+                            genY:null, fieldId:null, tawjihiGradeId:null });
       overlay.classList.add('visible');
       document.body.style.overflow = 'hidden';
 
@@ -183,7 +226,7 @@ const APP = (() => {
         showOvPage('grades');
       } else {
         cur.page = 'tawjihi';
-        renderGenerations();
+        renderTawjihiGrades();
         showOvPage('tawjihi');
       }
     },
@@ -192,6 +235,16 @@ const APP = (() => {
       if (page === 'grade-subjects') {
         push('subjects', { gradeN: val, sem: 1 });
         renderSubjects();
+      } else if (page === 'tawjihi-grade') {
+        const tg = TAWJIHI_GRADES.find(g => g.id === val);
+        if (!tg) return;
+        if (tg.type === 'subjects') {
+          push('tsubjects', { tawjihiGradeId: val });
+          renderTsubjects();
+        } else {
+          push('fields', { tawjihiGradeId: val });
+          renderFields();
+        }
       } else if (page === 'fields') {
         push('fields', { genY: val });
         renderFields();
@@ -217,7 +270,8 @@ const APP = (() => {
       showOvPage(cur.page);
       if (cur.page === 'grades')    renderGrades();
       if (cur.page === 'subjects')  renderSubjects();
-      if (cur.page === 'tawjihi')   renderGenerations();
+      if (cur.page === 'tawjihi')   renderTawjihiGrades();
+      if (cur.page === 'tsubjects') renderTsubjects();
       if (cur.page === 'fields')    renderFields();
       if (cur.page === 'fsubjects') renderFsubjects();
     },
@@ -230,7 +284,8 @@ const APP = (() => {
       showOvPage(cur.page);
       if (cur.page === 'grades')    renderGrades();
       if (cur.page === 'subjects')  renderSubjects();
-      if (cur.page === 'tawjihi')   renderGenerations();
+      if (cur.page === 'tawjihi')   renderTawjihiGrades();
+      if (cur.page === 'tsubjects') renderTsubjects();
       if (cur.page === 'fields')    renderFields();
       if (cur.page === 'fsubjects') renderFsubjects();
     },

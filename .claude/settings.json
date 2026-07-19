@@ -23,7 +23,12 @@
       "Bash(Get-ChildItem -Path \"C:\\\\xampp\\\\htdocs\\\\zaidonfull\\\\app\\\\Http\\\\Controllers\\\\Admin\" -Name)",
       "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\zaidonfull\\\\database\\\\migrations\" -File)",
       "Bash(Get-Content database/migrations/*.php)",
-      "Bash(Select-String -Pattern \"follow\" -i)"
+      "Bash(Select-String -Pattern \"follow\" -i)",
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\bahith\" -Force)",
+      "Bash(Select-Object -Property Name, PSIsContainer)",
+      "PowerShell(ls -Recurse \"c:\\\\xampp\\\\htdocs\\\\bahith\\\\app\" | where {$_.PSIsContainer} | Select-Object -ExpandProperty FullName | Sort-Object)",
+      "PowerShell(ls -Recurse \"c:\\\\xampp\\\\htdocs\\\\bahith\\\\resources\\\\views\" | where {$_.PSIsContainer} | Select-Object -ExpandProperty FullName | Sort-Object)",
+      "Read(//mnt/c/xampp/htdocs/bahith/**)"
     ]
   }
 }

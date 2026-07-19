@@ -155,6 +155,14 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="{{ route('admin.weekly-planners.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.weekly-planners.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-calendar-week"></i>
+                    <span>المفكرة الأسبوعية</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a href="{{ route('admin.notifications.send') }}"
                     class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-bell"></i>

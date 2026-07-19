@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Student\PreviousYearExamController;
 use App\Http\Controllers\Api\Student\ProfileController;
 use App\Http\Controllers\Api\Student\QuestionBankController;
 use App\Http\Controllers\Api\Student\TeacherController;
+use App\Http\Controllers\Api\Student\WeeklyPlannerController;
 use App\Http\Controllers\Api\Student\WorksheetController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,9 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
 
     // ── Banners (slider images — no auth needed) ────────────────────────────
     Route::get('banners', [BannerController::class, 'index']);
+
+    // ── Weekly Planner ─────────────────────────────────────────────────────
+    Route::get('weekly-planner', [WeeklyPlannerController::class, 'index']);
 
     // ── Category tree navigation ───────────────────────────────────────────
     Route::get('categories',        [CategoryController::class, 'index']);

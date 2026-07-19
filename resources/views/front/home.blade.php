@@ -535,7 +535,7 @@
     </div>
   </div>
 
-  <!-- PAGE: TAWJIHI — GENERATIONS -->
+  <!-- PAGE: TAWJIHI — GRADE SELECT (11 / 12) -->
   <div class="ov-page" id="ovp-tawjihi">
     <div class="ov-hero">
       <div class="ov-hero-inner">
@@ -545,16 +545,25 @@
       </div>
     </div>
     <div class="ov-body">
-      <div class="ov-section-hd">
-        <div class="ov-section-eye">{{ __('front.overlay_gen_eye') }}</div>
-        <h2 class="ov-section-title">{{ __('front.overlay_gen_t') }}</h2>
-        <p class="ov-section-sub">{{ __('front.overlay_gen_sub') }}</p>
-      </div>
-      <div class="ov-gen-grid" id="ov-gen-list"></div>
+      <div class="ov-grade-grid" id="ov-tw-grade-list"></div>
     </div>
   </div>
 
-  <!-- PAGE: FIELDS -->
+  <!-- PAGE: TAWJIHI GRADE 11 — DIRECT SUBJECTS -->
+  <div class="ov-page" id="ovp-tsubjects">
+    <div class="ov-hero">
+      <div class="ov-hero-inner">
+        <div class="ov-eyebrow" id="ts-ey">{{ __('front.overlay_tawjihi_eye') }}</div>
+        <h1 class="ov-hero-title" id="ts-ttl">{{ __('front.overlay_subj_t') }}</h1>
+        <p class="ov-hero-sub">{{ __('front.overlay_subj_sub') }}</p>
+      </div>
+    </div>
+    <div class="ov-body">
+      <div class="ov-subj-grid" id="ov-ts-subj-list"></div>
+    </div>
+  </div>
+
+  <!-- PAGE: FIELDS (Grade 12 streams) -->
   <div class="ov-page" id="ovp-fields">
     <div class="ov-hero">
       <div class="ov-hero-inner">
@@ -588,7 +597,7 @@
         </div>
         <div class="ov-subj-grid" id="ov-comp-list"></div>
       </div>
-      <div class="ov-subj-section">
+      <div class="ov-subj-section" id="ov-elec-sec">
         <div class="ov-subj-sec-hd">
           <span class="ov-subj-badge sb-elec">{{ __('front.overlay_elec_badge') }}</span>
           <div>

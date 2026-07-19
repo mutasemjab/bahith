@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AnnouncementController;
+use App\Http\Controllers\Admin\WeeklyPlannerController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CardController;
 use App\Http\Controllers\Admin\CardNumberController;
@@ -120,6 +121,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::delete('lessons/{id}',         [CourseContentController::class, 'destroyLesson'])->name('admin.courses.lessons.destroy');
         Route::post('units/{id}/materials',   [CourseContentController::class, 'storeMaterial'])->name('admin.courses.materials.store');
         Route::delete('materials/{id}',       [CourseContentController::class, 'destroyMaterial'])->name('admin.courses.materials.destroy');
+
+        // ── Weekly Planners ───────────────────────────────────────────
+        Route::resource('weekly-planners', WeeklyPlannerController::class, ['as' => 'admin']);
 
         // ── Banners ───────────────────────────────────────────────────
         Route::post('banners/{banner}/toggle', [BannerController::class, 'toggleActive'])->name('admin.banners.toggle');
