@@ -28,14 +28,11 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(Gate $gate)
     {
         $gate->before(function ($user, $ability) {
-            if (Auth::guard('admin')->check()) {
-               if(auth()->user()->is_super){
-                   return true;
-               }
-           }else{
-            return false;
-           }
-       });
+            if ($user instanceof \App\Models\Admin && $user->is_super) {
+                return true;
+            }
+        });
+
         $this->registerPolicies();
 
 

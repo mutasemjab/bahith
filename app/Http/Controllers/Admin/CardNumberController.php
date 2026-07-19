@@ -9,6 +9,14 @@ use Illuminate\Http\Request;
 
 class CardNumberController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('card-number-table'))->only(['index', 'show', 'printView']);
+        $this->middleware($this->perm('card-number-add'))->only(['create', 'store', 'bulkGenerate']);
+        $this->middleware($this->perm('card-number-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('card-number-delete'))->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $cardNumbers = CardNumber::with('card.pos', 'assignedUser')

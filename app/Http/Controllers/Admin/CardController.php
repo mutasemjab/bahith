@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 
 class CardController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('card-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('card-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('card-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('card-delete'))->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $cards = Card::with('pos.city')

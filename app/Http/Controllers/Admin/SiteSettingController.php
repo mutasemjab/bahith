@@ -10,6 +10,11 @@ class SiteSettingController extends Controller
 {
     private array $groups = ['hero', 'about', 'contact', 'social', 'apps'];
 
+    public function __construct()
+    {
+        $this->middleware($this->perm('setting-edit'))->only(['edit', 'update', 'togglePriceDisplay']);
+    }
+
     public function edit()
     {
         $settings = SiteSetting::all()->keyBy('key');

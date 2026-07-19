@@ -9,6 +9,13 @@ use Illuminate\Http\Request;
 
 class EnrollmentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('enrollment-table'))->only(['index']);
+        $this->middleware($this->perm('enrollment-edit'))->only(['toggleActive']);
+        $this->middleware($this->perm('enrollment-delete'))->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $enrollments = Enrollment::with(['student', 'course'])

@@ -13,6 +13,14 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('student-table'))->only(['index', 'show', 'export']);
+        $this->middleware($this->perm('student-add'))->only(['create', 'store', 'import']);
+        $this->middleware($this->perm('student-edit'))->only(['edit', 'update', 'resetDevice']);
+        $this->middleware($this->perm('student-delete'))->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $students = Student::withCount('enrollments')

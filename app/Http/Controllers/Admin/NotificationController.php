@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('notification-send'))->only(['sendForm', 'send']);
+    }
+
     public function sendForm()
     {
         $classes  = SchoolClass::where('is_active', true)->orderBy('name')->get();

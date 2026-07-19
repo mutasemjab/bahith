@@ -9,6 +9,14 @@ use Illuminate\Http\Request;
 
 class SubjectController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('subject-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('subject-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('subject-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('subject-delete'))->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $subjects = Subject::with(['category.parent.parent'])

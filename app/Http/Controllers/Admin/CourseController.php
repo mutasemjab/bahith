@@ -10,7 +10,13 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    public function __construct(private CourseService $courses) {}
+    public function __construct(private CourseService $courses)
+    {
+        $this->middleware($this->perm('course-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('course-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('course-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('course-delete'))->only(['destroy']);
+    }
 
     public function index(Request $request)
     {

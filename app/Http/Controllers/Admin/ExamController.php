@@ -9,7 +9,13 @@ use Illuminate\Http\{JsonResponse, Request};
 
 class ExamController extends Controller
 {
-    public function __construct(private ExamService $exams) {}
+    public function __construct(private ExamService $exams)
+    {
+        $this->middleware($this->perm('exam-table'))->only(['index', 'show', 'getCourseStructure']);
+        $this->middleware($this->perm('exam-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('exam-edit'))->only(['edit', 'update', 'storeQuestion', 'destroyQuestion']);
+        $this->middleware($this->perm('exam-delete'))->only(['destroy']);
+    }
 
     public function index(Request $request)
     {

@@ -12,6 +12,14 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class TeacherController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('teacher-table'))->only(['index', 'show', 'export']);
+        $this->middleware($this->perm('teacher-add'))->only(['create', 'store', 'import']);
+        $this->middleware($this->perm('teacher-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('teacher-delete'))->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $teachers = Teacher::withCount('courses')

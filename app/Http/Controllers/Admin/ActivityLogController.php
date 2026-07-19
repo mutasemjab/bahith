@@ -9,6 +9,12 @@ use Illuminate\Http\Request;
 
 class ActivityLogController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('activity-log-table'))->only(['index']);
+        $this->middleware($this->perm('activity-log-delete'))->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $logs = AdminActivityLog::query()

@@ -12,11 +12,14 @@ use Spatie\Permission\Models\Permission;
 use Gate;
 class RoleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct()
+    {
+        $this->middleware($this->perm('role-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('role-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('role-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('role-delete'))->only(['delete']);
+    }
+
     public function index(Request $request)
     {
     

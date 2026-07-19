@@ -8,6 +8,14 @@ use Illuminate\Http\{JsonResponse, Request};
 
 class CategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('category-table'))->only(['index', 'show', 'children']);
+        $this->middleware($this->perm('category-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('category-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('category-delete'))->only(['destroy']);
+    }
+
     // ── Tree index ────────────────────────────────────────────────────────
 
     public function index()

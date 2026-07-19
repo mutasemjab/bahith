@@ -9,6 +9,14 @@ use Illuminate\Http\Request;
 
 class PosController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('pos-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('pos-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('pos-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('pos-delete'))->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $pos = POS::with('city')

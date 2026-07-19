@@ -10,6 +10,14 @@ use Illuminate\Http\Request;
 
 class AnnouncementController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('announcement-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('announcement-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('announcement-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('announcement-delete'))->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $announcements = Announcement::with('schoolClass')

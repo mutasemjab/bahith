@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 
 class CityController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('city-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('city-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('city-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('city-delete'))->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $cities = City::withCount('pos')

@@ -9,6 +9,14 @@ use Illuminate\Http\Request;
 
 class WorksheetController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('worksheet-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('worksheet-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('worksheet-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('worksheet-delete'))->only(['destroy']);
+    }
+
     public function index()
     {
         $worksheets = Worksheet::with('subject')->latest()->paginate(20);

@@ -10,6 +10,14 @@ use Illuminate\Http\Request;
 
 class EducationalNoteController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('educational-note-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('educational-note-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('educational-note-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('educational-note-delete'))->only(['destroy']);
+    }
+
     private function formData(): array
     {
         $teachers = Teacher::orderBy('name')->get();

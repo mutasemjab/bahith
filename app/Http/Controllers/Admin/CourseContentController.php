@@ -16,6 +16,7 @@ class CourseContentController extends Controller
 
     public function storeUnit(Request $request, int $courseId)
     {
+        abort_unless(auth()->guard('admin')->user()?->can('course-content-add'), 403);
         $course = Course::findOrFail($courseId);
 
         $data = $request->validate([
@@ -35,6 +36,7 @@ class CourseContentController extends Controller
 
     public function destroyUnit(int $id)
     {
+        abort_unless(auth()->guard('admin')->user()?->can('course-content-delete'), 403);
         $unit = Unit::findOrFail($id);
 
         foreach ($unit->materials as $mat) {
@@ -50,6 +52,7 @@ class CourseContentController extends Controller
 
     public function storeLesson(Request $request, int $unitId)
     {
+        abort_unless(auth()->guard('admin')->user()?->can('course-content-add'), 403);
         $unit = Unit::findOrFail($unitId);
 
         $lessonType = $request->input('lesson_type', 'video');
@@ -88,6 +91,7 @@ class CourseContentController extends Controller
 
     public function updateLesson(Request $request, int $id)
     {
+        abort_unless(auth()->guard('admin')->user()?->can('course-content-edit'), 403);
         $lesson = Lesson::findOrFail($id);
 
         $data = $request->validate([
@@ -123,6 +127,7 @@ class CourseContentController extends Controller
 
     public function destroyLesson(int $id)
     {
+        abort_unless(auth()->guard('admin')->user()?->can('course-content-delete'), 403);
         $lesson = Lesson::findOrFail($id);
 
         if ($lesson->lesson_type === 'pdf' && $lesson->file_path) {
@@ -139,6 +144,7 @@ class CourseContentController extends Controller
 
     public function storeMaterial(Request $request, int $unitId)
     {
+        abort_unless(auth()->guard('admin')->user()?->can('course-content-add'), 403);
         $unit = Unit::findOrFail($unitId);
 
         $data = $request->validate([
@@ -173,6 +179,7 @@ class CourseContentController extends Controller
 
     public function destroyMaterial(int $id)
     {
+        abort_unless(auth()->guard('admin')->user()?->can('course-content-delete'), 403);
         $mat = Material::findOrFail($id);
         $this->deleteFile($mat->file_path);
         $mat->unit->decrement('total_pdfs');

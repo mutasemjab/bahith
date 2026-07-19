@@ -9,6 +9,14 @@ use Illuminate\Http\Request;
 
 class PreviousYearExamController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('previous-exam-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('previous-exam-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('previous-exam-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('previous-exam-delete'))->only(['destroy']);
+    }
+
     public function index()
     {
         $exams = PreviousYearExam::with('subject')

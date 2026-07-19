@@ -9,6 +9,14 @@ use Illuminate\Http\Request;
 
 class QuestionBankController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('question-bank-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('question-bank-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('question-bank-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('question-bank-delete'))->only(['destroy']);
+    }
+
     public function index()
     {
         $questionBanks = QuestionBank::with('subject')

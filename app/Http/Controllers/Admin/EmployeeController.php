@@ -13,6 +13,13 @@ use Spatie\Permission\Models\Role;
 
 class EmployeeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('employee-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('employee-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('employee-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('employee-delete'))->only(['destroy']);
+    }
 
     public function index(Request $request)
     {

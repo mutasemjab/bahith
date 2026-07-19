@@ -10,6 +10,14 @@ use Illuminate\Http\Request;
 
 class WeeklyPlannerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware($this->perm('weekly-planner-table'))->only(['index', 'show']);
+        $this->middleware($this->perm('weekly-planner-add'))->only(['create', 'store']);
+        $this->middleware($this->perm('weekly-planner-edit'))->only(['edit', 'update']);
+        $this->middleware($this->perm('weekly-planner-delete'))->only(['destroy']);
+    }
+
     private function formData(): array
     {
         $teachers = Teacher::orderBy('name')->get(['id', 'name']);
