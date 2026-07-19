@@ -32,7 +32,7 @@
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div style="font-weight:500;flex:1">
                             <span style="color:var(--primary)">Q{{ $loop->iteration }}.</span>
-                            {{ $q->question_text_ar ?: $q->question_text_en }}
+                            {{ $q->question_ar ?: $q->question_en }}
                         </div>
                         <form action="{{ route('teacher.exams.questions.destroy', $q->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.t_confirm_delete_question') }}')">
                             @csrf @method('DELETE')
@@ -81,8 +81,8 @@
                         <div class="col-md-4">
                             <label class="form-label">{{ __('messages.t_type') }}</label>
                             <select name="question_type" class="form-select form-select-sm" onchange="toggleOptions(this.value)">
-                                <option value="mcq">MCQ</option>
-                                <option value="true_false">True/False</option>
+                                <option value="mcq">اختيار متعدد</option>
+                                <option value="true_false">صح وخطأ</option>
                                 <option value="short_answer">{{ __('messages.t_short_answer') }}</option>
                             </select>
                         </div>
@@ -100,38 +100,82 @@
                         </div>
                     </div>
 
-                    {{-- MCQ Options --}}
+                    {{-- Options section --}}
                     <div id="options-section">
                         <label class="form-label">{{ __('messages.t_options') }}</label>
-                        @for($i = 0; $i < 4; $i++)
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <input type="radio" name="correct_option" value="{{ $i }}" {{ $i === 0 ? 'checked' : '' }}>
-                            <input type="text" name="options[{{ $i }}][text_ar]" class="form-control form-control-sm" placeholder="{{ __('messages.t_option') }} {{ $i+1 }} ({{ __('messages.t_arabic') }})" dir="rtl">
-                            <input type="text" name="options[{{ $i }}][text_en]" class="form-control form-control-sm" placeholder="{{ __('messages.t_english') }}">
+
+                        {{-- اختيار متعدد: 4 حقول --}}
+                        <div id="mcq-rows">
+                            @for($i = 0; $i < 4; $i++)
+                            <div class="option-row d-flex align-items-center gap-2 mb-2">
+                                <input type="radio" name="correct_option" value="{{ $i }}" {{ $i === 0 ? 'checked' : '' }}>
+                                <input type="text" name="options[{{ $i }}][text_ar]" class="form-control form-control-sm" placeholder="{{ __('messages.t_option') }} {{ $i+1 }} ({{ __('messages.t_arabic') }})" dir="rtl">
+                                <input type="text" name="options[{{ $i }}][text_en]" class="form-control form-control-sm" placeholder="{{ __('messages.t_english') }}">
+                                <input type="hidden" name="options[{{ $i }}][correct]" value="{{ $i === 0 ? '1' : '0' }}" class="correct-flag">
+                            </div>
+                            @endfor
                         </div>
-                        @endfor
-                        <script>
-                        document.addEventListener('change', function(e) {
-                            if (e.target.name === 'correct_option') {
-                                document.querySelectorAll('[name^="options"][name$="[correct]"]').forEach(el => el.remove());
-                                var idx = e.target.value;
-                                var inp = document.createElement('input');
-                                inp.type = 'hidden';
-                                inp.name = 'options['+idx+'][correct]';
-                                inp.value = '1';
-                                document.getElementById('question-form').appendChild(inp);
-                            }
-                        });
-                        (function(){
-                            var inp = document.createElement('input');
-                            inp.type = 'hidden'; inp.name = 'options[0][correct]'; inp.value = '1';
-                            document.getElementById('question-form').appendChild(inp);
-                        })();
-                        function toggleOptions(type) {
-                            document.getElementById('options-section').style.display = (type === 'short_answer') ? 'none' : '';
-                        }
-                        </script>
+
+                        {{-- صح وخطأ: خيارين ثابتين --}}
+                        <div id="tf-rows" style="display:none">
+                            <div class="option-row d-flex align-items-center gap-2 mb-2">
+                                <input type="radio" name="correct_option" value="0" checked>
+                                <span class="form-control form-control-sm" style="background:#f0fdf4;border-color:#86efac;color:#166534;font-weight:600">✓ صح (True)</span>
+                                <input type="hidden" name="options[0][text_ar]" value="صح">
+                                <input type="hidden" name="options[0][text_en]" value="True">
+                                <input type="hidden" name="options[0][correct]" value="1" class="correct-flag">
+                            </div>
+                            <div class="option-row d-flex align-items-center gap-2 mb-2">
+                                <input type="radio" name="correct_option" value="1">
+                                <span class="form-control form-control-sm" style="background:#fef2f2;border-color:#fca5a5;color:#dc2626;font-weight:600">✗ خطأ (False)</span>
+                                <input type="hidden" name="options[1][text_ar]" value="خطأ">
+                                <input type="hidden" name="options[1][text_en]" value="False">
+                                <input type="hidden" name="options[1][correct]" value="0" class="correct-flag">
+                            </div>
+                        </div>
                     </div>
+
+                    <script>
+                    document.addEventListener('change', function(e) {
+                        if (e.target.name !== 'correct_option') return;
+                        var activeSection = document.getElementById('mcq-rows').style.display !== 'none'
+                            ? document.getElementById('mcq-rows')
+                            : document.getElementById('tf-rows');
+                        activeSection.querySelectorAll('.correct-flag').forEach(function(el) { el.value = '0'; });
+                        e.target.closest('.option-row').querySelector('.correct-flag').value = '1';
+                    });
+
+                    function toggleOptions(type) {
+                        var optSection = document.getElementById('options-section');
+                        var mcqRows    = document.getElementById('mcq-rows');
+                        var tfRows     = document.getElementById('tf-rows');
+
+                        if (type === 'short_answer') {
+                            optSection.style.display = 'none';
+                            mcqRows.querySelectorAll('input').forEach(function(el){ el.disabled = true; });
+                            tfRows.querySelectorAll('input').forEach(function(el){ el.disabled = true; });
+                            return;
+                        }
+
+                        optSection.style.display = '';
+
+                        if (type === 'mcq') {
+                            mcqRows.style.display = '';
+                            tfRows.style.display  = 'none';
+                            mcqRows.querySelectorAll('input').forEach(function(el){ el.disabled = false; });
+                            tfRows.querySelectorAll('input').forEach(function(el){ el.disabled = true; });
+                            mcqRows.querySelectorAll('.correct-flag').forEach(function(el, i){ el.value = i === 0 ? '1' : '0'; });
+                            mcqRows.querySelector('input[type="radio"]').checked = true;
+                        } else if (type === 'true_false') {
+                            mcqRows.style.display = 'none';
+                            tfRows.style.display  = '';
+                            mcqRows.querySelectorAll('input').forEach(function(el){ el.disabled = true; });
+                            tfRows.querySelectorAll('input').forEach(function(el){ el.disabled = false; });
+                            tfRows.querySelectorAll('.correct-flag').forEach(function(el, i){ el.value = i === 0 ? '1' : '0'; });
+                            tfRows.querySelector('input[type="radio"]').checked = true;
+                        }
+                    }
+                    </script>
 
                     <div class="mb-3">
                         <label class="form-label">{{ __('messages.t_explanation_ar') }}</label>
