@@ -1,90 +1,109 @@
 @extends('admin.layouts.app')
-@section('title', __('messages.role'))
+@section('title', 'الأدوار الوظيفية')
 
 @section('content')
-    <!-- Start Content-->
-    <div class="container-fluid">
 
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box">
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">{{ env('APP_NAME') }}</a></li>
-                            <li class="breadcrumb-item active">{{ __('messages.role') }}</li>
-                        </ol>
-                    </div>
-                    <h4 class="page-title">{{ __('messages.role') }}</h4>
-                </div>
+<div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-3">
+    <div>
+        <h1 class="page-title">الأدوار الوظيفية</h1>
+        <p class="page-sub">إدارة الأدوار وصلاحياتها</p>
+    </div>
+    @can('role-add')
+    <a href="{{ route('admin.role.create') }}" class="btn-primary-sm">
+        <i class="bi bi-plus-circle"></i> إضافة دور جديد
+    </a>
+    @endcan
+</div>
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show mb-3">
+        {{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+<div class="panel-card mb-3">
+    <div class="panel-card-body">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-12 col-md-6">
+                <input type="text" name="search" value="{{ request('search') }}"
+                    class="form-control form-control-sm" placeholder="ابحث باسم الدور...">
             </div>
-        </div>
+            <div class="col-auto">
+                <button type="submit" class="btn-primary-sm"><i class="bi bi-search"></i></button>
+            </div>
+            @if(request('search'))
+            <div class="col-auto">
+                <a href="{{ route('admin.role.index') }}" class="btn-outline-sm"><i class="bi bi-x"></i> مسح</a>
+            </div>
+            @endif
+        </form>
+    </div>
+</div>
 
-
-        <div class="row">
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row mb-2">
-                                <div class="col-md-12">
-
-                                </div>
-                            <div class="col-sm-4">
-
-                                {{ $data->links() }}
-
+<div class="panel-card">
+    <div class="panel-card-header d-flex align-items-center justify-content-between">
+        <h2 class="panel-card-title"><i class="bi bi-shield-lock"></i> قائمة الأدوار</h2>
+        <span class="pill pill-info">{{ $roles->total() }} دور</span>
+    </div>
+    <div class="panel-card-body p-0">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم الدور</th>
+                        <th>عدد الصلاحيات</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($roles as $role)
+                    <tr>
+                        <td>{{ $loop->iteration + ($roles->currentPage() - 1) * $roles->perPage() }}</td>
+                        <td><span class="fw-semibold">{{ $role->name }}</span></td>
+                        <td>
+                            <span class="pill pill-{{ $role->permissions_count > 0 ? 'success' : 'neutral' }}">
+                                {{ $role->permissions_count }} صلاحية
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                @can('role-edit')
+                                <a href="{{ route('admin.role.edit', $role->id) }}"
+                                   class="btn-icon-sm btn-edit" title="تعديل">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                @endcan
+                                @can('role-delete')
+                                <form action="{{ route('admin.role.destroy', $role->id) }}" method="POST"
+                                      class="d-inline"
+                                      onsubmit="return confirm('هل أنت متأكد من حذف دور «{{ $role->name }}»؟')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn-icon-sm btn-delete" title="حذف">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                                @endcan
                             </div>
-                            <div class="col-sm-8">
-                                <div class="text-sm-right">
-                                    <a type="button" href="{{ route("admin.role.create") }}"
-                                        class="btn btn-primary waves-effect waves-light mb-2 text-white">{{ __('messages.new_role') }}
-                                    </a>
-                                </div>
-                            </div><!-- end col-->
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-centered table-nowrap table-hover mb-0">
-                                <thead class="thead-light">
-
-                                    <tr>
-                                         <th>{{ __('messages.name_field') }}</th>
-                                        <th>{{ __('messages.permissions') }}</th>
-                                         <th style="width: 82px;">{{ __('messages.action') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($data as $value)
-                                        <tr>
-                                            <td><span class="font-weight-bold">{{ $value->name }}</span></td>
-                                            <td>
-                                                @foreach ($value->permissions as $permission)
-                                                    {{ $permission->name }}<br>
-                                                @endforeach
-                                            </td>
-                                             <td>
-                                                <a class="btn btn-sm btn-outline-info"
-                                                    href="{{ route("admin.role.edit",  $value->id) }}"><i
-                                                        class="mdi mdi-pencil-box"></i> {{ __('messages.Edit') }}</a>
-                                              <a class="btn btn-sm btn-outline-danger" href="javascript:void(0)"
-                                                   @if (env('Environment') == 'sendbox') onclick="myFunction()" @else onclick="Delete('{{ $value->id }}','{{ route('admin.role.delete') }}')" @endif><i
-                                                        class="mdi mdi-trash-can"></i>{{ __('messages.Delete') }}</a>
-
-                                            </td>
-                                        </tr>
-                                    @endforeach
-
-                                </tbody>
-                            </table>
-                        </div>
-
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-4 d-block mb-2"></i>
+                            لا توجد أدوار مسجلة
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-    </div> <!-- container -->
-@endsection
+    </div>
+    @if($roles->hasPages())
+    <div class="panel-card-body border-top pt-3">
+        {{ $roles->links() }}
+    </div>
+    @endif
+</div>
 
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.3/dist/sweetalert2.min.js"></script>
-    <script src="{{ asset('assets/js/category.js') }}"></script>
-@endpush
+@endsection

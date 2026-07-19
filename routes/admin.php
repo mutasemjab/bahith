@@ -44,13 +44,14 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('/admin/update/{id}', [LoginController::class, 'updatelogin'])->name('admin.login.update');
 
         // ── Roles & Employees ─────────────────────────────────────────
-        Route::resource('employee', EmployeeController::class, ['as' => 'admin']);
+        Route::resource('employee', EmployeeController::class, ['as' => 'admin'])->except(['show']);
         Route::get('role',               [RoleController::class, 'index'])->name('admin.role.index');
         Route::get('role/create',        [RoleController::class, 'create'])->name('admin.role.create');
         Route::get('role/{id}/edit',     [RoleController::class, 'edit'])->name('admin.role.edit');
         Route::patch('role/{id}',        [RoleController::class, 'update'])->name('admin.role.update');
         Route::post('role',              [RoleController::class, 'store'])->name('admin.role.store');
-        Route::post('admin/role/delete', [RoleController::class, 'delete'])->name('admin.role.delete');
+        Route::post('admin/role/delete',  [RoleController::class, 'delete'])->name('admin.role.delete');
+        Route::delete('role/{id}',        [RoleController::class, 'destroy'])->name('admin.role.destroy');
 
         Route::get('/permissions/{guard_name}', function ($guard_name) {
             return response()->json(Permission::where('guard_name', $guard_name)->get());

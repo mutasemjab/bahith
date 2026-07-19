@@ -202,6 +202,13 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="{{ route('admin.employee.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.employee.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-people"></i>
+                    <span>الموظفون</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route('admin.activity-log.index') }}"
                     class="nav-link {{ request()->routeIs('admin.activity-log.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-clock-history"></i>

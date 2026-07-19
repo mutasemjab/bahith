@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Gate;
+use Spatie\Permission\Models\Role;
+
 class RoleController extends Controller
 {
     public function __construct()
@@ -17,159 +14,106 @@ class RoleController extends Controller
         $this->middleware($this->perm('role-table'))->only(['index', 'show']);
         $this->middleware($this->perm('role-add'))->only(['create', 'store']);
         $this->middleware($this->perm('role-edit'))->only(['edit', 'update']);
-        $this->middleware($this->perm('role-delete'))->only(['delete']);
+        $this->middleware($this->perm('role-delete'))->only(['destroy', 'delete']);
+    }
+
+    // Permissions grouped by module (used in create/edit UI)
+    public static function permGroups(): array
+    {
+        return [
+            'الأدوار والموظفون'    => ['role-table', 'role-add', 'role-edit', 'role-delete', 'employee-table', 'employee-add', 'employee-edit', 'employee-delete'],
+            'سجل النشاطات'         => ['activity-log-table', 'activity-log-delete'],
+            'الطلاب'               => ['student-table', 'student-add', 'student-edit', 'student-delete'],
+            'المعلمون'             => ['teacher-table', 'teacher-add', 'teacher-edit', 'teacher-delete'],
+            'الدورات'              => ['course-table', 'course-add', 'course-edit', 'course-delete'],
+            'محتوى الدورات'        => ['course-content-add', 'course-content-edit', 'course-content-delete'],
+            'الفئات'               => ['category-table', 'category-add', 'category-edit', 'category-delete'],
+            'المواد الدراسية'      => ['subject-table', 'subject-add', 'subject-edit', 'subject-delete'],
+            'الاختبارات'           => ['exam-table', 'exam-add', 'exam-edit', 'exam-delete'],
+            'بنك الأسئلة'          => ['question-bank-table', 'question-bank-add', 'question-bank-edit', 'question-bank-delete'],
+            'امتحانات سابقة'       => ['previous-exam-table', 'previous-exam-add', 'previous-exam-edit', 'previous-exam-delete'],
+            'أوراق العمل'          => ['worksheet-table', 'worksheet-add', 'worksheet-edit', 'worksheet-delete'],
+            'المفكرة التعليمية'    => ['educational-note-table', 'educational-note-add', 'educational-note-edit', 'educational-note-delete'],
+            'المفكرة الأسبوعية'    => ['weekly-planner-table', 'weekly-planner-add', 'weekly-planner-edit', 'weekly-planner-delete'],
+            'التسجيلات'            => ['enrollment-table', 'enrollment-edit', 'enrollment-delete'],
+            'البطاقات'             => ['card-table', 'card-add', 'card-edit', 'card-delete', 'card-number-table', 'card-number-add', 'card-number-edit', 'card-number-delete'],
+            'البانرات'             => ['banner-table', 'banner-add', 'banner-edit', 'banner-delete'],
+            'الإعلانات'            => ['announcement-table', 'announcement-add', 'announcement-edit', 'announcement-delete'],
+            'الإشعارات'            => ['notification-send'],
+            'المدن'                => ['city-table', 'city-add', 'city-edit', 'city-delete'],
+            'نقاط البيع'           => ['pos-table', 'pos-add', 'pos-edit', 'pos-delete'],
+            'رسائل التواصل'        => ['contact-message-table', 'contact-message-delete'],
+            'الإعدادات'            => ['setting-edit'],
+        ];
     }
 
     public function index(Request $request)
     {
-    
-        if(!Gate::allows('role-table'))
-            return "Not auth";
-        // $manager = Manager::where('email', auth()->user()->email)->first();
-        // $shop = $manager->shop;
+        $roles = Role::withCount('permissions')
+            ->where('guard_name', 'admin')
+            ->when($request->search, fn($q, $s) => $q->where('name', 'like', "%$s%"))
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString();
 
-        if ($request->search != '' ||  $request->search) {
-            $data = Role::where(function ($query) use ($request) {
-                $query->where('roles.name', 'LIKE', "%$request->search%")
-                    ->orWhere('roles.guard_name',  'LIKE', "%$request->search%");
-            })->paginate(10);
-        } else {
-            $data = Role::paginate(10);
-        }
-         return view('admin.roles.index', compact('data'));
+        return view('admin.roles.index', compact('roles'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-
-        $data = Permission::where('guard_name','admin')->get();
-        return view('admin.roles.create', compact('data'));
+        $permGroups = self::permGroups();
+        $allPerms   = Permission::where('guard_name', 'admin')->pluck('id', 'name');
+        return view('admin.roles.create', compact('permGroups', 'allPerms'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
+        $request->validate([
+            'name'    => 'required|string|max:100|unique:roles,name',
+            'perms'   => 'nullable|array',
+            'perms.*' => 'integer|exists:permissions,id',
+        ]);
 
-        $request->validate(
-            [
-                'name' => 'required|unique:roles,name',
-                 'perms' => 'required',
-            ]
-        );
-        DB::beginTransaction();
-        try {
+        $role = Role::create(['name' => $request->name, 'guard_name' => 'admin']);
+        $role->syncPermissions(Permission::whereIn('id', $request->input('perms', []))->get());
 
-            $role = new Role([
-                "name" => $request->name,
-                "guard_name" => 'admin',
-
-            ]);
-            $role->save();
-            $data = [];
-            foreach ($request->perms as $permission) {
-                $data[] = [
-                    'role_id' => $role->id,
-                    'permission_id' => $permission
-                ];
-            };
-
-            DB::table('role_has_permissions')->insertOrIgnore($data);
-
-            DB::commit();
-            return redirect()->route('admin.role.index')->with('success', trans('messages.success'));
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            DB::rollBack();
-            return redirect()->back()->withErrors($e->getMessage())->withInput();
-        }
+        return redirect()->route('admin.role.index')->with('success', 'تم إنشاء الدور بنجاح.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function edit(int $id)
     {
-        //
+        $role       = Role::findOrFail($id);
+        $permGroups = self::permGroups();
+        $allPerms   = Permission::where('guard_name', 'admin')->pluck('id', 'name');
+        $assigned   = $role->permissions->pluck('id')->toArray();
+        return view('admin.roles.edit', compact('role', 'permGroups', 'allPerms', 'assigned'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function update(Request $request, int $id)
     {
+        $request->validate([
+            'name'    => 'required|string|max:100|unique:roles,name,' . $id,
+            'perms'   => 'nullable|array',
+            'perms.*' => 'integer|exists:permissions,id',
+        ]);
 
-        $permissions = Permission::where('guard_name','admin')->get();
-        $role_permissions = DB::table('role_has_permissions')->where('role_id',$id)->pluck('permission_id')->toArray();
-        $data = Role::find($id);
-         return view('admin.roles.edit', compact('permissions','role_permissions','data'));
+        $role = Role::findOrFail($id);
+        $role->update(['name' => $request->name]);
+        $role->syncPermissions(Permission::whereIn('id', $request->input('perms', []))->get());
+
+        return redirect()->route('admin.role.index')->with('success', 'تم تحديث الدور بنجاح.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function destroy(int $id)
     {
-
-
-        DB::beginTransaction();
-        try {
-            $role = Role::find($id);
-            $role->name = $request->name;
-            $role->guard_name = 'admin';
-
-
-            $role->save();
-            $role_permissions = DB::table('role_has_permissions')->where('role_id',$id)->delete();
-            $data = [];
-            foreach ($request->perms as $permission) {
-                $data[] = [
-                    'role_id' => $role->id,
-                    'permission_id' => $permission
-                ];
-            };
-
-            DB::table('role_has_permissions')->insertOrIgnore($data);
-
-            DB::commit();
-            return redirect()->route('admin.role.index')->with('success', trans('messages.success'));
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            DB::rollBack();
-            return redirect()->back()->withErrors($e->getMessage())->withInput();
-        }
+        Role::findOrFail($id)->delete();
+        return back()->with('success', 'تم حذف الدور.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Legacy AJAX delete endpoint (kept for backward compat)
     public function delete(Request $request)
     {
-
-        Role::where('id',$request->id)->delete();
-       return 1;
-
+        Role::where('id', $request->id)->delete();
+        return 1;
     }
 }

@@ -1,97 +1,120 @@
 @extends('admin.layouts.app')
-@section('title', __('messages.employee_title'))
+@section('title', 'الموظفون')
 
 @section('content')
-    <!-- Start Content-->
-    <div class="container-fluid">
 
+<div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-3">
+    <div>
+        <h1 class="page-title">الموظفون</h1>
+        <p class="page-sub">إدارة حسابات الموظفين وأدوارهم</p>
+    </div>
+    @can('employee-add')
+    <a href="{{ route('admin.employee.create') }}" class="btn-primary-sm">
+        <i class="bi bi-person-plus"></i> إضافة موظف جديد
+    </a>
+    @endcan
+</div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box">
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">{{ env('APP_NAME') }}</a></li>
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show mb-3">
+        {{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show mb-3">
+        {{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
 
-                        </ol>
-                    </div>
-                    <h4 class="page-title">{{ __('messages.employee_title') }}</h4>
-                </div>
+<div class="panel-card mb-3">
+    <div class="panel-card-body">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-12 col-md-6">
+                <input type="text" name="search" value="{{ request('search') }}"
+                    class="form-control form-control-sm" placeholder="ابحث بالاسم أو اسم المستخدم أو البريد...">
             </div>
-        </div>
-
-
-        <div class="row">
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row mb-2">
-                            <div class="col-md-12">
-
-                            </div>
-                            <div class="col-sm-4">
-
-                                {{ $data->links() }}
-
-                            </div>
-                            @can('employee-add')
-                                <div class="col-sm-8">
-                                    <div class="text-sm-right">
-                                        <a type="button" href="{{ route("admin.employee.create") }}"
-                                            class="btn btn-primary waves-effect waves-light mb-2 text-white">{{ __('messages.new_employee') }}
-                                        </a>
-                                    </div>
-                                </div><!-- end col-->
-                            @endcan
-                        </div>
-
-                        @can('employee-table')
-                            <div class="table-responsive">
-                                <table class="table table-centered table-nowrap table-hover mb-0">
-                                    <thead class="thead-light">
-
-                                        <tr>
-
-                                            <th>{{ __('messages.name_field') }}</th>
-                                            <th>{{ __('messages.user_name_col') }}</th>
-                                            <th style="width: 82px;">{{ __('messages.action') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($data as $value)
-                                            <tr>
-
-                                                <td><span class="font-weight-bold">{{ $value->name }}</span></td>
-                                                <td><span class="font-weight-bold">{{ $value->username }}</span></td>
-                                                <td>
-                                                    @can('employee-edit')
-                                                        <a class="btn btn-sm btn-outline-info"
-                                                            href="{{ route("admin.employee.edit", $value->id) }}"><i
-                                                                class="mdi mdi-pencil-box"></i>{{ __('messages.Edit') }}</a>
-                                                    @endcan
-                                                    @can('employee-delete')
-                                                        <a class="btn btn-sm btn-outline-danger"
-                                                            href="{{ route("admin.employee.destroy", $value->id) }}"><i
-                                                                class="mdi mdi-trash-can"></i>{{ __('messages.Delete') }}</a>
-                                                    @endcan
-
-                                                </td>
-                                            </tr>
-                                        @endforeach
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endcan
-
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
+            <div class="col-auto">
+                <button type="submit" class="btn-primary-sm"><i class="bi bi-search"></i></button>
             </div>
+            @if(request('search'))
+            <div class="col-auto">
+                <a href="{{ route('admin.employee.index') }}" class="btn-outline-sm"><i class="bi bi-x"></i> مسح</a>
+            </div>
+            @endif
+        </form>
+    </div>
+</div>
+
+<div class="panel-card">
+    <div class="panel-card-header d-flex align-items-center justify-content-between">
+        <h2 class="panel-card-title"><i class="bi bi-people"></i> قائمة الموظفين</h2>
+        <span class="pill pill-info">{{ $employees->total() }} موظف</span>
+    </div>
+    <div class="panel-card-body p-0">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>الاسم</th>
+                        <th>اسم المستخدم</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>الأدوار</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($employees as $emp)
+                    <tr>
+                        <td>{{ $loop->iteration + ($employees->currentPage() - 1) * $employees->perPage() }}</td>
+                        <td><span class="fw-semibold">{{ $emp->name }}</span></td>
+                        <td><span class="text-muted">{{ $emp->username }}</span></td>
+                        <td>{{ $emp->email ?: '—' }}</td>
+                        <td>
+                            @forelse($emp->roles as $role)
+                                <span class="pill pill-info">{{ $role->name }}</span>
+                            @empty
+                                <span class="pill pill-neutral">بدون دور</span>
+                            @endforelse
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                @can('employee-edit')
+                                <a href="{{ route('admin.employee.edit', $emp->id) }}"
+                                   class="btn-icon-sm btn-edit" title="تعديل">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                @endcan
+                                @can('employee-delete')
+                                <form action="{{ route('admin.employee.destroy', $emp->id) }}" method="POST"
+                                      class="d-inline"
+                                      onsubmit="return confirm('هل أنت متأكد من حذف موظف «{{ $emp->name }}»؟')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn-icon-sm btn-delete" title="حذف">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                                @endcan
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-4 d-block mb-2"></i>
+                            لا يوجد موظفون مسجلون
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-    </div> <!-- container -->
+    </div>
+    @if($employees->hasPages())
+    <div class="panel-card-body border-top pt-3">
+        {{ $employees->links() }}
+    </div>
+    @endif
+</div>
+
 @endsection
-
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.3/dist/sweetalert2.min.js"></script>
-    <script src="{{ asset('assets/js/category.js') }}"></script>
-@endpush

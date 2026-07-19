@@ -1,77 +1,175 @@
 @extends('admin.layouts.app')
-@section('title', __('messages.edit_role'))
+@section('title', 'تعديل الدور: ' . $role->name)
 
 @section('content')
-    <div class="container-fluid">
 
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box">
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a
-                                    href="{{ route('admin.role.index') }}">{{ __('messages.role') }}</a></li>
-                            <li class="breadcrumb-item active">{{ __('messages.create') }}</li>
-                        </ol>
-                    </div>
-                    <h4 class="page-title">{{ __('messages.edit_role') }}</h4>
-                </div>
-            </div>
-        </div>
+<div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-3">
+    <div>
+        <h1 class="page-title">تعديل الدور</h1>
+        <p class="page-sub">{{ $role->name }}</p>
+    </div>
+    <a href="{{ route('admin.role.index') }}" class="btn-outline-sm">
+        <i class="bi bi-arrow-right"></i> العودة للقائمة
+    </a>
+</div>
 
-        <div class="row justify-content-center">
-            <div class="col-6">
-                <div class="card">
-                    <div class="card-body">
-                        <form action="{{ route('admin.role.update', $data->id) }}" method="post">
-                            @csrf
-                            {{ method_field('PATCH') }}
-                             <div class="my-3">
-                                <input type="text"
-                                    class="form-control @if ($errors->has('name')) is-invalid @endif" id="name"
-                                    placeholder=" {{ __('messages.name_field') }}" value="{{ $data->name }}" name="name">
-                                @error('name')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                                <span class="emsg text-danger"></span>
-                            </div>
-                            <div class="my-3">
-                                @foreach($permissions as $value)
+@if($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show mb-3">
+        <ul class="mb-0">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
 
-                                     <br>
-                                     <input   class="ml-5" type="checkbox" name="perms[]" id="perm_{{$value->id}}" value="{{ $value->id }}" {{in_array($value->id, $role_permissions) ? 'checked':''}}>
-                                    <label for="perm_{{$value->id}}"> {{ $value->name }}. </label>
-                                    <br>
-                                @endforeach
-                            </div>
-                            <div class="row" id="permissions">
-                                @error('perms')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                                <span class="emsg text-danger"></span>
-                            </div>
+<form action="{{ route('admin.role.update', $role->id) }}" method="POST">
+@csrf @method('PATCH')
 
-
-
-
-
-                    </div>
-
-
-
-
-                    <div class="text-right">
-                        <button type="submit"
-                            class="btn btn-success waves-effect waves-light">{{ __('messages.update') }}</button>
-                        <a type="button" href="{{ route('admin.role.index') }}"
-                            class="btn btn-danger waves-effect waves-light m-l-10">{{ __('messages.Cancel') }}
-                        </a>
-                    </div>
-
-
-                    </form>
-                </div>
-            </div>
+{{-- Role name --}}
+<div class="panel-card mb-4">
+    <div class="panel-card-header">
+        <h2 class="panel-card-title"><i class="bi bi-tag"></i> بيانات الدور</h2>
+    </div>
+    <div class="panel-card-body">
+        <div class="col-12 col-md-5">
+            <label class="form-label">اسم الدور <span class="text-danger">*</span></label>
+            <input type="text" name="name" value="{{ old('name', $role->name) }}"
+                   class="form-control @error('name') is-invalid @enderror" required>
+            @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
     </div>
+</div>
+
+{{-- Permissions --}}
+<div class="panel-card mb-4">
+    <div class="panel-card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <h2 class="panel-card-title"><i class="bi bi-shield-check"></i> الصلاحيات</h2>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn-outline-sm" id="btn-select-all">
+                <i class="bi bi-check2-all"></i> تحديد الكل
+            </button>
+            <button type="button" class="btn-outline-sm" id="btn-deselect-all">
+                <i class="bi bi-x-circle"></i> إلغاء الكل
+            </button>
+        </div>
+    </div>
+    <div class="panel-card-body">
+        @php
+            $permLabels  = ['table' => 'عرض', 'add' => 'إضافة', 'edit' => 'تعديل', 'delete' => 'حذف', 'send' => 'إرسال'];
+            $checkedPerms = old('perms') !== null ? array_map('intval', old('perms', [])) : $assigned;
+        @endphp
+        <div class="row g-3">
+            @foreach($permGroups as $groupName => $groupPerms)
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="perm-card">
+                    <div class="perm-card-head d-flex align-items-center justify-content-between">
+                        <span class="fw-semibold small">{{ $groupName }}</span>
+                        <label class="d-flex align-items-center gap-1 mb-0 cursor-pointer">
+                            <input type="checkbox" class="group-toggle" data-group="{{ Str::slug($groupName) }}">
+                            <span class="small text-muted">الكل</span>
+                        </label>
+                    </div>
+                    <div class="perm-card-body">
+                        @foreach($groupPerms as $perm)
+                            @if(isset($allPerms[$perm]))
+                            @php
+                                $permId = $allPerms[$perm];
+                                $suffix = last(explode('-', $perm));
+                                $label  = $permLabels[$suffix] ?? $perm;
+                            @endphp
+                            <label class="perm-item">
+                                <input type="checkbox" name="perms[]"
+                                       value="{{ $permId }}"
+                                       class="perm-checkbox group-{{ Str::slug($groupName) }}"
+                                       {{ in_array($permId, $checkedPerms) ? 'checked' : '' }}>
+                                <span>{{ $label }}</span>
+                            </label>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-2 pb-4">
+    <button type="submit" class="btn-primary-sm"><i class="bi bi-save"></i> حفظ التغييرات</button>
+    <a href="{{ route('admin.role.index') }}" class="btn-outline-sm">إلغاء</a>
+</div>
+
+</form>
+
+@push('styles')
+<style>
+.perm-card {
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+}
+.perm-card-head {
+    background: var(--surface-2, #f8fafc);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+.perm-card-body {
+    padding: 10px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+}
+.perm-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: .875rem;
+    white-space: nowrap;
+}
+.perm-item input[type=checkbox] { cursor: pointer; }
+.cursor-pointer { cursor: pointer; }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Sync group-toggle initial state
+    document.querySelectorAll('.group-toggle').forEach(function (toggle) {
+        var group = toggle.dataset.group;
+        var checkboxes = document.querySelectorAll('.group-' + group);
+
+        var allChecked  = Array.from(checkboxes).every(function (c) { return c.checked; });
+        var someChecked = Array.from(checkboxes).some(function (c) { return c.checked; });
+        toggle.checked = allChecked;
+        toggle.indeterminate = !allChecked && someChecked;
+
+        toggle.addEventListener('change', function () {
+            checkboxes.forEach(function (cb) { cb.checked = toggle.checked; });
+        });
+
+        checkboxes.forEach(function (cb) {
+            cb.addEventListener('change', function () {
+                var all  = Array.from(checkboxes).every(function (c) { return c.checked; });
+                var some = Array.from(checkboxes).some(function (c) { return c.checked; });
+                toggle.checked = all;
+                toggle.indeterminate = !all && some;
+            });
+        });
+    });
+
+    // Select/Deselect all
+    document.getElementById('btn-select-all').addEventListener('click', function () {
+        document.querySelectorAll('.perm-checkbox').forEach(function (cb) { cb.checked = true; });
+        document.querySelectorAll('.group-toggle').forEach(function (t) { t.checked = true; t.indeterminate = false; });
+    });
+    document.getElementById('btn-deselect-all').addEventListener('click', function () {
+        document.querySelectorAll('.perm-checkbox').forEach(function (cb) { cb.checked = false; });
+        document.querySelectorAll('.group-toggle').forEach(function (t) { t.checked = false; t.indeterminate = false; });
+    });
+});
+</script>
+@endpush
+
 @endsection
