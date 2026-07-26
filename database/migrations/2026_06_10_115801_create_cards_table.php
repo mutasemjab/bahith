@@ -22,6 +22,16 @@ return new class extends Migration
             $table->double('selling_price');
             $table->double('number_of_cards');
             $table->string('photo')->nullable();
+            
+            // course  → activates one specific course
+            // teacher → activates all courses by one teacher
+            // price   → activates any course whose price equals this card's selling_price
+            $table->enum('activation_type', ['course', 'teacher', 'price'])->default('price');
+            $table->unsignedBigInteger('linked_course_id')->nullable();
+            $table->unsignedBigInteger('linked_teacher_id')->nullable();
+
+            $table->foreign('linked_course_id')->references('id')->on('courses')->nullOnDelete();
+            $table->foreign('linked_teacher_id')->references('id')->on('teachers')->nullOnDelete();
             $table->timestamps();
         });
     }

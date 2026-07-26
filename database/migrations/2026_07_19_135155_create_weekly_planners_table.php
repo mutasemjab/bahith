@@ -20,6 +20,8 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->boolean('is_active')->default(true);
+            $table->unsignedBigInteger('teacher_id')->nullable();
+            $table->unsignedBigInteger('class_id')->nullable();
             $table->timestamps();
         });
     }
