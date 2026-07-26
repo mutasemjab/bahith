@@ -41,6 +41,15 @@
 <section style="padding:48px 5%;background:var(--bg-soft);min-height:50vh;">
   <div style="max-width:1200px;margin:0 auto;">
 
+    @php $showCourses = (sett_raw('show_price') ?: '1') === '1'; @endphp
+    @if(!$showCourses)
+      <div style="text-align:center;padding:100px 0;color:var(--text-muted);">
+        <div style="font-size:56px;margin-bottom:16px;">🔒</div>
+        <p style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:8px;">{{ app()->getLocale()==='ar' ? 'الدورات غير متاحة حالياً' : 'Courses are not available at the moment' }}</p>
+        <a href="{{ route('home') }}" style="display:inline-block;margin-top:20px;color:var(--blue);font-weight:600;font-size:14px;">{{ __('front.nav_home') }} →</a>
+      </div>
+    @else
+
     @if(session('cart_added'))
     <div style="background:#d1fae5;color:#065f46;padding:12px 20px;border-radius:10px;margin-bottom:24px;font-weight:600;display:flex;justify-content:space-between;align-items:center;">
       <span>✓ {{ session('cart_added') }} — {{ __('front.courses_add_cart') }}</span>
@@ -146,6 +155,8 @@
     </div>
     @endif
     @endif
+
+    @endif {{-- showCourses --}}
 
   </div>
 </section>

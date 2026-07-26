@@ -12,7 +12,9 @@
   <ul class="nav-links">
     <li><a href="{{ route('home') }}#grades">{{ __('front.nav_grades') }}</a></li>
     <li><a href="{{ route('home') }}#teachers">{{ __('front.nav_teachers') }}</a></li>
+    @if((sett_raw('show_price') ?: '1') === '1')
     <li><a href="{{ route('courses.index') }}">{{ __('front.nav_courses') }}</a></li>
+    @endif
     <li><a href="{{ route('exams.index') }}">{{ __('front.nav_exams') }}</a></li>
     <li><a href="{{ route('home') }}#about">{{ __('front.nav_about') }}</a></li>
     <li><a href="{{ route('home') }}#contact" class="nav-cta">{{ __('front.nav_contact') }}</a></li>

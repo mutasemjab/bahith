@@ -68,6 +68,7 @@
       @endif
 
       {{-- Courses --}}
+      @if((sett_raw('show_price') ?: '1') === '1')
       <div style="background:white;border-radius:16px;padding:32px;box-shadow:0 2px 20px rgba(0,0,0,0.06);">
         <h2 style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:24px;">{{ __('front.teacher_courses_title') }}</h2>
         @forelse($teacher->courses as $course)
@@ -100,6 +101,7 @@
         <p style="color:var(--text-muted);text-align:center;padding:32px 0;">{{ __('front.teacher_no_courses') }}</p>
         @endforelse
       </div>
+      @endif {{-- showCourses --}}
     </div>
 
     {{-- RIGHT: Info Card --}}

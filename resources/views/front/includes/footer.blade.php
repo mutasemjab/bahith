@@ -70,7 +70,9 @@
           <li><a href="{{ route('home') }}#grades">{{ app()->getLocale() === 'ar' ? 'الصفوف 7–10' : 'Grades 7–10' }}</a></li>
           <li><a href="{{ route('home') }}#grades">{{ app()->getLocale() === 'ar' ? 'الحادي عشر (توجيهي)' : 'Grade 11 (Tawjihi)' }}</a></li>
           <li><a href="{{ route('home') }}#grades">{{ app()->getLocale() === 'ar' ? 'الثاني عشر (توجيهي)' : 'Grade 12 (Tawjihi)' }}</a></li>
+          @if((sett_raw('show_price') ?: '1') === '1')
           <li><a href="{{ route('courses.index') }}">{{ app()->getLocale() === 'ar' ? 'دورات صيفية' : 'Summer Courses' }}</a></li>
+          @endif
         </ul>
       </div>
 
@@ -79,7 +81,9 @@
         <ul>
           <li><a href="{{ route('home') }}#about">{{ __('front.nav_about') }}</a></li>
           <li><a href="{{ route('home') }}#teachers">{{ __('front.nav_teachers') }}</a></li>
+          @if((sett_raw('show_price') ?: '1') === '1')
           <li><a href="{{ route('courses.index') }}">{{ __('front.nav_courses') }}</a></li>
+          @endif
           <li><a href="{{ route('exams.index') }}">{{ __('front.nav_exams') }}</a></li>
           <li><a href="{{ route('home') }}#contact">{{ __('front.nav_contact') }}</a></li>
         </ul>

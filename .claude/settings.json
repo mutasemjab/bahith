@@ -28,7 +28,8 @@
       "Bash(Select-Object -Property Name, PSIsContainer)",
       "PowerShell(ls -Recurse \"c:\\\\xampp\\\\htdocs\\\\bahith\\\\app\" | where {$_.PSIsContainer} | Select-Object -ExpandProperty FullName | Sort-Object)",
       "PowerShell(ls -Recurse \"c:\\\\xampp\\\\htdocs\\\\bahith\\\\resources\\\\views\" | where {$_.PSIsContainer} | Select-Object -ExpandProperty FullName | Sort-Object)",
-      "Read(//mnt/c/xampp/htdocs/bahith/**)"
+      "Read(//mnt/c/xampp/htdocs/bahith/**)",
+      "Bash(findstr /r /s \"show_price\" app resources)"
     ]
   }
 }

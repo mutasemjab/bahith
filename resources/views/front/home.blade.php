@@ -200,6 +200,7 @@
 </section>
 
 <!-- ======= COURSES ======= -->
+@if((sett_raw('show_price') ?: '1') === '1')
 <section id="courses">
   <div class="courses-inner">
     <div class="section-header reveal">
@@ -253,6 +254,7 @@
     </div>
   </div>
 </section>
+@endif
 
 <!-- ======= ABOUT ======= -->
 <section id="about">

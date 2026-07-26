@@ -2,6 +2,14 @@
 @section('title', $course->title . ' — ' . __('front.site_name'))
 
 @section('content')
+@php $showCourses = (sett_raw('show_price') ?: '1') === '1'; @endphp
+@if(!$showCourses)
+<div style="text-align:center;padding:140px 5%;background:var(--bg-soft);min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+  <div style="font-size:64px;margin-bottom:20px;">🔒</div>
+  <h2 style="color:var(--navy);font-size:28px;font-weight:800;margin-bottom:12px;">{{ app()->getLocale()==='ar' ? 'الدورات غير متاحة حالياً' : 'Courses are not available at the moment' }}</h2>
+  <a href="{{ route('home') }}" class="btn-primary" style="display:inline-flex;margin-top:24px;padding:12px 32px;text-decoration:none;">{{ __('front.nav_home') }}</a>
+</div>
+@else
 
 {{-- ── HERO ── --}}
 <section style="background:linear-gradient(135deg,var(--navy) 0%,#0f1e35 100%);padding:100px 5% 56px;">
@@ -228,6 +236,8 @@
     @endif
   </div>
 </section>
+
+@endif {{-- showCourses --}}
 
 @endsection
 
