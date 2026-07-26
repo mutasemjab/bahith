@@ -1,11 +1,13 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
+class TawajihhiGradeSeeder extends Seeder
 {
-    public function up(): void
+    public function run(): void
     {
         $tawjihi = DB::table('categories')
             ->whereNull('parent_id')
@@ -16,7 +18,6 @@ return new class extends Migration
             return;
         }
 
-        // Guard: skip if already restructured
         $alreadyDone = DB::table('categories')
             ->where('parent_id', $tawjihi->id)
             ->where('name_ar', 'like', '%حادي عشر%')
@@ -26,12 +27,10 @@ return new class extends Migration
             return;
         }
 
-        // Get existing children of توجيهي (e.g. علمي / أدبي tracks)
         $existingChildIds = DB::table('categories')
             ->where('parent_id', $tawjihi->id)
             ->pluck('id');
 
-        // Create الصف الثاني عشر
         $grade12Id = DB::table('categories')->insertGetId([
             'parent_id'   => $tawjihi->id,
             'level'       => ($tawjihi->level + 1),
@@ -43,7 +42,6 @@ return new class extends Migration
             'updated_at'  => now(),
         ]);
 
-        // Move existing children under الثاني عشر
         if ($existingChildIds->isNotEmpty()) {
             DB::table('categories')
                 ->whereIn('id', $existingChildIds)
@@ -54,7 +52,6 @@ return new class extends Migration
                 ]);
         }
 
-        // Create الصف الحادي عشر (ordered before الثاني عشر)
         $grade11Id = DB::table('categories')->insertGetId([
             'parent_id'   => $tawjihi->id,
             'level'       => ($tawjihi->level + 1),
@@ -66,7 +63,6 @@ return new class extends Migration
             'updated_at'  => now(),
         ]);
 
-        // Create subjects directly under Grade 11
         $subjects = [
             ['name_ar' => 'الرياضيات',        'name_en' => 'Mathematics',       'order_index' => 1],
             ['name_ar' => 'اللغة العربية',     'name_en' => 'Arabic Language',   'order_index' => 2],
@@ -88,36 +84,4 @@ return new class extends Migration
             ]);
         }
     }
-
-    public function down(): void
-    {
-        $tawjihi = DB::table('categories')
-            ->whereNull('parent_id')
-            ->where('name_ar', 'like', '%توجيهي%')
-            ->first();
-
-        if (! $tawjihi) return;
-
-        $grade11 = DB::table('categories')
-            ->where('parent_id', $tawjihi->id)
-            ->where('name_ar', 'like', '%حادي عشر%')
-            ->first();
-
-        $grade12 = DB::table('categories')
-            ->where('parent_id', $tawjihi->id)
-            ->where('name_ar', 'like', '%ثاني عشر%')
-            ->first();
-
-        if ($grade11) {
-            DB::table('subjects')->where('category_id', $grade11->id)->delete();
-            DB::table('categories')->where('id', $grade11->id)->delete();
-        }
-
-        if ($grade12) {
-            DB::table('categories')
-                ->where('parent_id', $grade12->id)
-                ->update(['parent_id' => $tawjihi->id, 'level' => ($tawjihi->level + 1)]);
-            DB::table('categories')->where('id', $grade12->id)->delete();
-        }
-    }
-};
+}
