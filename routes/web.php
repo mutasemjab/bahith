@@ -44,28 +44,9 @@ Route::group([
         ->name('student.logout')
         ->middleware('auth:student');
 
-        Route::get('/test-session', function () {
-            session(['test' => 'working']);
-            return session('test');
-        });
-
-        Route::get('/https-test', function () {
-            return [
-                'https' => request()->isSecure(),
-                'scheme' => request()->getScheme(),
-                'url' => url('/'),
-            ];
-        });
-
-
-        Route::get('/cookie-test', function () {
-
-            Cookie::queue('test_cookie', '123456', 60);
-
-            return response()->json([
-                'headers_sent' => headers_sent(),
-                'headers' => headers_list(),
-            ]);
-        });
+      Route::get('/cookie-test', function () {
+        return response('cookie test')
+            ->cookie('test_cookie', '12345', 60);
+    });
 
 });
