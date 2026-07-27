@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\StudentAuthController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+       use Illuminate\Support\Facades\Cookie;
 
 Route::group([
     'prefix'     => LaravelLocalization::setLocale(),
@@ -56,8 +57,15 @@ Route::group([
             ];
         });
 
+
         Route::get('/cookie-test', function () {
-            abort(555);
+
+            Cookie::queue('test_cookie', '123456', 60);
+
+            return response()->json([
+                'headers_sent' => headers_sent(),
+                'headers' => headers_list(),
+            ]);
         });
 
 });
