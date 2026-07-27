@@ -10,64 +10,57 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
- public function show_login_view(){
- return view('admin.auth.login');
-
-
+  public function show_login_view()
+  {
+    return view('admin.auth.login');
   }
 
-  public function login(LoginRequest $request){
-    if(auth()->guard('admin')->attempt(['username'=>$request->input('username'),'password'=>$request->input('password')]))
- {
-  return redirect()->route('admin.dashboard');
-
- }else{
-  return redirect()->route('admin.showlogin');
- }
-
-
-
+  public function login(LoginRequest $request)
+  {
+    if (auth()->guard('admin')->attempt(['username' => $request->input('username'), 'password' => $request->input('password')])) {
+      return redirect()->route('admin.dashboard');
+    } else {
+      return redirect()->route('admin.showlogin');
+    }
   }
 
-  public function logout(){
+  public function logout()
+  {
     auth()->logout();
     return redirect()->route('admin.showlogin');
-   }
+  }
 
 
-   public function editlogin($id)
-   {
-     $data=Admin::findorFail($id);
-     return view('admin.auth.edit',compact('data'));
-   }
+  public function editlogin($id)
+  {
+    $data = Admin::findorFail($id);
+    return view('admin.auth.edit', compact('data'));
+  }
 
 
 
-   public function updatelogin(Request $request,$id)
-   {
-     $admin=Admin::findorFail($id);
-     try{
-         $admin->username = $request->get('username');
-         $admin->password = Hash::make($request->password);
+  public function updatelogin(Request $request, $id)
+  {
+    $admin = Admin::findorFail($id);
+    try {
+      $admin->username = $request->get('username');
+      $admin->password = Hash::make($request->password);
 
-         if($admin->save()){
-            auth()->logout();
-             return redirect()->route('admin.showlogin');
-
-         }else{
-             return redirect()->back()->with(['error' => 'Something wrong']);
-         }
-
-     }catch(\Exception $ex){
-         return redirect()->back()
-         ->with(['error' => 'عفوا حدث خطأ ما' . $ex->getMessage()])
-         ->withInput();
-     }
-
-   }
+      if ($admin->save()) {
+        auth()->logout();
+        return redirect()->route('admin.showlogin');
+      } else {
+        return redirect()->back()->with(['error' => 'Something wrong']);
+      }
+    } catch (\Exception $ex) {
+      return redirect()->back()
+        ->with(['error' => 'عفوا حدث خطأ ما' . $ex->getMessage()])
+        ->withInput();
+    }
+  }
 
 
-/*
+  /*
 
 function make_new_admin(){
 $admin=new App\Models\Admin();
@@ -80,6 +73,4 @@ $admin->save();
 
 }
 */
-
-
 }
