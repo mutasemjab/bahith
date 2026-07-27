@@ -43,4 +43,9 @@ Route::group([
         ->name('student.logout')
         ->middleware('auth:student');
 
+        Route::get('/test-session', function () {
+            session(['test' => 'working']);
+            return session('test');
+        });
+
 });
