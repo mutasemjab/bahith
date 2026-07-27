@@ -153,11 +153,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('contact-messages/{contactMessage}/reply', [ContactMessageController::class, 'reply'])->name('admin.contact_messages.reply');
         Route::delete('contact-messages/{contactMessage}', [ContactMessageController::class, 'destroy'])->name('admin.contact_messages.destroy');
     });
-
+});
 
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'guest:admin'], function () {
     Route::get('login',  [LoginController::class, 'show_login_view'])->name('admin.showlogin');
     Route::post('login', [LoginController::class, 'login'])->name('admin.login');
-});
-
 });
