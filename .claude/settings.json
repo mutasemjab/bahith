@@ -32,7 +32,8 @@
       "Bash(findstr /r /s \"show_price\" app resources)",
       "Bash(Get-ChildItem \"c:\\\\xampp\\\\htdocs\\\\bahith\\\\storage\\\\framework\\\\sessions\")",
       "Bash(Remove-Item -Force)",
-      "Bash(Write-Host \"Session files cleared\")"
+      "Bash(Write-Host \"Session files cleared\")",
+      "Bash(dir c:\\\\xampp\\\\htdocs\\\\bahith)"
     ]
   }
 }

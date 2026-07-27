@@ -45,6 +45,13 @@
                     <span>{{ __('messages.enrollments') }}</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.school-classes.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.school-classes.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-building"></i>
+                    <span>{{ __('messages.classes_title') }}</span>
+                </a>
+            </li>
         </ul>
 
         <div class="nav-label">{{ __('messages.academic') }}</div>

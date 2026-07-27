@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\EducationalNoteController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\TeacherController;
 use Illuminate\Support\Facades\Route;
@@ -106,6 +107,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('card-numbers/bulk-generate', [CardNumberController::class, 'bulkGenerate'])->name('admin.card-numbers.bulk');
         Route::get('card-numbers/print',          [CardNumberController::class, 'printView'])->name('admin.card-numbers.print');
         Route::resource('card-numbers', CardNumberController::class, ['as' => 'admin']);
+
+        // ── School Classes ────────────────────────────────────────────
+        Route::resource('school-classes', SchoolClassController::class, ['as' => 'admin']);
 
         // ── Subjects ──────────────────────────────────────────────────
         Route::resource('subjects', SubjectController::class, ['as' => 'admin']);

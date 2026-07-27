@@ -498,6 +498,19 @@ return [
 'email_directly' => 'إرسال بريد مباشر',
 'close_message' => 'إغلاق الرسالة',
 
+// ─── School Classes module ───
+'classes_title'       => 'الصفوف الدراسية',
+'manage_classes_desc' => 'إدارة الصفوف الدراسية المتاحة للطلاب.',
+'add_class'           => 'إضافة صف',
+'edit_class'          => 'تعديل صف',
+'class_info'          => 'معلومات الصف',
+'class_name'          => 'اسم الصف',
+'search_class_ph'     => 'البحث عن صف...',
+'no_classes_yet'      => 'لا توجد صفوف بعد.',
+'class_created'       => 'تم إضافة الصف بنجاح.',
+'class_updated'       => 'تم تحديث الصف بنجاح.',
+'class_deleted'       => 'تم حذف الصف.',
+
 // ─── Subjects module ───
 'subjects_title' => 'المواد الدراسية',
 'manage_subjects_desc' => 'إدارة أسماء المواد بالعربية والإنجليزية.',

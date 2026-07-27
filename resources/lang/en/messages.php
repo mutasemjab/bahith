@@ -498,6 +498,19 @@ return [
 'email_directly' => 'Email Directly',
 'close_message' => 'Close Message',
 
+// ─── School Classes module ───
+'classes_title'       => 'School Classes',
+'manage_classes_desc' => 'Manage school classes available to students.',
+'add_class'           => 'Add Class',
+'edit_class'          => 'Edit Class',
+'class_info'          => 'Class Info',
+'class_name'          => 'Class Name',
+'search_class_ph'     => 'Search for a class...',
+'no_classes_yet'      => 'No classes yet.',
+'class_created'       => 'Class created successfully.',
+'class_updated'       => 'Class updated successfully.',
+'class_deleted'       => 'Class deleted.',
+
 // ─── Subjects module ───
 'subjects_title' => 'Subjects',
 'manage_subjects_desc' => 'Manage subject names in Arabic and English.',
