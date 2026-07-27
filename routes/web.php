@@ -44,9 +44,12 @@ Route::group([
         ->name('student.logout')
         ->middleware('auth:student');
 
-      Route::get('/cookie-test', function () {
-        return response('cookie test')
-            ->cookie('test_cookie', '12345', 60);
-    });
+      Route::get('/native-cookie-test', function () {
+
+    header('Set-Cookie: native_test=12345; Path=/; HttpOnly');
+
+    return 'native cookie test';
+
+});
 
 });
