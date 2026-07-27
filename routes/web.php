@@ -56,4 +56,12 @@ Route::group([
             ];
         });
 
+        Route::get('/cookie-test', function () {
+    return response('OK')->cookie(
+        'test_cookie',
+        '123456',
+        60
+    );
+});
+
 });
