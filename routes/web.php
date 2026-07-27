@@ -48,4 +48,12 @@ Route::group([
             return session('test');
         });
 
+        Route::get('/https-test', function () {
+            return [
+                'https' => request()->isSecure(),
+                'scheme' => request()->getScheme(),
+                'url' => url('/'),
+            ];
+        });
+
 });
