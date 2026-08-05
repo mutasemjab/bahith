@@ -5,11 +5,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\StudentAuthController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-       use Illuminate\Support\Facades\Cookie;
 
 Route::group([
     'prefix'     => LaravelLocalization::setLocale(),
-    'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
+    'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath', 'website.mode'],
 ], function () {
 
     // ── Public front routes ───────────────────────────────────────────────

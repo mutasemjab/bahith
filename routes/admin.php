@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\EducationalNoteController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\ConductDocumentController;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\TeacherController;
@@ -111,6 +112,12 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         // ── School Classes ────────────────────────────────────────────
         Route::resource('school-classes', SchoolClassController::class, ['as' => 'admin']);
 
+        // ── Conduct Document ──────────────────────────────────────────
+        Route::get('conduct',              [ConductDocumentController::class, 'index'])->name('admin.conduct.index');
+        Route::get('conduct/edit',         [ConductDocumentController::class, 'edit'])->name('admin.conduct.edit');
+        Route::put('conduct',              [ConductDocumentController::class, 'update'])->name('admin.conduct.update');
+        Route::get('conduct/signatures',   [ConductDocumentController::class, 'signatures'])->name('admin.conduct.signatures');
+
         // ── Subjects ──────────────────────────────────────────────────
         Route::resource('subjects', SubjectController::class, ['as' => 'admin']);
 
@@ -146,6 +153,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('site-settings',           [SiteSettingController::class, 'edit'])->name('admin.site-settings.edit');
         Route::put('site-settings',           [SiteSettingController::class, 'update'])->name('admin.site-settings.update');
         Route::post('site-settings/toggle-price-display', [SiteSettingController::class, 'togglePriceDisplay'])->name('admin.site-settings.toggle-price');
+        Route::post('site-settings/toggle-website-mode', [SiteSettingController::class, 'toggleWebsiteMode'])->name('admin.site-settings.toggle-website');
 
         // ── Contact Messages ──────────────────────────────────────────
 

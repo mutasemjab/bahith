@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 
 class SiteSettingController extends Controller
 {
-    private array $groups = ['hero', 'about', 'contact', 'social', 'apps'];
-
     public function __construct()
     {
         $this->middleware($this->perm('setting-edit'))->only(['edit', 'update', 'togglePriceDisplay']);
@@ -104,5 +102,18 @@ class SiteSettingController extends Controller
         $label = $new === '1' ? 'مفعّل (يظهر السعر)' : 'معطّل (مخفي في App Store)';
 
         return back()->with('success', "تم تغيير إعداد السعر: {$label}");
+    }
+
+    public function toggleWebsiteMode()
+    {
+        $current = SiteSetting::raw('website_mode') ?: '1';
+        $new     = $current === '1' ? '0' : '1';
+
+        SiteSetting::set('website_mode', $new, $new, 'general');
+        SiteSetting::clearCache();
+
+        $label = $new === '1' ? 'الموقع مفتوح للزوار' : 'الموقع في وضع Landing Page';
+
+        return back()->with('success', "تم تغيير وضع الموقع: {$label}");
     }
 }

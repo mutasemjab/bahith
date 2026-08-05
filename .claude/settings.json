@@ -33,7 +33,8 @@
       "Bash(Get-ChildItem \"c:\\\\xampp\\\\htdocs\\\\bahith\\\\storage\\\\framework\\\\sessions\")",
       "Bash(Remove-Item -Force)",
       "Bash(Write-Host \"Session files cleared\")",
-      "Bash(dir c:\\\\xampp\\\\htdocs\\\\bahith)"
+      "Bash(dir c:\\\\xampp\\\\htdocs\\\\bahith)",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"c:\\\\xampp\\\\htdocs\\\\bahith\\\\resources\\\\views\\\\admin\\\\conduct\")"
     ]
   }
 }

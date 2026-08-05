@@ -186,6 +186,15 @@
                 </a>
             </li>
 
+            {{-- Conduct Document --}}
+            <li class="nav-item">
+                <a href="{{ route('admin.conduct.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.conduct.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-file-earmark-check"></i>
+                    <span>{{ __('messages.conduct_title') }}</span>
+                </a>
+            </li>
+
         </ul>
 
         <div class="nav-label">{{ __('messages.cards_management') }}</div>

@@ -30,7 +30,32 @@ function sv($settings, $key, $col = 'value_ar') {
 @endphp
 
 {{-- App Store price visibility toggle --}}
-@php $showPrice = \App\Models\SiteSetting::raw('show_price') ?: '1'; @endphp
+{{-- Website mode toggle --}}
+@php
+    $websiteMode = \App\Models\SiteSetting::raw('website_mode') ?: '1';
+    $showPrice   = \App\Models\SiteSetting::raw('show_price') ?: '1';
+@endphp
+<div class="panel-card mb-4">
+    <div class="panel-card-header">
+        <h2 class="panel-card-title"><i class="bi bi-globe2 me-2"></i>وضع الموقع الإلكتروني</h2>
+    </div>
+    <div class="panel-card-body">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <div class="fw-semibold">تشغيل / إيقاف الموقع للزوار</div>
+                <small class="text-muted">عند الإيقاف، يُعرض للزوار صفحة Landing Page فقط (بانر + من نحن + رابط App Store)</small>
+            </div>
+            <form action="{{ route('admin.site-settings.toggle-website') }}" method="POST" class="m-0">
+                @csrf
+                <button type="submit" class="btn btn-{{ $websiteMode === '1' ? 'success' : 'warning' }} d-flex align-items-center gap-2">
+                    <i class="bi bi-{{ $websiteMode === '1' ? 'globe' : 'globe2' }}"></i>
+                    {{ $websiteMode === '1' ? 'مفتوح — الموقع يعمل' : 'Landing Page فقط' }}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="panel-card mb-4">
     <div class="panel-card-header">
         <h2 class="panel-card-title"><i class="bi bi-phone me-2"></i>إعدادات تطبيق الجوال</h2>

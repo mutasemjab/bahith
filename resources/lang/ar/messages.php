@@ -498,6 +498,22 @@ return [
 'email_directly' => 'إرسال بريد مباشر',
 'close_message' => 'إغلاق الرسالة',
 
+// ─── Conduct Document module ───
+'conduct_title'        => 'مدونة السلوك',
+'conduct_desc'         => 'إدارة مدونة السلوك والانضباط الداخلي ومتابعة التوقيعات.',
+'conduct_edit'         => 'تعديل المدونة',
+'conduct_create'       => 'إنشاء المدونة',
+'conduct_info'         => 'معلومات المدونة',
+'conduct_title_ar'     => 'العنوان (عربي)',
+'conduct_title_en'     => 'العنوان (إنجليزي)',
+'conduct_body'         => 'نص المدونة',
+'conduct_updated'      => 'تم تحديث مدونة السلوك بنجاح.',
+'conduct_signatures'   => 'التوقيعات',
+'conduct_guardian_name'=> 'اسم ولي الأمر',
+'conduct_signed_at'    => 'تاريخ التوقيع',
+'conduct_no_document'  => 'لم يتم إنشاء مدونة السلوك بعد.',
+'conduct_no_signatures'=> 'لا توجد توقيعات بعد.',
+
 // ─── School Classes module ───
 'classes_title'       => 'الصفوف الدراسية',
 'manage_classes_desc' => 'إدارة الصفوف الدراسية المتاحة للطلاب.',
