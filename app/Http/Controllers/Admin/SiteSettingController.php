@@ -106,7 +106,8 @@ class SiteSettingController extends Controller
 
     public function toggleWebsiteMode()
     {
-        $current = SiteSetting::raw('website_mode') ?: '1';
+        $raw     = SiteSetting::raw('website_mode');
+        $current = ($raw === '0') ? '0' : '1';
         $new     = $current === '1' ? '0' : '1';
 
         SiteSetting::set('website_mode', $new, $new, 'general');

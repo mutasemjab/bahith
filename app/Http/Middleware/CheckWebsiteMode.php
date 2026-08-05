@@ -10,9 +10,9 @@ class CheckWebsiteMode
 {
     public function handle(Request $request, Closure $next)
     {
-        $mode = SiteSetting::raw('website_mode') ?: '1';
+        $mode = SiteSetting::raw('website_mode');
 
-        if ($mode === '1') {
+        if ($mode !== '0') {
             return $next($request);
         }
 

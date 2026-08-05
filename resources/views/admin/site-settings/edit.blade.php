@@ -32,7 +32,8 @@ function sv($settings, $key, $col = 'value_ar') {
 {{-- App Store price visibility toggle --}}
 {{-- Website mode toggle --}}
 @php
-    $websiteMode = \App\Models\SiteSetting::raw('website_mode') ?: '1';
+    $wm          = \App\Models\SiteSetting::raw('website_mode');
+    $websiteMode = ($wm === '0') ? '0' : '1';
     $showPrice   = \App\Models\SiteSetting::raw('show_price') ?: '1';
 @endphp
 <div class="panel-card mb-4">
