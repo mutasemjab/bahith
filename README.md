@@ -1,5 +1,24 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
+## Apple In-App Purchase deployment
+
+The API verifies StoreKit 2 signed transactions for the Flutter application.
+Before submitting the iOS app:
+
+1. Set `APPLE_IAP_BUNDLE_ID=com.baheth.school` and
+   `APPLE_IAP_COURSE_PRODUCT_ID=com.baheth.school.course.access`.
+2. Keep `APPLE_IAP_ALLOWED_ENVIRONMENTS=Production,Sandbox`; App Review uses
+   Sandbox transactions against the deployed API.
+3. Run `php artisan migrate --force` to backfill every student's permanent
+   `app_account_token` and create the `apple_purchases` audit table.
+4. Clear/configure the Laravel config cache after changing environment values.
+5. Verify a complete TestFlight purchase. The endpoint is
+   `POST /api/v1/student/purchases/apple/verify` and requires Sanctum auth.
+
+Apple's trusted root certificates are committed under
+`resources/certificates/apple` from the official Apple PKI repository. Review
+and refresh them if Apple changes the certificate chain.
+
 <p align="center">
 <a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>

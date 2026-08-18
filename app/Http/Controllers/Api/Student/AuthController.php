@@ -99,6 +99,8 @@ class AuthController extends Controller
 
     private function studentData(Student $student): array
     {
+        $appAccountToken = $student->ensureAppAccountToken();
+
         return [
             'id'          => $student->id,
             'name'        => $student->name,
@@ -110,6 +112,7 @@ class AuthController extends Controller
             'class_id'    => $student->class_id,
             'gender'      => $student->gender,
             'is_active'   => $student->is_active,
+            'app_account_token' => $appAccountToken,
         ];
     }
 }
