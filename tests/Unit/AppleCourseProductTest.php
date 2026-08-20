@@ -13,7 +13,7 @@ class AppleCourseProductTest extends TestCase
         parent::setUp();
 
         config([
-            'apple_iap.course_product_prefix' => 'com.baheth.school.course.',
+            'apple_iap.course_product_prefix' => 'com.baheth.school.course.v2.',
         ]);
     }
 
@@ -21,8 +21,8 @@ class AppleCourseProductTest extends TestCase
     {
         $products = new AppleCourseProduct();
 
-        $this->assertSame('com.baheth.school.course.42', $products->forCourse(42));
-        $this->assertSame(42, $products->courseIdFrom('com.baheth.school.course.42'));
+        $this->assertSame('com.baheth.school.course.v2.42', $products->forCourse(42));
+        $this->assertSame(42, $products->courseIdFrom('com.baheth.school.course.v2.42'));
     }
 
     public function test_it_rejects_malformed_product_ids(): void
@@ -30,8 +30,8 @@ class AppleCourseProductTest extends TestCase
         $products = new AppleCourseProduct();
 
         $this->assertNull($products->courseIdFrom('com.baheth.school.course.access'));
-        $this->assertNull($products->courseIdFrom('com.baheth.school.course.0'));
-        $this->assertNull($products->courseIdFrom('com.baheth.school.course.01'));
+        $this->assertNull($products->courseIdFrom('com.baheth.school.course.v2.0'));
+        $this->assertNull($products->courseIdFrom('com.baheth.school.course.v2.01'));
     }
 
     public function test_it_rejects_invalid_course_ids(): void

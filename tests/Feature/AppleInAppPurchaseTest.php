@@ -47,7 +47,7 @@ class AppleInAppPurchaseTest extends TestCase
             $student->app_account_token,
             $course->id
         );
-        $productId = 'com.baheth.school.course.'.$course->id;
+        $productId = 'com.baheth.school.course.v2.'.$course->id;
 
         $this->app->instance(
             AppleTransactionVerifier::class,
@@ -103,14 +103,14 @@ class AppleInAppPurchaseTest extends TestCase
             AppleTransactionVerifier::class,
             new FakeAppleTransactionVerifier(
                 $differentCourseToken,
-                'com.baheth.school.course.'.$course->id
+                'com.baheth.school.course.v2.'.$course->id
             )
         );
         Sanctum::actingAs($student);
 
         $this->postJson('/api/v1/student/purchases/apple/verify', [
             'course_id' => $course->id,
-            'product_id' => 'com.baheth.school.course.'.$course->id,
+            'product_id' => 'com.baheth.school.course.v2.'.$course->id,
             'transaction_id' => '200000000000001',
             'signed_transaction' => 'header.payload.signature',
             'purchase_token' => $courseToken,
@@ -133,14 +133,14 @@ class AppleInAppPurchaseTest extends TestCase
             AppleTransactionVerifier::class,
             new FakeAppleTransactionVerifier(
                 $purchaseToken,
-                'com.baheth.school.course.'.($course->id + 1)
+                'com.baheth.school.course.v2.'.($course->id + 1)
             )
         );
         Sanctum::actingAs($student);
 
         $this->postJson('/api/v1/student/purchases/apple/verify', [
             'course_id' => $course->id,
-            'product_id' => 'com.baheth.school.course.'.($course->id + 1),
+            'product_id' => 'com.baheth.school.course.v2.'.($course->id + 1),
             'transaction_id' => '200000000000001',
             'signed_transaction' => 'header.payload.signature',
             'purchase_token' => $purchaseToken,
@@ -167,7 +167,7 @@ class AppleInAppPurchaseTest extends TestCase
             $firstStudent->app_account_token,
             $course->id
         );
-        $productId = 'com.baheth.school.course.'.$course->id;
+        $productId = 'com.baheth.school.course.v2.'.$course->id;
         $verifier = new FakeAppleTransactionVerifier($firstToken, $productId);
         $this->app->instance(AppleTransactionVerifier::class, $verifier);
         Sanctum::actingAs($firstStudent);

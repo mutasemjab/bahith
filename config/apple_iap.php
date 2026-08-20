@@ -4,7 +4,7 @@ return [
     'bundle_id' => env('APPLE_IAP_BUNDLE_ID', 'com.baheth.school'),
     'course_product_prefix' => env(
         'APPLE_IAP_COURSE_PRODUCT_PREFIX',
-        'com.baheth.school.course.'
+        'com.baheth.school.course.v2.'
     ),
     'course_product_type' => 'Non-Consumable',
 
