@@ -47,16 +47,17 @@ class AppleInAppPurchaseTest extends TestCase
             $student->app_account_token,
             $course->id
         );
+        $productId = 'com.baheth.school.course.'.$course->id;
 
         $this->app->instance(
             AppleTransactionVerifier::class,
-            new FakeAppleTransactionVerifier($purchaseToken)
+            new FakeAppleTransactionVerifier($purchaseToken, $productId)
         );
         Sanctum::actingAs($student);
 
         $payload = [
             'course_id' => $course->id,
-            'product_id' => 'com.baheth.school.course.access',
+            'product_id' => $productId,
             'transaction_id' => '200000000000001',
             'signed_transaction' => 'header.payload.signature',
             'purchase_token' => $purchaseToken,
@@ -100,16 +101,49 @@ class AppleInAppPurchaseTest extends TestCase
 
         $this->app->instance(
             AppleTransactionVerifier::class,
-            new FakeAppleTransactionVerifier($differentCourseToken)
+            new FakeAppleTransactionVerifier(
+                $differentCourseToken,
+                'com.baheth.school.course.'.$course->id
+            )
         );
         Sanctum::actingAs($student);
 
         $this->postJson('/api/v1/student/purchases/apple/verify', [
             'course_id' => $course->id,
-            'product_id' => 'com.baheth.school.course.access',
+            'product_id' => 'com.baheth.school.course.'.$course->id,
             'transaction_id' => '200000000000001',
             'signed_transaction' => 'header.payload.signature',
             'purchase_token' => $courseToken,
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('apple_purchases', 0);
+        $this->assertDatabaseCount('enrollments', 0);
+    }
+
+    public function test_purchase_is_rejected_when_the_product_does_not_match_the_course(): void
+    {
+        $student = $this->student();
+        $course = $this->paidCourse();
+        $purchaseToken = (new ApplePurchaseToken())->forCourse(
+            $student->app_account_token,
+            $course->id
+        );
+
+        $this->app->instance(
+            AppleTransactionVerifier::class,
+            new FakeAppleTransactionVerifier(
+                $purchaseToken,
+                'com.baheth.school.course.'.($course->id + 1)
+            )
+        );
+        Sanctum::actingAs($student);
+
+        $this->postJson('/api/v1/student/purchases/apple/verify', [
+            'course_id' => $course->id,
+            'product_id' => 'com.baheth.school.course.'.($course->id + 1),
+            'transaction_id' => '200000000000001',
+            'signed_transaction' => 'header.payload.signature',
+            'purchase_token' => $purchaseToken,
         ])->assertStatus(422);
 
         $this->assertDatabaseCount('apple_purchases', 0);
@@ -133,13 +167,14 @@ class AppleInAppPurchaseTest extends TestCase
             $firstStudent->app_account_token,
             $course->id
         );
-        $verifier = new FakeAppleTransactionVerifier($firstToken);
+        $productId = 'com.baheth.school.course.'.$course->id;
+        $verifier = new FakeAppleTransactionVerifier($firstToken, $productId);
         $this->app->instance(AppleTransactionVerifier::class, $verifier);
         Sanctum::actingAs($firstStudent);
 
         $this->postJson('/api/v1/student/purchases/apple/verify', [
             'course_id' => $course->id,
-            'product_id' => 'com.baheth.school.course.access',
+            'product_id' => $productId,
             'transaction_id' => '200000000000001',
             'signed_transaction' => 'header.payload.signature',
             'purchase_token' => $firstToken,
@@ -154,7 +189,7 @@ class AppleInAppPurchaseTest extends TestCase
 
         $this->postJson('/api/v1/student/purchases/apple/verify', [
             'course_id' => $course->id,
-            'product_id' => 'com.baheth.school.course.access',
+            'product_id' => $productId,
             'transaction_id' => '200000000000001',
             'signed_transaction' => 'header.payload.signature',
             'purchase_token' => $secondToken,
@@ -204,8 +239,10 @@ class AppleInAppPurchaseTest extends TestCase
 
 class FakeAppleTransactionVerifier implements AppleTransactionVerifier
 {
-    public function __construct(public string $purchaseToken)
-    {
+    public function __construct(
+        public string $purchaseToken,
+        public string $productId
+    ) {
     }
 
     public function verify(string $signedTransaction): array
@@ -214,12 +251,12 @@ class FakeAppleTransactionVerifier implements AppleTransactionVerifier
 
         return [
             'bundle_id' => 'com.baheth.school',
-            'product_id' => 'com.baheth.school.course.access',
+            'product_id' => $this->productId,
             'transaction_id' => '200000000000001',
             'original_transaction_id' => '200000000000001',
             'app_account_token' => $this->purchaseToken,
             'environment' => 'Sandbox',
-            'type' => 'Consumable',
+            'type' => 'Non-Consumable',
             'quantity' => 1,
             'purchase_date_ms' => $now,
             'signed_date_ms' => $now,

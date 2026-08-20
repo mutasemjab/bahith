@@ -14,7 +14,10 @@ class AppleSignedTransactionVerifierTest extends TestCase
 
         config([
             'apple_iap.bundle_id' => 'com.baheth.school',
-            'apple_iap.course_product_id' => 'com.baheth.school.course.access',
+            // The cryptographic fixture predates the production switch to
+            // per-course non-consumables. Override only the expected type so
+            // the fixture can continue exercising signature verification.
+            'apple_iap.course_product_type' => 'Consumable',
             'apple_iap.allowed_environments' => ['Production', 'Sandbox'],
             'apple_iap.trusted_root_certificates' => [
                 base_path('tests/Fixtures/apple/TestRoot.pem'),
@@ -47,6 +50,15 @@ class AppleSignedTransactionVerifierTest extends TestCase
         (new AppleSignedTransactionVerifier())->verify(
             $header.'.'.$tamperedPayload.'.'.$signature
         );
+    }
+
+    public function test_production_product_type_rejects_a_consumable_transaction(): void
+    {
+        config(['apple_iap.course_product_type' => 'Non-Consumable']);
+
+        $this->expectException(ApplePurchaseException::class);
+
+        (new AppleSignedTransactionVerifier())->verify($this->fixture());
     }
 
     public function test_it_rejects_a_certificate_chain_not_anchored_to_a_trusted_root(): void

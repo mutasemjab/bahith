@@ -25,7 +25,7 @@ class ApplePurchaseController extends Controller
             'product_id' => [
                 'required',
                 'string',
-                Rule::in([(string) config('apple_iap.course_product_id')]),
+                'max:255',
             ],
             'transaction_id' => ['required', 'string', 'regex:/^\d{6,30}$/'],
             'signed_transaction' => ['required', 'string', 'max:50000'],

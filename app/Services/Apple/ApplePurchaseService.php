@@ -16,7 +16,8 @@ class ApplePurchaseService
 {
     public function __construct(
         private AppleTransactionVerifier $verifier,
-        private ApplePurchaseToken $tokens
+        private ApplePurchaseToken $tokens,
+        private AppleCourseProduct $products
     ) {
     }
 
@@ -35,12 +36,14 @@ class ApplePurchaseService
         }
 
         $verified = $this->verifier->verify((string) $input['signed_transaction']);
+        $expectedProductId = $this->products->forCourse((int) $course->id);
         $expectedPurchaseToken = $this->tokens->forCourse(
             (string) $student->app_account_token,
             $course->id
         );
 
-        if (! hash_equals($verified['product_id'], (string) $input['product_id'])
+        if (! hash_equals($expectedProductId, (string) $input['product_id'])
+            || ! hash_equals($expectedProductId, $verified['product_id'])
             || ! hash_equals($verified['transaction_id'], (string) $input['transaction_id'])
             || ! hash_equals($expectedPurchaseToken, strtolower((string) $input['purchase_token']))
             || ! hash_equals($expectedPurchaseToken, strtolower($verified['app_account_token']))) {

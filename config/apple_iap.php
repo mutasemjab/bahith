@@ -2,10 +2,11 @@
 
 return [
     'bundle_id' => env('APPLE_IAP_BUNDLE_ID', 'com.baheth.school'),
-    'course_product_id' => env(
-        'APPLE_IAP_COURSE_PRODUCT_ID',
-        'com.baheth.school.course.access'
+    'course_product_prefix' => env(
+        'APPLE_IAP_COURSE_PRODUCT_PREFIX',
+        'com.baheth.school.course.'
     ),
+    'course_product_type' => 'Non-Consumable',
 
     // App Review purchases are signed for Sandbox even when the submitted
     // binary is a release build. Production must therefore accept and record

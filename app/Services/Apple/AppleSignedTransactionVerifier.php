@@ -187,11 +187,9 @@ class AppleSignedTransactionVerifier implements AppleTransactionVerifier
         $purchaseDate = $this->requiredMilliseconds($payload, 'purchaseDate');
         $signedDate = $this->requiredMilliseconds($payload, 'signedDate');
         $quantity = (int) ($payload['quantity'] ?? 1);
-
         if (! hash_equals((string) config('apple_iap.bundle_id'), $bundleId)
-            || ! hash_equals((string) config('apple_iap.course_product_id'), $productId)
             || ! in_array($environment, (array) config('apple_iap.allowed_environments'), true)
-            || $type !== 'Consumable'
+            || $type !== (string) config('apple_iap.course_product_type')
             || $quantity !== 1
             || ! preg_match('/^\d{6,30}$/', $transactionId)
             || ! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $appAccountToken)
