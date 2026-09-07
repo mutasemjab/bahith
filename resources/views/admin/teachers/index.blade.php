@@ -95,6 +95,7 @@
                     </td>
                     <td>
                         <div class="d-flex gap-1">
+                            <a href="{{ route('admin.teachers.show', $teacher->id) }}" class="btn-outline-sm" style="padding:4px 8px"><i class="bi bi-eye"></i></a>
                             <a href="{{ route('admin.teachers.edit', $teacher->id) }}" class="btn-outline-sm" style="padding:4px 8px"><i class="bi bi-pencil"></i></a>
                             <form action="{{ route('admin.teachers.destroy', $teacher->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.delete_teacher_confirm') }}')">
                                 @csrf @method('DELETE')
