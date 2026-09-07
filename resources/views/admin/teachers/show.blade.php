@@ -123,7 +123,7 @@
                                     <option value="">-- مربي صف فقط --</option>
                                     @foreach($allSubjects as $subject)
                                         <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
-                                            {{ $subject->name_ar }}
+                                            {{ $subject->full_path }}
                                         </option>
                                     @endforeach
                                 </select>

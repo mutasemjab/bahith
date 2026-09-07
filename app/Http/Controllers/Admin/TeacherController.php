@@ -86,7 +86,10 @@ class TeacherController extends Controller
         ]);
 
         $allClasses  = SchoolClass::where('is_active', true)->orderBy('name')->get();
-        $allSubjects = Subject::where('is_active', true)->orderBy('name_ar')->get();
+        $allSubjects = Subject::where('is_active', true)
+            ->with(['category.parent.parent'])
+            ->orderBy('name_ar')
+            ->get();
 
         return view('admin.teachers.show', compact('teacher', 'allClasses', 'allSubjects'));
     }
