@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Teacher\CourseController;
 use App\Http\Controllers\Teacher\DashboardController;
+use App\Http\Controllers\Teacher\StudentsController;
 use App\Http\Controllers\Teacher\EducationalNoteController;
 use App\Http\Controllers\Teacher\ExamController;
 use App\Http\Controllers\Teacher\PreviousYearExamController;
@@ -34,8 +35,9 @@ Route::group([
     // ── Authenticated ─────────────────────────────────────────────────
     Route::group(['prefix' => 'teacher', 'middleware' => 'auth.teacher'], function () {
 
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('teacher.dashboard');
-        Route::post('/logout',   [LoginController::class, 'logout'])->name('teacher.logout');
+        Route::get('/dashboard',   [DashboardController::class, 'index'])->name('teacher.dashboard');
+        Route::post('/logout',     [LoginController::class, 'logout'])->name('teacher.logout');
+        Route::get('/my-students', [StudentsController::class, 'index'])->name('teacher.my-students');
 
         // ── Profile ───────────────────────────────────────────────────
         Route::get('/profile',  [ProfileController::class, 'edit'])->name('teacher.profile');

@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\ConductDocumentController;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\SubjectController;
+use App\Http\Controllers\Admin\TeacherClassController;
 use App\Http\Controllers\Admin\TeacherController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -78,6 +79,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('teachers/export',  [TeacherController::class, 'export'])->name('admin.teachers.export');
         Route::post('teachers/import', [TeacherController::class, 'import'])->name('admin.teachers.import');
         Route::resource('teachers', TeacherController::class, ['as' => 'admin']);
+
+        // ── Teacher Class Assignments ─────────────────────────────────
+        Route::post('teacher-classes',              [TeacherClassController::class, 'store'])->name('admin.teacher-classes.store');
+        Route::delete('teacher-classes/{teacherClass}', [TeacherClassController::class, 'destroy'])->name('admin.teacher-classes.destroy');
 
         // ── Students ──────────────────────────────────────────────────
         Route::get('students/export',  [StudentController::class, 'export'])->name('admin.students.export');

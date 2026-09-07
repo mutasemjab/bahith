@@ -66,4 +66,39 @@ class Teacher extends Authenticatable
     {
         return $this->belongsToMany(Subject::class, 'teacher_subjects');
     }
+
+    // الصفوف والمواد اللي بدرّسها المعلم
+    public function teacherClasses()
+    {
+        return $this->hasMany(TeacherClass::class);
+    }
+
+    // الصفوف اللي بدرّس فيها (بدون تكرار)
+    public function taughtClasses()
+    {
+        return $this->belongsToMany(SchoolClass::class, 'teacher_classes', 'teacher_id', 'class_id')
+            ->withPivot('subject_id', 'is_homeroom')
+            ->withTimestamps()
+            ->distinct();
+    }
+
+    // الصف اللي المعلم مربيه (إن وجد)
+    public function homeroomClass()
+    {
+        return $this->hasOneThrough(
+            SchoolClass::class,
+            TeacherClass::class,
+            'teacher_id',
+            'id',
+            'id',
+            'class_id'
+        )->where('teacher_classes.is_homeroom', true);
+    }
+
+    // كل طلاب الصفوف اللي بدرّسها المعلم
+    public function students()
+    {
+        $classIds = $this->teacherClasses()->distinct()->pluck('class_id');
+        return Student::whereIn('class_id', $classIds);
+    }
 }
