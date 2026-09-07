@@ -2,71 +2,62 @@
 
 namespace App\Imports;
 
-use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 
 class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 {
-    public array $errors   = [];
-    public int   $imported = 0;
-    public int   $skipped  = 0;
-
-    private array $classMap = [];
-
-    public function __construct()
-    {
-        // Build class name → id map for fast lookup
-        SchoolClass::all()->each(function ($c) {
-            $this->classMap[trim($c->name)] = $c->id;
-        });
-    }
+    public array $errors = [];
+    public int $imported = 0;
+    public int $skipped = 0;
 
     public function collection(Collection $rows): void
     {
         foreach ($rows as $index => $row) {
-            $rowNum = $index + 2; // +2 because row 1 is headers
 
-            $name       = trim($row['الاسم']          ?? $row['name']        ?? '');
-            $nationalId = trim($row['الرقم_الوطني']   ?? $row['national_id'] ?? '');
-            $email      = trim($row['البريد_الإلكتروني'] ?? $row['email']    ?? '');
-            $phone      = trim($row['الهاتف']          ?? $row['phone']      ?? '');
-            $password   = trim($row['كلمة_المرور']     ?? $row['password']   ?? 'Pass@1234');
-            $className  = trim($row['الصف']            ?? $row['class']      ?? '');
+            // Row 1 = headers, so first data row is Excel row 2
+            $rowNum = $index + 2;
 
+            $name = trim($row['name'] ?? '');
+            $nationalId = trim((string) ($row['national_id'] ?? ''));
+            $password = trim((string) ($row['password'] ?? ''));
+            $classId = $row['class_id'] ?? null;
+
+            // Skip if name is empty
             if (empty($name)) {
                 $this->skipped++;
                 continue;
             }
 
-            // Skip duplicate national_id
+            // Check duplicate national ID
             if ($nationalId && Student::where('national_id', $nationalId)->exists()) {
-                $this->errors[] = "صف {$rowNum}: الرقم الوطني «{$nationalId}» موجود مسبقاً — تم التخطي";
+                $this->errors[] =
+                    "Row {$rowNum}: National ID '{$nationalId}' already exists — skipped";
+
                 $this->skipped++;
                 continue;
             }
 
-            // Skip duplicate email
-            if ($email && Student::where('email', $email)->exists()) {
-                $this->errors[] = "صف {$rowNum}: البريد «{$email}» موجود مسبقاً — تم التخطي";
+            // Validate class_id
+            if ($classId && !\App\Models\SchoolClass::where('id', $classId)->exists()) {
+                $this->errors[] =
+                    "Row {$rowNum}: Class ID '{$classId}' does not exist — skipped";
+
                 $this->skipped++;
                 continue;
             }
-
-            $classId = $className ? ($this->classMap[$className] ?? null) : null;
 
             Student::create([
                 'name'        => $name,
                 'national_id' => $nationalId ?: null,
-                'email'       => $email ?: null,
-                'phone'       => $phone ?: null,
-                'password'    => $password,
-                'class_id'    => $classId,
+                'email'       => null,
+                'phone'       => null,
+                'password'    => Hash::make($password),
+                'class_id'    => $classId ?: null,
                 'is_active'   => true,
             ]);
 
