@@ -40,7 +40,7 @@
                 <tr>
                     <td>{{ $planner->id }}</td>
                     <td>
-                        <img src="{{ asset($planner->image) }}" alt="مفكرة"
+                        <img src="{{ asset('assets/uploads/weekly-planners/'. $planner->image) }}" alt="مفكرة"
                              style="width:80px;height:55px;object-fit:cover;border-radius:6px;">
                     </td>
                     <td>{{ $planner->title ?: '—' }}</td>

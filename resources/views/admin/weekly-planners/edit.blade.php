@@ -79,7 +79,7 @@
             <div class="col-12">
                 <label class="form-label">صورة المفكرة <span class="text-muted">(اتركه فارغاً للإبقاء على الحالية)</span></label>
                 <div class="mb-2">
-                    <img src="{{ asset($weeklyPlanner->image) }}" alt="الصورة الحالية"
+                    <img src="{{ asset('assets/uploads/weekly-planners/'. $weeklyPlanner->image) }}" alt="الصورة الحالية"
                          style="max-width:250px;max-height:180px;border-radius:8px;object-fit:contain;border:1px solid #e2e8f0;">
                 </div>
                 <input type="file" name="image" accept="image/*"
