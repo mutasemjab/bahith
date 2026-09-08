@@ -12,6 +12,7 @@ class CartController extends Controller
 {
     public function index()
     {
+        
         $items   = $this->getCart();
         $courses = Course::with(['teacher', 'category'])
             ->whereIn('id', array_keys($items))
