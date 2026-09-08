@@ -40,7 +40,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         // ── Dashboard ─────────────────────────────────────────────────
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
-        Route::get('logout', [LoginController::class, 'logout'])->name('admin.logout');
+        Route::post('logout', [LoginController::class, 'logout'])->name('admin.logout');
 
         // ── Admin profile ─────────────────────────────────────────────
         Route::get('/admin/edit/{id}',    [LoginController::class, 'editlogin'])->name('admin.login.edit');
