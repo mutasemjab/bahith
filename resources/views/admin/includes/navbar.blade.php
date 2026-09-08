@@ -39,13 +39,22 @@
 
         <div class="nav-divider"></div>
 
+        @php
+            $authAdmin  = auth('admin')->user();
+            $adminName  = $authAdmin?->name ?? 'Admin';
+            $adminLetter = strtoupper(mb_substr($adminName, 0, 1));
+            $adminRole  = $authAdmin?->is_super
+                ? __('messages.administrator')
+                : ($authAdmin?->roles->first()?->name ?? __('messages.employee'));
+        @endphp
+
         <div class="dropdown">
             <div class="user-menu" data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="user-avatar">A</div>
+                <div class="user-avatar">{{ $adminLetter }}</div>
 
                 <div class="user-info">
-                    <span class="user-name">Admin</span>
-                    <span class="user-role">{{ __('messages.administrator') }}</span>
+                    <span class="user-name">{{ $adminName }}</span>
+                    <span class="user-role">{{ $adminRole }}</span>
                 </div>
 
                 <i class="bi bi-chevron-down ms-1"
@@ -57,25 +66,13 @@
 
                 <li>
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2"
-                       href="#">
-                        <i class="bi bi-person-circle"
-                           style="color:var(--muted)"></i>
+                       href="{{ route('admin.login.edit', $authAdmin?->id) }}">
+                        <i class="bi bi-person-circle" style="color:var(--muted)"></i>
                         {{ __('messages.my_profile') }}
                     </a>
                 </li>
 
-                <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2 py-2"
-                       href="#">
-                        <i class="bi bi-gear"
-                           style="color:var(--muted)"></i>
-                        {{ __('messages.settings') }}
-                    </a>
-                </li>
-
-                <li>
-                    <hr class="dropdown-divider my-1">
-                </li>
+                <li><hr class="dropdown-divider my-1"></li>
 
                 <li>
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger"
