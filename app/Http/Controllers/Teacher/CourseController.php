@@ -29,8 +29,7 @@ class CourseController extends Controller
 
     private function teacherSubjects(): \Illuminate\Support\Collection
     {
-        return $this->teacher()
-            ->subjects()
+        return Subject::whereIn('id', $this->teacher()->teacherClasses()->whereNotNull('subject_id')->pluck('subject_id'))
             ->with(['category.parent.parent'])
             ->get()
             ->sortBy(fn($s) => $s->full_path)
@@ -39,10 +38,7 @@ class CourseController extends Controller
 
     private function teacherCategories(): \Illuminate\Support\Collection
     {
-        return $this->teacher()
-            ->subjects()
-            ->with(['category.parent.parent'])
-            ->get()
+        return $this->teacherSubjects()
             ->pluck('category')
             ->filter()
             ->unique('id')
