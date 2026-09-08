@@ -284,8 +284,29 @@ ul { list-style: none; }
     .main-content { padding: calc(var(--navbar-h) + 16px) 14px 16px; }
     .main-footer { flex-direction: column; text-align: center; padding: 12px 14px; }
     .sidebar-collapse-btn { display: none; }
+
+    /* Page header: stack title & buttons */
+    .page-header { flex-direction: column !important; align-items: flex-start !important; gap: 10px; }
+
+    /* Panel card header: allow wrap */
+    .panel-card-header { flex-wrap: wrap; gap: 8px; }
+
+    /* Tables: make card horizontally scrollable */
+    .panel-card { overflow-x: auto; }
+    .data-table th, .data-table td { white-space: nowrap; }
+
+    /* Stat cards: tighter padding */
+    .stat-card { padding: 14px; }
+    .stat-icon { width: 40px; height: 40px; font-size: 1.1rem; margin-bottom: 10px; }
+    .stat-value { font-size: 1.4rem; }
+
+    /* Buttons: slightly smaller */
+    .btn-primary-sm, .btn-outline-sm { font-size: .78rem; padding: 6px 10px; }
 }
-@media (max-width: 480px) { .stat-value { font-size: 1.5rem; } }
+@media (max-width: 480px) {
+    .data-table th, .data-table td { padding: 8px 10px; font-size: .78rem; }
+    .page-title { font-size: 1.15rem; }
+}
 
 /* ================================================================
    RTL Support

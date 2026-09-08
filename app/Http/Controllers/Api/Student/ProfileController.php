@@ -25,6 +25,7 @@ class ProfileController extends Controller
     public function show(Request $request): JsonResponse
     {
         $student = $request->user()->load('schoolClass');
+        $appAccountToken = $student->ensureAppAccountToken();
 
         return $this->success([
             'id'             => $student->id,
@@ -40,6 +41,7 @@ class ProfileController extends Controller
             'class_id'       => $student->class_id,
             'is_active'      => $student->is_active,
             'created_at'     => $student->created_at?->format('Y-m-d'),
+            'app_account_token' => $appAccountToken,
             'stats'          => $this->stats->studentStats($student->id),
         ]);
     }
@@ -75,6 +77,7 @@ class ProfileController extends Controller
 
         unset($validated['current_password']);
         $student->update($validated);
+        $appAccountToken = $student->ensureAppAccountToken();
 
         return $this->success([
             'id'            => $student->id,
@@ -87,6 +90,7 @@ class ProfileController extends Controller
             'nationality'   => $student->nationality,
             'avatar'        => $student->avatar ? asset('assets/uploads/' . $student->avatar) : null,
             'class_id'      => $student->class_id,
+            'app_account_token' => $appAccountToken,
         ], 'تم تحديث البيانات');
     }
 

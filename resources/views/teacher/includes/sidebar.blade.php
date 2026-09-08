@@ -21,6 +21,13 @@
         <div class="nav-label">{{ __('messages.t_teaching') }}</div>
         <ul>
             <li class="nav-item">
+                <a href="{{ route('teacher.my-students') }}"
+                   class="nav-link {{ request()->routeIs('teacher.my-students') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-people-fill"></i>
+                    <span>طلابي</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="#my-courses" class="nav-link {{ request()->routeIs('teacher.courses.*') ? 'active' : '' }}"
                    data-submenu="my-courses"
                    aria-expanded="{{ request()->routeIs('teacher.courses.*') ? 'true' : 'false' }}">

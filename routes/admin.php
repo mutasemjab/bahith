@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AnnouncementController;
@@ -25,7 +25,10 @@ use App\Http\Controllers\Admin\EducationalNoteController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\ConductDocumentController;
+use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\SubjectController;
+use App\Http\Controllers\Admin\TeacherClassController;
 use App\Http\Controllers\Admin\TeacherController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -37,7 +40,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         // ── Dashboard ─────────────────────────────────────────────────
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
-        Route::get('logout', [LoginController::class, 'logout'])->name('admin.logout');
+        Route::post('logout', [LoginController::class, 'logout'])->name('admin.logout');
 
         // ── Admin profile ─────────────────────────────────────────────
         Route::get('/admin/edit/{id}',    [LoginController::class, 'editlogin'])->name('admin.login.edit');
@@ -77,6 +80,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('teachers/import', [TeacherController::class, 'import'])->name('admin.teachers.import');
         Route::resource('teachers', TeacherController::class, ['as' => 'admin']);
 
+        // ── Teacher Class Assignments ─────────────────────────────────
+        Route::post('teacher-classes',              [TeacherClassController::class, 'store'])->name('admin.teacher-classes.store');
+        Route::delete('teacher-classes/{teacherClass}', [TeacherClassController::class, 'destroy'])->name('admin.teacher-classes.destroy');
+
         // ── Students ──────────────────────────────────────────────────
         Route::get('students/export',  [StudentController::class, 'export'])->name('admin.students.export');
         Route::post('students/import', [StudentController::class, 'import'])->name('admin.students.import');
@@ -106,6 +113,15 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('card-numbers/bulk-generate', [CardNumberController::class, 'bulkGenerate'])->name('admin.card-numbers.bulk');
         Route::get('card-numbers/print',          [CardNumberController::class, 'printView'])->name('admin.card-numbers.print');
         Route::resource('card-numbers', CardNumberController::class, ['as' => 'admin']);
+
+        // ── School Classes ────────────────────────────────────────────
+        Route::resource('school-classes', SchoolClassController::class, ['as' => 'admin']);
+
+        // ── Conduct Document ──────────────────────────────────────────
+        Route::get('conduct',              [ConductDocumentController::class, 'index'])->name('admin.conduct.index');
+        Route::get('conduct/edit',         [ConductDocumentController::class, 'edit'])->name('admin.conduct.edit');
+        Route::put('conduct',              [ConductDocumentController::class, 'update'])->name('admin.conduct.update');
+        Route::get('conduct/signatures',   [ConductDocumentController::class, 'signatures'])->name('admin.conduct.signatures');
 
         // ── Subjects ──────────────────────────────────────────────────
         Route::resource('subjects', SubjectController::class, ['as' => 'admin']);
@@ -142,6 +158,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('site-settings',           [SiteSettingController::class, 'edit'])->name('admin.site-settings.edit');
         Route::put('site-settings',           [SiteSettingController::class, 'update'])->name('admin.site-settings.update');
         Route::post('site-settings/toggle-price-display', [SiteSettingController::class, 'togglePriceDisplay'])->name('admin.site-settings.toggle-price');
+        Route::post('site-settings/toggle-website-mode', [SiteSettingController::class, 'toggleWebsiteMode'])->name('admin.site-settings.toggle-website');
 
         // ── Contact Messages ──────────────────────────────────────────
 

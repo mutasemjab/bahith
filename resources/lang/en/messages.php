@@ -498,6 +498,35 @@ return [
 'email_directly' => 'Email Directly',
 'close_message' => 'Close Message',
 
+// ─── Conduct Document module ───
+'conduct_title'        => 'Code of Conduct',
+'conduct_desc'         => 'Manage the student code of conduct and track signatures.',
+'conduct_edit'         => 'Edit Document',
+'conduct_create'       => 'Create Document',
+'conduct_info'         => 'Document Info',
+'conduct_title_ar'     => 'Title (Arabic)',
+'conduct_title_en'     => 'Title (English)',
+'conduct_body'         => 'Document Body',
+'conduct_updated'      => 'Code of conduct updated successfully.',
+'conduct_signatures'   => 'Signatures',
+'conduct_guardian_name'=> 'Guardian Name',
+'conduct_signed_at'    => 'Signed At',
+'conduct_no_document'  => 'No conduct document has been created yet.',
+'conduct_no_signatures'=> 'No signatures yet.',
+
+// ─── School Classes module ───
+'classes_title'       => 'School Classes',
+'manage_classes_desc' => 'Manage school classes available to students.',
+'add_class'           => 'Add Class',
+'edit_class'          => 'Edit Class',
+'class_info'          => 'Class Info',
+'class_name'          => 'Class Name',
+'search_class_ph'     => 'Search for a class...',
+'no_classes_yet'      => 'No classes yet.',
+'class_created'       => 'Class created successfully.',
+'class_updated'       => 'Class updated successfully.',
+'class_deleted'       => 'Class deleted.',
+
 // ─── Subjects module ───
 'subjects_title' => 'Subjects',
 'manage_subjects_desc' => 'Manage subject names in Arabic and English.',

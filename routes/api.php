@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Student\AnnouncementController;
+use App\Http\Controllers\Api\Student\ApplePurchaseController;
+use App\Http\Controllers\Api\Student\ConductController;
 use App\Http\Controllers\Api\Student\AppSettingController;
 use App\Http\Controllers\Api\Student\BannerController;
 use App\Http\Controllers\Api\Student\AuthController;
@@ -60,7 +62,7 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
 
     // ── Courses ────────────────────────────────────────────────────────────
     Route::get('courses',       [CourseController::class, 'index']);
-    Route::get('courses/{id}',  [CourseController::class, 'show']);
+    Route::get('courses/{id}',  [CourseController::class, 'show'])->middleware('optional.auth:sanctum');
 
     // ── Course units + lesson content (auth optional — needed for locked check) ──
     // GET /courses/{id}/units        → units + lessons list (locked/free based on enrollment)
@@ -87,6 +89,9 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
     Route::get('worksheets',                [WorksheetController::class, 'index']);
     Route::get('worksheets/{id}',           [WorksheetController::class, 'show']);
 
+    // ── Conduct document (public — read only) ─────────────────────────────
+    Route::get('conduct', [ConductController::class, 'show']);
+
     // ── Protected routes (require Bearer token) ────────────────────────────
     Route::middleware('auth:sanctum')->group(function () {
 
@@ -112,6 +117,10 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
         // POST /courses/{id}/activate   body: { card_code: "XXXX-XXXX" }
         Route::post('courses/{id}/activate', [CourseActivationController::class, 'activate']);
 
+        // Apple StoreKit 2 signed-transaction verification and enrollment.
+        Route::post('purchases/apple/verify', [ApplePurchaseController::class, 'verify'])
+            ->middleware('throttle:20,1');
+
         // Lesson progress
         // POST /lessons/{id}/progress   body: { watch_seconds: 340, is_completed: true }
         // GET  /courses/{id}/my-progress
@@ -124,6 +133,10 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
         // Announcements (الإعلانات — filtered by student's class or global)
         Route::get('announcements',      [AnnouncementController::class, 'index']);
         Route::get('announcements/{id}', [AnnouncementController::class, 'show']);
+
+        // Conduct document — sign + status (auth required)
+        Route::get('conduct/status', [ConductController::class, 'status']);
+        Route::post('conduct/sign',  [ConductController::class, 'sign']);
 
         // Push notifications
         // POST /device-token          body: { fcm_token: "..." }

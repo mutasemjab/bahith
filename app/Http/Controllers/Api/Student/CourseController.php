@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Student;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponse;
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Services\CourseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -47,7 +48,7 @@ class CourseController extends Controller
     }
 
     // GET /courses/{id}
-    public function show(int $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
         $course = $this->service->find($id);
 
@@ -55,7 +56,22 @@ class CourseController extends Controller
             return $this->error('الدورة غير متاحة', 404);
         }
 
-        return $this->success($this->courseDetail($course));
+        $data = $this->courseDetail($course);
+        $student = $request->user('sanctum');
+        $enrollment = $student
+            ? Enrollment::query()
+                ->where('student_id', $student->id)
+                ->where('course_id', $course->id)
+                ->where('is_active', true)
+                ->first()
+            : null;
+
+        $data['is_enrolled'] = $enrollment !== null;
+        $data['progress'] = $enrollment
+            ? ((int) $enrollment->progress_percentage) / 100
+            : null;
+
+        return $this->success($data);
     }
 
     private function courseCard(Course $course): array

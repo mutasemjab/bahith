@@ -21,4 +21,24 @@ class SchoolClass extends Model
     {
         return $this->hasMany(EducationalNote::class, 'class_id');
     }
+
+    // كل assignments المعلمين لهذا الصف
+    public function teacherClasses()
+    {
+        return $this->hasMany(TeacherClass::class, 'class_id');
+    }
+
+    // المعلمين اللي بدرّسون في هذا الصف
+    public function teachers()
+    {
+        return $this->belongsToMany(Teacher::class, 'teacher_classes', 'class_id', 'teacher_id')
+            ->withPivot('subject_id', 'is_homeroom')
+            ->withTimestamps();
+    }
+
+    // مربي الصف
+    public function homeroomTeacher()
+    {
+        return $this->teachers()->wherePivot('is_homeroom', true)->first();
+    }
 }

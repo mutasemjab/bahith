@@ -12,10 +12,10 @@ class ExampleTest extends TestCase
      *
      * @return void
      */
-    public function test_the_application_returns_a_successful_response()
+    public function test_the_root_redirects_to_the_localized_site()
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertRedirect();
     }
 }

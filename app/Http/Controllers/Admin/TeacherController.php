@@ -6,6 +6,8 @@ use App\Exports\TeachersExport;
 use App\Http\Controllers\Controller;
 use App\Imports\TeachersImport;
 use App\Models\AdminActivityLog;
+use App\Models\SchoolClass;
+use App\Models\Subject;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -78,9 +80,18 @@ class TeacherController extends Controller
 
     public function show(Teacher $teacher)
     {
-        $teacher->load(['courses' => fn ($q) => $q->withCount('enrollments')->latest()->limit(5)]);
+        $teacher->load([
+            'courses'       => fn ($q) => $q->withCount('enrollments')->latest()->limit(5),
+            'teacherClasses' => fn ($q) => $q->with(['schoolClass', 'subject'])->orderBy('class_id'),
+        ]);
 
-        return view('admin.teachers.show', compact('teacher'));
+        $allClasses  = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $allSubjects = Subject::where('is_active', true)
+            ->with(['category.parent.parent'])
+            ->orderBy('name_ar')
+            ->get();
+
+        return view('admin.teachers.show', compact('teacher', 'allClasses', 'allSubjects'));
     }
 
     public function edit(Teacher $teacher)

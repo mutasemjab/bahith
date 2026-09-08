@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Currency;
-use App\Models\Setting;
+use App\Contracts\AppleTransactionVerifier;
+use App\Services\Apple\AppleSignedTransactionVerifier;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 
@@ -16,7 +16,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            AppleTransactionVerifier::class,
+            AppleSignedTransactionVerifier::class
+        );
     }
 
     /**

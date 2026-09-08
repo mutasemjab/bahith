@@ -8,7 +8,7 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::group([
     'prefix'     => LaravelLocalization::setLocale(),
-    'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
+    'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath', 'website.mode'],
 ], function () {
 
     // ── Public front routes ───────────────────────────────────────────────
@@ -42,5 +42,13 @@ Route::group([
     Route::post('/logout', [StudentAuthController::class, 'logout'])
         ->name('student.logout')
         ->middleware('auth:student');
+
+      Route::get('/native-cookie-test', function () {
+
+    header('Set-Cookie: native_test=12345; Path=/; HttpOnly');
+
+    return 'native cookie test';
+
+});
 
 });

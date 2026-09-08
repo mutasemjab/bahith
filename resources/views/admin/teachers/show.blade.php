@@ -14,6 +14,17 @@
     </div>
 </div>
 
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show mb-3">
+        {{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show mb-3">
+        {{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
 <div class="row g-3">
 
     {{-- Profile Card --}}
@@ -75,8 +86,118 @@
         @endif
     </div>
 
-    {{-- Courses List --}}
+    {{-- Right Column --}}
     <div class="col-12 col-xl-8">
+
+        {{-- ── Class Assignments ─────────────────────────────── --}}
+        <div class="panel-card mb-3">
+            <div class="panel-card-header d-flex justify-content-between align-items-center">
+                <h2 class="panel-card-title"><i class="bi bi-building me-1"></i> الصفوف والمواد</h2>
+                <button class="btn-primary-sm" type="button" data-bs-toggle="collapse" data-bs-target="#add-class-form">
+                    <i class="bi bi-plus-circle"></i> إضافة تعيين
+                </button>
+            </div>
+
+            {{-- Add Assignment Form --}}
+            <div class="collapse {{ $errors->any() ? 'show' : '' }}" id="add-class-form">
+                <div class="panel-card-body" style="border-bottom:1px solid var(--border)">
+                    <form action="{{ route('admin.teacher-classes.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="teacher_id" value="{{ $teacher->id }}">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label" style="font-size:.82rem;font-weight:600">الصف / الشعبة</label>
+                                <select name="class_id" class="form-select form-select-sm" required>
+                                    <option value="">-- اختر الصف --</option>
+                                    @foreach($allClasses as $class)
+                                        <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
+                                            {{ $class->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('class_id')<div class="text-danger" style="font-size:.78rem">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label" style="font-size:.82rem;font-weight:600">المادة <span style="color:var(--muted)">(اختياري)</span></label>
+                                <select name="subject_id" class="form-select form-select-sm">
+                                    <option value="">-- مربي صف فقط --</option>
+                                    @foreach($allSubjects as $subject)
+                                        <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
+                                            {{ $subject->full_path }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('subject_id')<div class="text-danger" style="font-size:.78rem">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" name="is_homeroom" value="1" id="is_homeroom" {{ old('is_homeroom') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="is_homeroom" style="font-size:.83rem">مربي صف</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <button type="submit" class="btn-primary-sm w-100"><i class="bi bi-check-lg"></i> حفظ</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Assignments Table --}}
+            <div class="panel-card-body p-0">
+                @if($teacher->teacherClasses->isEmpty())
+                    <div class="text-center py-4" style="color:var(--muted);font-size:.87rem">
+                        <i class="bi bi-building" style="font-size:1.5rem;display:block;margin-bottom:6px"></i>
+                        لم يُعيَّن لأي صف بعد
+                    </div>
+                @else
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الصف / الشعبة</th>
+                                <th>المادة</th>
+                                <th>مربي صف</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($teacher->teacherClasses as $tc)
+                            <tr>
+                                <td>
+                                    <span style="font-weight:500">{{ $tc->schoolClass->name ?? '—' }}</span>
+                                </td>
+                                <td>
+                                    @if($tc->subject)
+                                        <span class="pill pill-info" style="font-size:.78rem">{{ $tc->subject->name_ar }}</span>
+                                    @else
+                                        <span style="color:var(--muted);font-size:.83rem">—</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($tc->is_homeroom)
+                                        <span class="pill pill-success" style="font-size:.78rem"><i class="bi bi-star-fill"></i> مربي</span>
+                                    @else
+                                        <span style="color:var(--muted);font-size:.83rem">—</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <form action="{{ route('admin.teacher-classes.destroy', $tc->id) }}" method="POST"
+                                          onsubmit="return confirm('حذف هذا التعيين؟')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn-outline-sm" style="padding:3px 8px;font-size:.78rem">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+            </div>
+        </div>
+
+        {{-- ── Courses ────────────────────────────────────────── --}}
         <div class="panel-card">
             <div class="panel-card-header d-flex justify-content-between align-items-center">
                 <h2 class="panel-card-title">{{ __('messages.courses') }} ({{ $teacher->courses->count() }})</h2>
@@ -108,7 +229,7 @@
                 </table>
             </div>
         </div>
-    </div>
 
+    </div>
 </div>
 @endsection
