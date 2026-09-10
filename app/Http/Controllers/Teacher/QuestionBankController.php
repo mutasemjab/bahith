@@ -63,6 +63,7 @@ class QuestionBankController extends Controller
         QuestionBank::create([
             'teacher_id' => $this->teacherId(),
             'subject_id' => $request->subject_id,
+            'class_id'   => $request->class_id,
             'title_ar'   => $request->title_ar,
             'title_en'   => $request->title_en,
             'tag_ar'     => $request->tag_ar,
@@ -81,7 +82,8 @@ class QuestionBankController extends Controller
     {
         abort_unless($questionBank->teacher_id === $this->teacherId(), 403);
         $subjects = $this->subjectsWithPath();
-        return view('teacher.question_banks.edit', compact('questionBank', 'subjects'));
+        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        return view('teacher.question_banks.edit', compact('questionBank', 'subjects', 'classes'));
     }
 
     public function update(Request $request, QuestionBank $questionBank)
@@ -90,6 +92,7 @@ class QuestionBankController extends Controller
 
         $request->validate([
             'subject_id' => 'nullable|exists:subjects,id',
+            'class_id'   => 'nullable|exists:classes,id',
             'title_ar'   => 'required|string|max:255',
             'title_en'   => 'nullable|string|max:255',
             'tag_ar'     => 'nullable|string|max:255',
@@ -107,6 +110,7 @@ class QuestionBankController extends Controller
 
         $questionBank->update([
             'subject_id' => $request->subject_id,
+            'class_id'   => $request->class_id,
             'title_ar'   => $request->title_ar,
             'title_en'   => $request->title_en,
             'tag_ar'     => $request->tag_ar,

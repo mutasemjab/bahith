@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\PreviousYearExam;
+use App\Models\SchoolClass;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 
@@ -36,13 +37,15 @@ class PreviousYearExamController extends Controller
     public function create()
     {
         $subjects = $this->subjectsWithPath();
-        return view('teacher.previous_year_exams.create', compact('subjects'));
+        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        return view('teacher.previous_year_exams.create', compact('subjects', 'classes'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'subject_id' => 'nullable|exists:subjects,id',
+            'class_id'   => 'nullable|exists:classes,id',
             'title_ar'   => 'required|string|max:255',
             'title_en'   => 'nullable|string|max:255',
             'tag_ar'     => 'nullable|string|max:255',
@@ -60,6 +63,7 @@ class PreviousYearExamController extends Controller
         PreviousYearExam::create([
             'teacher_id' => $this->teacherId(),
             'subject_id' => $request->subject_id,
+            'class_id'   => $request->class_id,
             'title_ar'   => $request->title_ar,
             'title_en'   => $request->title_en,
             'tag_ar'     => $request->tag_ar,
@@ -79,7 +83,8 @@ class PreviousYearExamController extends Controller
     {
         abort_unless($previousYearExam->teacher_id === $this->teacherId(), 403);
         $subjects = $this->subjectsWithPath();
-        return view('teacher.previous_year_exams.edit', compact('previousYearExam', 'subjects'));
+        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        return view('teacher.previous_year_exams.edit', compact('previousYearExam', 'subjects', 'classes'));
     }
 
     public function update(Request $request, PreviousYearExam $previousYearExam)
@@ -88,6 +93,7 @@ class PreviousYearExamController extends Controller
 
         $request->validate([
             'subject_id' => 'nullable|exists:subjects,id',
+            'class_id'   => 'nullable|exists:classes,id',
             'title_ar'   => 'required|string|max:255',
             'title_en'   => 'nullable|string|max:255',
             'tag_ar'     => 'nullable|string|max:255',
@@ -106,6 +112,7 @@ class PreviousYearExamController extends Controller
 
         $previousYearExam->update([
             'subject_id' => $request->subject_id,
+            'class_id'   => $request->class_id,
             'title_ar'   => $request->title_ar,
             'title_en'   => $request->title_en,
             'tag_ar'     => $request->tag_ar,

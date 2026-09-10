@@ -25,7 +25,7 @@ class SubjectController extends Controller
                 ->orWhere('name_en', 'like', "%{$s}%")
             )
             ->when($request->category_id, fn ($q, $c) => $q->where('category_id', $c))
-            ->orderBy('order_index')
+            ->orderBy('created_at')
             ->paginate(20)
             ->withQueryString();
 
