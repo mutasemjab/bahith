@@ -29,9 +29,11 @@ class WeeklyPlanner extends Model
         return $query->where('is_active', true);
     }
 
-    public function scopeCurrent($query)
+    // Only hides planners whose start_date hasn't arrived yet.
+    // Planners whose end_date has already passed are still returned
+    // (the API always shows the latest one that has actually started).
+    public function scopeReached($query)
     {
-        $today = now()->toDateString();
-        return $query->where('start_date', '<=', $today)->where('end_date', '>=', $today);
+        return $query->where('start_date', '<=', now()->toDateString());
     }
 }

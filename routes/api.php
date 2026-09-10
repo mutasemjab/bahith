@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\Student\AppSettingController;
 use App\Http\Controllers\Api\Student\BannerController;
 use App\Http\Controllers\Api\Student\AuthController;
 use App\Http\Controllers\Api\Student\CategoryController;
+use App\Http\Controllers\Api\Student\ClassScheduleController;
+use App\Http\Controllers\Api\Student\ExamScheduleController;
 use App\Http\Controllers\Api\Student\CourseActivationController;
 use App\Http\Controllers\Api\Student\CourseController;
 use App\Http\Controllers\Api\Student\EducationalNoteController;
@@ -52,9 +54,6 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
     // ── Banners (slider images — no auth needed) ────────────────────────────
     Route::get('banners', [BannerController::class, 'index']);
 
-    // ── Weekly Planner ─────────────────────────────────────────────────────
-    Route::get('weekly-planner', [WeeklyPlannerController::class, 'index']);
-
     // ── Category tree navigation ───────────────────────────────────────────
     Route::get('categories',        [CategoryController::class, 'index']);
     Route::get('categories/{id}',   [CategoryController::class, 'show']);
@@ -99,6 +98,10 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
         Route::post('auth/logout',          [AuthController::class, 'logout']);
         Route::delete('auth/delete-account', [AuthController::class, 'deleteAccount']);
 
+        // Switch to a linked sibling account without re-entering credentials
+        // (the sibling link is created by an admin from the dashboard)
+        Route::post('auth/switch-sibling/{siblingId}', [AuthController::class, 'switchSibling']);
+
         // Profile
         Route::get('profile', [ProfileController::class, 'show']);
         Route::put('profile', [ProfileController::class, 'update']);
@@ -127,8 +130,17 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
         Route::post('lessons/{id}/progress',       [LessonProgressController::class, 'update']);
         Route::get('courses/{id}/my-progress',     [LessonProgressController::class, 'courseProgress']);
 
-        // Educational notes (المفكرة التعليمية — filtered by student's class)
+        // Educational notes / daily planner (المفكرة اليومية — filtered by student's class + date reached)
         Route::get('educational-notes', [EducationalNoteController::class, 'index']);
+
+        // Weekly planner (المفكرة الأسبوعية — filtered by student's class + start_date reached)
+        Route::get('weekly-planner', [WeeklyPlannerController::class, 'index']);
+
+        // Class schedule image (جدول الحصص) — for the logged-in student's class
+        Route::get('class-schedule', [ClassScheduleController::class, 'index']);
+
+        // Exam schedule image (جدول الامتحانات) — for the logged-in student's class
+        Route::get('exam-schedule', [ExamScheduleController::class, 'index']);
 
         // Announcements (الإعلانات — filtered by student's class or global)
         Route::get('announcements',      [AnnouncementController::class, 'index']);

@@ -6,18 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponse;
 use App\Models\WeeklyPlanner;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class WeeklyPlannerController extends Controller
 {
     use ApiResponse;
 
-    // GET /weekly-planner — returns the active planner for the current week
-    public function index(): JsonResponse
+    // GET /weekly-planner  [auth]
+    // Returns the latest planner (for the student's class) whose start_date has arrived.
+    public function index(Request $request): JsonResponse
     {
-        $planner = WeeklyPlanner::active()
-            ->current()
-            ->latest('start_date')
-            ->first();
+        $student = $request->user();
+
+        $query = WeeklyPlanner::active()->reached();
+
+        if ($student->class_id) {
+            $query->where('class_id', $student->class_id);
+        }
+
+        $planner = $query->latest('start_date')->first();
 
         if (! $planner) {
             return $this->success(null, 'No active planner for this week.');

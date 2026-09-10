@@ -87,6 +87,33 @@ class AuthController extends Controller
         return $this->success(null, 'تم تسجيل الخروج');
     }
 
+    // POST /auth/switch-sibling/{siblingId}
+    // Switches to a linked sibling account without re-entering credentials.
+    // The sibling link must have been created by an admin beforehand.
+    public function switchSibling(Request $request, int $siblingId): JsonResponse
+    {
+        $current = $request->user();
+
+        $isLinkedSibling = $current->siblings()->where('students.id', $siblingId)->exists();
+
+        if (! $isLinkedSibling) {
+            return $this->error('هذا الحساب غير مرتبط كأخ/أخت', 403);
+        }
+
+        $sibling = Student::find($siblingId);
+
+        if (! $sibling->is_active) {
+            return $this->error('الحساب موقوف، تواصل مع الإدارة', 403);
+        }
+
+        $token = $sibling->createToken('student-app')->plainTextToken;
+
+        return $this->success([
+            'token'   => $token,
+            'student' => $this->studentData($sibling->load('schoolClass')),
+        ]);
+    }
+
     public function deleteAccount(Request $request): JsonResponse
     {
         $student = $request->user();
@@ -113,6 +140,13 @@ class AuthController extends Controller
             'gender'      => $student->gender,
             'is_active'   => $student->is_active,
             'app_account_token' => $appAccountToken,
+            'siblings'    => $student->siblings()->with('schoolClass')->get()->map(fn ($s) => [
+                'id'       => $s->id,
+                'name'     => $s->name,
+                'avatar'   => $s->avatar ? asset('assets/uploads/students/' . $s->avatar) : null,
+                'class'    => $s->schoolClass?->name,
+                'class_id' => $s->class_id,
+            ])->values(),
         ];
     }
 }

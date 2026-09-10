@@ -41,4 +41,14 @@ class SchoolClass extends Model
     {
         return $this->teachers()->wherePivot('is_homeroom', true)->first();
     }
+
+    public function classSchedule()
+    {
+        return $this->hasOne(ClassSchedule::class, 'class_id');
+    }
+
+    public function examSchedule()
+    {
+        return $this->hasOne(ExamSchedule::class, 'class_id');
+    }
 }

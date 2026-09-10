@@ -77,6 +77,7 @@
                 'question-bank-table','previous-exam-table','worksheet-table',
                 'announcement-table','banner-table','weekly-planner-table',
                 'notification-send','educational-note-table',
+                'class-schedule-table','exam-schedule-table',
             ]) || $u?->is_super;
         @endphp
         @if($showAcademic)
@@ -224,6 +225,28 @@
                    class="nav-link {{ request()->routeIs('admin.weekly-planners.*') ? 'active' : '' }}">
                     <i class="nav-icon bi bi-calendar-week"></i>
                     <span>المفكرة الأسبوعية</span>
+                </a>
+            </li>
+            @endif
+
+            {{-- Class Schedule --}}
+            @if($u?->can('class-schedule-table'))
+            <li class="nav-item">
+                <a href="{{ route('admin.class-schedules.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.class-schedules.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-calendar3"></i>
+                    <span>جدول الحصص</span>
+                </a>
+            </li>
+            @endif
+
+            {{-- Exam Schedule --}}
+            @if($u?->can('exam-schedule-table'))
+            <li class="nav-item">
+                <a href="{{ route('admin.exam-schedules.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.exam-schedules.*') ? 'active' : '' }}">
+                    <i class="nav-icon bi bi-calendar-check"></i>
+                    <span>جدول الامتحانات</span>
                 </a>
             </li>
             @endif

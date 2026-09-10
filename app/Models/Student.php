@@ -83,4 +83,10 @@ class Student extends Authenticatable
     {
         return $this->hasMany(ExamAttempt::class);
     }
+
+    public function siblings()
+    {
+        return $this->belongsToMany(Student::class, 'student_siblings', 'student_id', 'sibling_id')
+            ->withTimestamps();
+    }
 }

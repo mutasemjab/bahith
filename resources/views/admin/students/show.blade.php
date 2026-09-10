@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div class="panel-card">
+        <div class="panel-card mb-3">
             <div class="panel-card-header"><h2 class="panel-card-title">{{ __('messages.info') }}</h2></div>
             <div class="panel-card-body">
                 <div style="font-size:.85rem">
@@ -44,6 +44,65 @@
                     @if($student->nationality)<div class="d-flex justify-content-between mb-2"><span style="color:var(--muted)">{{ __('messages.nationality') }}</span><span>{{ $student->nationality }}</span></div>@endif
                     <div class="d-flex justify-content-between"><span style="color:var(--muted)">{{ __('messages.joined') }}</span><span>{{ $student->created_at->format('M d, Y') }}</span></div>
                 </div>
+            </div>
+        </div>
+
+        {{-- الإخوة (Siblings) --}}
+        <div class="panel-card">
+            <div class="panel-card-header"><h2 class="panel-card-title"><i class="bi bi-people me-1"></i> الإخوة</h2></div>
+
+            <div class="panel-card-body p-0">
+                @if($student->siblings->isEmpty())
+                    <div class="text-center py-3" style="color:var(--muted);font-size:.85rem">لا يوجد إخوة مرتبطون بعد</div>
+                @else
+                    <table class="data-table">
+                        <tbody>
+                            @foreach($student->siblings as $sibling)
+                            <tr>
+                                <td>
+                                    <a href="{{ route('admin.students.show', $sibling->id) }}" style="font-weight:500">{{ $sibling->name }}</a>
+                                    <div style="font-size:.78rem;color:var(--muted)">{{ $sibling->schoolClass->name ?? '—' }}</div>
+                                </td>
+                                <td style="width:50px">
+                                    <form action="{{ route('admin.student-siblings.destroy', [$student->id, $sibling->id]) }}" method="POST"
+                                          onsubmit="return confirm('إلغاء ربط هذا الأخ/الأخت؟')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn-outline-sm" style="padding:3px 8px;font-size:.78rem">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+            </div>
+
+            <div class="panel-card-body" style="border-top:1px solid var(--border)">
+                <form method="GET" action="{{ route('admin.students.show', $student->id) }}" class="d-flex gap-2 mb-2">
+                    <input type="text" name="sibling_search" value="{{ request('sibling_search') }}"
+                           class="form-control form-control-sm" placeholder="ابحث بالاسم أو الرقم الوطني أو الهاتف">
+                    <button type="submit" class="btn-outline-sm"><i class="bi bi-search"></i></button>
+                </form>
+
+                @if(request()->filled('sibling_search'))
+                    @if($siblingResults->isEmpty())
+                        <div style="font-size:.8rem;color:var(--muted)">لا توجد نتائج</div>
+                    @else
+                        <div class="d-flex flex-column gap-2">
+                            @foreach($siblingResults as $result)
+                            <form action="{{ route('admin.student-siblings.store', $student->id) }}" method="POST"
+                                  class="d-flex align-items-center justify-content-between gap-2">
+                                @csrf
+                                <input type="hidden" name="sibling_id" value="{{ $result->id }}">
+                                <span style="font-size:.83rem">{{ $result->name }} <span style="color:var(--muted)">({{ $result->national_id ?? '—' }})</span></span>
+                                <button type="submit" class="btn-primary-sm" style="padding:3px 10px;font-size:.78rem">ربط</button>
+                            </form>
+                            @endforeach
+                        </div>
+                    @endif
+                @endif
             </div>
         </div>
     </div>

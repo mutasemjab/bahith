@@ -19,6 +19,7 @@ class EducationalNoteController extends Controller
         $student = $request->user();
 
         $query = EducationalNote::with(['teacher', 'schoolClass'])
+            ->where('date', '<=', now()->toDateString())
             ->orderByDesc('date');
 
         // If student has a class assigned, filter by it; otherwise return all

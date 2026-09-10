@@ -69,11 +69,26 @@ class StudentController extends Controller
             ->with('success', 'Student created successfully.');
     }
 
-    public function show(Student $student)
+    public function show(Request $request, Student $student)
     {
-        $student->load(['enrollments.course', 'examAttempts.exam']);
+        $student->load(['enrollments.course', 'examAttempts.exam', 'siblings.schoolClass']);
 
-        return view('admin.students.show', compact('student'));
+        $siblingResults = collect();
+        if ($request->filled('sibling_search')) {
+            $s = $request->sibling_search;
+            $excludeIds = $student->siblings->pluck('id')->push($student->id);
+
+            $siblingResults = Student::whereNotIn('id', $excludeIds)
+                ->where(fn ($q) => $q
+                    ->where('name', 'like', "%{$s}%")
+                    ->orWhere('national_id', 'like', "%{$s}%")
+                    ->orWhere('phone', 'like', "%{$s}%")
+                )
+                ->limit(20)
+                ->get();
+        }
+
+        return view('admin.students.show', compact('student', 'siblingResults'));
     }
 
     public function edit(Student $student)

@@ -119,18 +119,18 @@
                         {{-- صح وخطأ: خيارين ثابتين --}}
                         <div id="tf-rows" style="display:none">
                             <div class="option-row d-flex align-items-center gap-2 mb-2">
-                                <input type="radio" name="correct_option" value="0" checked>
+                                <input type="radio" name="correct_option" value="0" checked disabled>
                                 <span class="form-control form-control-sm" style="background:#f0fdf4;border-color:#86efac;color:#166534;font-weight:600">✓ صح (True)</span>
-                                <input type="hidden" name="options[0][text_ar]" value="صح">
-                                <input type="hidden" name="options[0][text_en]" value="True">
-                                <input type="hidden" name="options[0][correct]" value="1" class="correct-flag">
+                                <input type="hidden" name="options[0][text_ar]" value="صح" disabled>
+                                <input type="hidden" name="options[0][text_en]" value="True" disabled>
+                                <input type="hidden" name="options[0][correct]" value="1" class="correct-flag" disabled>
                             </div>
                             <div class="option-row d-flex align-items-center gap-2 mb-2">
-                                <input type="radio" name="correct_option" value="1">
+                                <input type="radio" name="correct_option" value="1" disabled>
                                 <span class="form-control form-control-sm" style="background:#fef2f2;border-color:#fca5a5;color:#dc2626;font-weight:600">✗ خطأ (False)</span>
-                                <input type="hidden" name="options[1][text_ar]" value="خطأ">
-                                <input type="hidden" name="options[1][text_en]" value="False">
-                                <input type="hidden" name="options[1][correct]" value="0" class="correct-flag">
+                                <input type="hidden" name="options[1][text_ar]" value="خطأ" disabled>
+                                <input type="hidden" name="options[1][text_en]" value="False" disabled>
+                                <input type="hidden" name="options[1][correct]" value="0" class="correct-flag" disabled>
                             </div>
                         </div>
                     </div>
@@ -175,6 +175,10 @@
                             tfRows.querySelector('input[type="radio"]').checked = true;
                         }
                     }
+
+                    // Keep field state in sync with whatever the select is actually showing
+                    // on load (e.g. browser back/forward cache restoring a different value).
+                    toggleOptions(document.querySelector('select[name="question_type"]').value);
                     </script>
 
                     <div class="mb-3">

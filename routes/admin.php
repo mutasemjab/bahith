@@ -25,6 +25,9 @@ use App\Http\Controllers\Admin\EducationalNoteController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\StudentSiblingController;
+use App\Http\Controllers\Admin\ClassScheduleController;
+use App\Http\Controllers\Admin\ExamScheduleController;
 use App\Http\Controllers\Admin\ConductDocumentController;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\SubjectController;
@@ -90,6 +93,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::resource('students', StudentController::class, ['as' => 'admin']);
         Route::post('students/{student}/reset-device', [StudentController::class, 'resetDevice'])->name('admin.students.reset-device');
 
+        // ── Student Siblings ─────────────────────────────────────────
+        Route::post('students/{student}/siblings',              [StudentSiblingController::class, 'store'])->name('admin.student-siblings.store');
+        Route::delete('students/{student}/siblings/{sibling}',  [StudentSiblingController::class, 'destroy'])->name('admin.student-siblings.destroy');
+
         // ── Categories (tree) ─────────────────────────────────────────
         Route::get('categories/{id}/children', [CategoryController::class, 'children'])->name('admin.categories.children');
         Route::resource('categories', CategoryController::class, ['as' => 'admin', 'except' => ['show']]);
@@ -142,6 +149,12 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         // ── Weekly Planners ───────────────────────────────────────────
         Route::resource('weekly-planners', WeeklyPlannerController::class, ['as' => 'admin']);
+
+        // ── Class Schedule (جدول الحصص) ────────────────────────────────
+        Route::resource('class-schedules', ClassScheduleController::class, ['as' => 'admin']);
+
+        // ── Exam Schedule (جدول الامتحانات) ────────────────────────────
+        Route::resource('exam-schedules', ExamScheduleController::class, ['as' => 'admin']);
 
         // ── Banners ───────────────────────────────────────────────────
         Route::post('banners/{banner}/toggle', [BannerController::class, 'toggleActive'])->name('admin.banners.toggle');
