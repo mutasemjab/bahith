@@ -15,12 +15,15 @@ class QuestionBankController extends Controller
     // GET /question-banks
     public function index(Request $request): JsonResponse
     {
-        $query = QuestionBank::with(['subject', 'teacher'])
+        $query = QuestionBank::with(['subject', 'teacher', 'schoolClass'])
             ->where('status', 1)
             ->orderBy('sort_order');
 
         if ($request->filled('subject_id')) {
             $query->where('subject_id', $request->subject_id);
+        }
+        if ($request->filled('class_id')) {
+            $query->where('class_id', $request->class_id);
         }
         if ($request->filled('search')) {
             $s = $request->search;
@@ -48,7 +51,7 @@ class QuestionBankController extends Controller
     // GET /question-banks/{id}
     public function show(int $id): JsonResponse
     {
-        $item = QuestionBank::with(['subject', 'teacher'])
+        $item = QuestionBank::with(['subject', 'teacher', 'schoolClass'])
             ->where('status', 1)
             ->findOrFail($id);
 
@@ -68,6 +71,7 @@ class QuestionBankController extends Controller
             'pdf_url'   => $item->pdf_file ? asset('assets/uploads/questionBank/' . $item->pdf_file) : null,
             'subject'   => ['id' => $item->subject?->id, 'name' => $item->subject?->name],
             'teacher'   => ['id' => $item->teacher?->id, 'name' => $item->teacher?->name],
+            'class'     => ['id' => $item->schoolClass?->id, 'name' => $item->schoolClass?->name],
         ];
     }
 }

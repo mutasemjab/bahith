@@ -644,7 +644,7 @@ return [
 'no_records' => 'لا توجد سجلات.',
 
 // ─── Educational Notes ───
-'educational_notes' => 'المفكرة التعليمية',
+'educational_notes' => 'المفكرة اليومية',
 'educational_notes_sub' => 'سجّل الدروس المعطاة والواجبات',
 'add_educational_note' => 'إضافة ملاحظة',
 'edit_educational_note' => 'تعديل ملاحظة',

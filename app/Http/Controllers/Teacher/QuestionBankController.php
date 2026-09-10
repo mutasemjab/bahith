@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\QuestionBank;
+use App\Models\SchoolClass;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 
@@ -36,13 +37,15 @@ class QuestionBankController extends Controller
     public function create()
     {
         $subjects = $this->subjectsWithPath();
-        return view('teacher.question_banks.create', compact('subjects'));
+        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        return view('teacher.question_banks.create', compact('subjects', 'classes'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'subject_id' => 'nullable|exists:subjects,id',
+            'class_id'   => 'nullable|exists:classes,id',
             'title_ar'   => 'required|string|max:255',
             'title_en'   => 'nullable|string|max:255',
             'tag_ar'     => 'nullable|string|max:255',
