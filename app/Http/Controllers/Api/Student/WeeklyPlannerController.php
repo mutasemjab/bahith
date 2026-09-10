@@ -33,7 +33,7 @@ class WeeklyPlannerController extends Controller
         return $this->success([
             'id'         => $planner->id,
             'title'      => $planner->title,
-            'image'      => asset($planner->image),
+            'image'      => asset('assets/uploads/weekly-planners/' . $planner->image),
             'start_date' => $planner->start_date->toDateString(),
             'end_date'   => $planner->end_date->toDateString(),
         ]);
