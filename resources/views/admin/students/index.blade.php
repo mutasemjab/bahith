@@ -89,6 +89,7 @@
                     <td style="color:var(--muted)">{{ $student->created_at->format('M d, Y') }}</td>
                     <td>
                         <div class="d-flex gap-1">
+                            <a href="{{ route('admin.students.show', $student->id) }}" class="btn-outline-sm" style="padding:4px 8px"><i class="bi bi-eye"></i></a>
                             <a href="{{ route('admin.students.edit', $student->id) }}" class="btn-outline-sm" style="padding:4px 8px"><i class="bi bi-pencil"></i></a>
                             <form action="{{ route('admin.students.destroy', $student->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.Delete') }}?')">
                                 @csrf @method('DELETE')
