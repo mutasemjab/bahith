@@ -44,12 +44,16 @@ class ExamController extends Controller
 
     private function teacherSubjects(): \Illuminate\Support\Collection
     {
-        return $this->teacher()
-            ->subjects()
+        return Subject::whereIn('id', $this->teacher()->teacherClasses()->whereNotNull('subject_id')->pluck('subject_id'))
             ->with(['category.parent.parent'])
             ->get()
             ->sortBy(fn($s) => $s->full_path)
             ->values();
+    }
+
+    private function teacherHasSubject(int $subjectId): bool
+    {
+        return $this->teacher()->teacherClasses()->where('subject_id', $subjectId)->exists();
     }
 
     public function create()
@@ -88,7 +92,7 @@ class ExamController extends Controller
         }
 
         if (! empty($data['subject_id'])) {
-            abort_unless($this->teacher()->subjects()->where('subjects.id', $data['subject_id'])->exists(), 403);
+            abort_unless($this->teacherHasSubject($data['subject_id']), 403);
         }
 
         $data['teacher_id']              = $this->teacher()->id;
@@ -151,7 +155,7 @@ class ExamController extends Controller
         ]);
 
         if (! empty($data['subject_id'])) {
-            abort_unless($this->teacher()->subjects()->where('subjects.id', $data['subject_id'])->exists(), 403);
+            abort_unless($this->teacherHasSubject($data['subject_id']), 403);
         }
 
         $data['is_published']            = $request->boolean('is_published');

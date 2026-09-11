@@ -126,8 +126,9 @@ class WorksheetController extends Controller
 
     private function subjectsWithPath(): \Illuminate\Support\Collection
     {
-        return auth('teacher')->user()
-            ->subjects()
+        $teacher = auth('teacher')->user();
+
+        return Subject::whereIn('id', $teacher->teacherClasses()->whereNotNull('subject_id')->pluck('subject_id'))
             ->with(['category.parent.parent'])
             ->get()
             ->sortBy(fn($s) => $s->full_path)
