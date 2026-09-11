@@ -14,6 +14,14 @@ class EducationalNoteController extends Controller
         return auth('teacher')->id();
     }
 
+    private function myClasses(): \Illuminate\Database\Eloquent\Collection
+    {
+        return SchoolClass::where('is_active', true)
+            ->whereIn('id', auth('teacher')->user()->teacherClasses()->pluck('class_id'))
+            ->orderBy('name')
+            ->get();
+    }
+
     public function index()
     {
         $notes = EducationalNote::with('schoolClass')
@@ -25,7 +33,7 @@ class EducationalNoteController extends Controller
 
     public function create()
     {
-        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $classes = $this->myClasses();
         return view('teacher.educational_notes.create', compact('classes'));
     }
 
@@ -62,7 +70,7 @@ class EducationalNoteController extends Controller
     public function edit(EducationalNote $educationalNote)
     {
         abort_unless($educationalNote->teacher_id === $this->teacherId(), 403);
-        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $classes = $this->myClasses();
         return view('teacher.educational_notes.edit', compact('educationalNote', 'classes'));
     }
 

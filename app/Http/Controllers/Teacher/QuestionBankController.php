@@ -26,6 +26,14 @@ class QuestionBankController extends Controller
             ->values();
     }
 
+    private function myClasses(): \Illuminate\Database\Eloquent\Collection
+    {
+        return SchoolClass::where('is_active', true)
+            ->whereIn('id', auth('teacher')->user()->teacherClasses()->pluck('class_id'))
+            ->orderBy('name')
+            ->get();
+    }
+
     public function index()
     {
         $questionBanks = QuestionBank::with('subject')
@@ -38,7 +46,7 @@ class QuestionBankController extends Controller
     public function create()
     {
         $subjects = $this->subjectsWithPath();
-        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $classes = $this->myClasses();
         return view('teacher.question_banks.create', compact('subjects', 'classes'));
     }
 
@@ -83,7 +91,7 @@ class QuestionBankController extends Controller
     {
         abort_unless($questionBank->teacher_id === $this->teacherId(), 403);
         $subjects = $this->subjectsWithPath();
-        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $classes = $this->myClasses();
         return view('teacher.question_banks.edit', compact('questionBank', 'subjects', 'classes'));
     }
 

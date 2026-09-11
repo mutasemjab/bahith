@@ -14,6 +14,14 @@ class WeeklyPlannerController extends Controller
         return auth('teacher')->id();
     }
 
+    private function myClasses(): \Illuminate\Database\Eloquent\Collection
+    {
+        return SchoolClass::where('is_active', true)
+            ->whereIn('id', auth('teacher')->user()->teacherClasses()->pluck('class_id'))
+            ->orderBy('name')
+            ->get(['id', 'name']);
+    }
+
     public function index()
     {
         $planners = WeeklyPlanner::with('schoolClass')
@@ -25,7 +33,7 @@ class WeeklyPlannerController extends Controller
 
     public function create()
     {
-        $classes      = SchoolClass::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        $classes      = $this->myClasses();
         $defaultStart = now()->toDateString();
         $defaultEnd   = now()->addWeek()->toDateString();
         return view('teacher.weekly-planners.create', compact('classes', 'defaultStart', 'defaultEnd'));
@@ -61,7 +69,7 @@ class WeeklyPlannerController extends Controller
     public function edit(WeeklyPlanner $weeklyPlanner)
     {
         abort_unless($weeklyPlanner->teacher_id === $this->teacherId(), 403);
-        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        $classes = $this->myClasses();
         return view('teacher.weekly-planners.edit', compact('weeklyPlanner', 'classes'));
     }
 

@@ -56,11 +56,24 @@ class ExamController extends Controller
         return $this->teacher()->teacherClasses()->where('subject_id', $subjectId)->exists();
     }
 
+    private function teacherHasClass(int $classId): bool
+    {
+        return $this->teacher()->teacherClasses()->where('class_id', $classId)->exists();
+    }
+
+    private function myClasses(): \Illuminate\Database\Eloquent\Collection
+    {
+        return SchoolClass::where('is_active', true)
+            ->whereIn('id', $this->teacher()->teacherClasses()->pluck('class_id'))
+            ->orderBy('name')
+            ->get();
+    }
+
     public function create()
     {
         $courses  = Course::where('teacher_id', $this->teacher()->id)->get();
         $subjects = $this->teacherSubjects();
-        $classes  = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $classes  = $this->myClasses();
 
         return view('teacher.exams.create', compact('courses', 'subjects', 'classes'));
     }
@@ -95,6 +108,10 @@ class ExamController extends Controller
             abort_unless($this->teacherHasSubject($data['subject_id']), 403);
         }
 
+        if (! empty($data['class_id'])) {
+            abort_unless($this->teacherHasClass($data['class_id']), 403);
+        }
+
         $data['teacher_id']              = $this->teacher()->id;
         $data['is_published']            = $request->boolean('is_published');
         $data['shuffle_questions']       = $request->boolean('shuffle_questions');
@@ -124,7 +141,7 @@ class ExamController extends Controller
 
         $courses  = Course::where('teacher_id', $this->teacher()->id)->get();
         $subjects = $this->teacherSubjects();
-        $classes  = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $classes  = $this->myClasses();
 
         return view('teacher.exams.edit', compact('exam', 'courses', 'subjects', 'classes'));
     }
@@ -156,6 +173,10 @@ class ExamController extends Controller
 
         if (! empty($data['subject_id'])) {
             abort_unless($this->teacherHasSubject($data['subject_id']), 403);
+        }
+
+        if (! empty($data['class_id'])) {
+            abort_unless($this->teacherHasClass($data['class_id']), 403);
         }
 
         $data['is_published']            = $request->boolean('is_published');

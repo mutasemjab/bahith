@@ -27,7 +27,7 @@ class WorksheetController extends Controller
     public function create()
     {
         $subjects = $this->subjectsWithPath();
-        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $classes = $this->myClasses();
         return view('teacher.worksheets.create', compact('subjects', 'classes'));
     }
 
@@ -73,7 +73,7 @@ class WorksheetController extends Controller
     {
         abort_unless($worksheet->teacher_id === $this->teacherId(), 403);
         $subjects = $this->subjectsWithPath();
-        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $classes = $this->myClasses();
         return view('teacher.worksheets.edit', compact('worksheet', 'subjects', 'classes'));
     }
 
@@ -133,5 +133,13 @@ class WorksheetController extends Controller
             ->get()
             ->sortBy(fn($s) => $s->full_path)
             ->values();
+    }
+
+    private function myClasses(): \Illuminate\Database\Eloquent\Collection
+    {
+        return SchoolClass::where('is_active', true)
+            ->whereIn('id', auth('teacher')->user()->teacherClasses()->pluck('class_id'))
+            ->orderBy('name')
+            ->get();
     }
 }

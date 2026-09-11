@@ -46,11 +46,19 @@ class CourseController extends Controller
             ->values();
     }
 
+    private function myClasses(): \Illuminate\Database\Eloquent\Collection
+    {
+        return SchoolClass::where('is_active', true)
+            ->whereIn('id', $this->teacher()->teacherClasses()->pluck('class_id'))
+            ->orderBy('name')
+            ->get();
+    }
+
     public function create()
     {
         $categories = $this->teacherCategories();
         $subjects   = $this->teacherSubjects();
-        $classes    = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $classes    = $this->myClasses();
 
         return view('teacher.courses.create', compact('categories', 'subjects', 'classes'));
     }
@@ -107,7 +115,7 @@ class CourseController extends Controller
 
         $categories = $this->teacherCategories();
         $subjects   = $this->teacherSubjects();
-        $classes    = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $classes    = $this->myClasses();
 
         return view('teacher.courses.edit', compact('course', 'categories', 'subjects', 'classes'));
     }
