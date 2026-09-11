@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Course;
 use App\Models\Subject;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -46,8 +47,8 @@ class CategoryController extends Controller
         ]);
     }
 
-    // GET /subjects/{id} — subject detail with courses
-    public function subject(int $id): JsonResponse
+    // GET /subjects/{id} — subject detail with courses (filtered by student's class, when logged in)
+    public function subject(Request $request, int $id): JsonResponse
     {
         $subject = Subject::with(['category'])
             ->where('is_active', true)
@@ -56,6 +57,7 @@ class CategoryController extends Controller
         $courses = Course::with(['teacher'])
             ->published()
             ->where('subject_id', $id)
+            ->when($request->user('sanctum')?->class_id, fn ($q, $classId) => $q->where('class_id', $classId))
             ->latest()
             ->get()
             ->map(fn ($c) => [

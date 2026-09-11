@@ -19,6 +19,8 @@ class HomeController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $classId = $request->user()?->class_id;
+
         // Root categories
         $categories = Category::active()
             ->roots()
@@ -34,26 +36,29 @@ class HomeController extends Controller
                 'subcategories_count'=> $cat->subcategories_count,
             ]);
 
-        // Featured courses
+        // Featured courses (filtered by the student's class)
         $featuredCourses = Course::with(['teacher', 'subject'])
             ->published()
             ->featured()
+            ->when($classId, fn ($q) => $q->where('class_id', $classId))
             ->latest()
             ->take(6)
             ->get()
             ->map(fn ($c) => $this->courseCard($c));
 
-        // Trending courses
+        // Trending courses (filtered by the student's class)
         $trendingCourses = Course::with(['teacher', 'subject'])
             ->published()
             ->trending()
+            ->when($classId, fn ($q) => $q->where('class_id', $classId))
             ->latest()
             ->take(6)
             ->get()
             ->map(fn ($c) => $this->courseCard($c));
 
-        // Top teachers
+        // Top teachers (only teachers assigned to the student's class)
         $teachers = Teacher::where('is_active', true)
+            ->when($classId, fn ($q) => $q->whereHas('teacherClasses', fn ($tc) => $tc->where('class_id', $classId)))
             ->orderByDesc('total_students')
             ->take(6)
             ->get()

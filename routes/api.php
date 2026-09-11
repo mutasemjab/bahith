@@ -48,16 +48,13 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
     // ── App settings (public — no auth) ───────────────────────────────────
     Route::get('app-settings', [AppSettingController::class, 'index']);
 
-    // ── Home ───────────────────────────────────────────────────────────────
-    Route::get('home', [HomeController::class, 'index']);
-
     // ── Banners (slider images — no auth needed) ────────────────────────────
     Route::get('banners', [BannerController::class, 'index']);
 
     // ── Category tree navigation ───────────────────────────────────────────
     Route::get('categories',        [CategoryController::class, 'index']);
     Route::get('categories/{id}',   [CategoryController::class, 'show']);
-    Route::get('subjects/{id}',     [CategoryController::class, 'subject']);
+    Route::get('subjects/{id}',     [CategoryController::class, 'subject'])->middleware('optional.auth:sanctum');
 
     // ── Courses ────────────────────────────────────────────────────────────
     Route::get('courses/{id}',  [CourseController::class, 'show'])->middleware('optional.auth:sanctum');
@@ -98,6 +95,9 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
         // Switch to a linked sibling account without re-entering credentials
         // (the sibling link is created by an admin from the dashboard)
         Route::post('auth/switch-sibling/{siblingId}', [AuthController::class, 'switchSibling']);
+
+        // Home (featured/trending courses + top teachers — filtered by the student's class)
+        Route::get('home', [HomeController::class, 'index']);
 
         // Courses list, teachers list, exams list — filtered by the student's class
         Route::get('courses',  [CourseController::class, 'index']);
