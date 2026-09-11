@@ -28,6 +28,7 @@ class Course extends Model
         'price'             => 'decimal:2',
         'old_price'         => 'decimal:2',
         'average_rating'    => 'decimal:2',
+        'duration_hours'    => 'integer',
         'is_live'           => 'boolean',
         'is_published'      => 'boolean',
         'is_featured'       => 'boolean',
