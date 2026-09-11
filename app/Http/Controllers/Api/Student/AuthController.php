@@ -33,7 +33,7 @@ class AuthController extends Controller
             'phone'       => $validated['phone'] ?? null,
             'password'    => $validated['password'],
             'class_id'    => $validated['class_id'] ?? null,
-            'device_uuid' => $validated['deviceId'],
+            'deviceId' => $validated['deviceId'],
             'is_active'   => true,
         ]);
 
@@ -70,7 +70,7 @@ class AuthController extends Controller
 
         // First login after migration: save the uuid
         if (! $student->device_uuid) {
-            $student->update(['device_uuid' => $request->deviceId]);
+            $student->update(['deviceId' => $request->deviceId]);
         }
 
         $token = $student->createToken('student-app')->plainTextToken;
