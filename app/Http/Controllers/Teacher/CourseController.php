@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Category, Course, Subject};
+use App\Models\{Category, Course, SchoolClass, Subject};
 use App\Services\CourseService;
 use Illuminate\Http\Request;
 
@@ -50,8 +50,9 @@ class CourseController extends Controller
     {
         $categories = $this->teacherCategories();
         $subjects   = $this->teacherSubjects();
+        $classes    = SchoolClass::where('is_active', true)->orderBy('name')->get();
 
-        return view('teacher.courses.create', compact('categories', 'subjects'));
+        return view('teacher.courses.create', compact('categories', 'subjects', 'classes'));
     }
 
     public function store(Request $request)
@@ -59,6 +60,7 @@ class CourseController extends Controller
         $data = $request->validate([
             'category_id'      => 'required|exists:categories,id',
             'subject_id'       => 'nullable|exists:subjects,id',
+            'class_id'         => 'nullable|exists:classes,id',
             'title_ar'         => 'required|string|max:255',
             'title_en'         => 'required|string|max:255',
             'description_ar'   => 'nullable|string',
@@ -105,8 +107,9 @@ class CourseController extends Controller
 
         $categories = $this->teacherCategories();
         $subjects   = $this->teacherSubjects();
+        $classes    = SchoolClass::where('is_active', true)->orderBy('name')->get();
 
-        return view('teacher.courses.edit', compact('course', 'categories', 'subjects'));
+        return view('teacher.courses.edit', compact('course', 'categories', 'subjects', 'classes'));
     }
 
     public function update(Request $request, int $id)
@@ -118,6 +121,7 @@ class CourseController extends Controller
         $data = $request->validate([
             'category_id'      => 'required|exists:categories,id',
             'subject_id'       => 'nullable|exists:subjects,id',
+            'class_id'         => 'nullable|exists:classes,id',
             'title_ar'         => 'required|string|max:255',
             'title_en'         => 'required|string|max:255',
             'description_ar'   => 'nullable|string',

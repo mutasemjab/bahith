@@ -31,12 +31,13 @@ class LessonProgressController extends Controller
             'is_completed'  => ['sometimes', 'boolean'],
         ]);
 
-        $lesson  = Lesson::where('is_published', true)->with('unit')->findOrFail($lessonId);
+        $lesson  = Lesson::where('is_published', true)->with('unit.course')->findOrFail($lessonId);
         $student = $request->user();
         $courseId = $lesson->unit?->course_id;
 
-        // Verify enrollment for paid lessons
-        if (! $lesson->is_free && $courseId) {
+        // Verify enrollment for paid lessons (a lesson is free if it's marked
+        // free itself, or if the whole course it belongs to is free)
+        if (! $lesson->isEffectivelyFree($lesson->unit?->course?->is_free) && $courseId) {
             $enrolled = Enrollment::where('student_id', $student->id)
                 ->where('course_id', $courseId)
                 ->where('is_active', true)
@@ -45,6 +46,12 @@ class LessonProgressController extends Controller
             if (! $enrolled) {
                 return $this->error('يجب تفعيل الدورة أولاً', 403);
             }
+        }
+
+        // Block progress on lessons the student hasn't reached yet in sequential courses
+        $course = $lesson->unit?->course;
+        if ($course && $course->sequentialLockedLessonIds($student->id)->contains($lesson->id)) {
+            return $this->error('يجب إكمال الدروس السابقة أولاً', 403);
         }
 
         $isCompleted = $request->boolean('is_completed', false);

@@ -143,6 +143,15 @@
                     <small class="text-muted">{{ __('messages.category_auto_hint') }}</small>
                 </div>
                 <div class="mb-3">
+                    <label class="form-label">الصف الدراسي</label>
+                    <select name="class_id" class="form-select">
+                        <option value="">— اختر الصف —</option>
+                        @foreach($classes as $class)
+                            <option value="{{ $class->id }}" @selected(old('class_id') == $class->id)>{{ $class->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label class="form-label">{{ __('messages.difficulty') }}</label>
                     <select name="difficulty_level" class="form-select">
                         <option value="beginner" @selected(old('difficulty_level') === 'beginner')>{{ __('messages.beginner') }}</option>

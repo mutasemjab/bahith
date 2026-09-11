@@ -76,6 +76,15 @@
                 </select>
             </div>
             <div class="col-md-4">
+                <label class="form-label">الصف الدراسي</label>
+                <select name="class_id" class="form-select">
+                    <option value="">— اختر الصف —</option>
+                    @foreach($classes as $class)
+                        <option value="{{ $class->id }}" @selected(old('class_id', $exam->class_id) == $class->id)>{{ $class->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
                 <label class="form-label">{{ __('messages.t_duration_minutes') }} <span class="text-danger">*</span></label>
                 <input type="number" name="duration_minutes" value="{{ old('duration_minutes', $exam->duration_minutes) }}" min="1" class="form-control" required>
             </div>

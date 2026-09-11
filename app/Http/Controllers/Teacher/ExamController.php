@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Course, Exam, Question, Subject};
+use App\Models\{Course, Exam, Question, SchoolClass, Subject};
 use App\Services\ExamService;
 use Illuminate\Http\Request;
 
@@ -14,6 +14,21 @@ class ExamController extends Controller
     private function teacher()
     {
         return auth()->guard('teacher')->user();
+    }
+
+    // Ownership check: prefer the direct teacher_id column (always set on
+    // exams created after this field existed); fall back to the linked
+    // course's owner for older exams created before teacher_id existed.
+    private function authorizeOwnership(Exam $exam): void
+    {
+        if ($exam->teacher_id) {
+            abort_if($exam->teacher_id !== $this->teacher()->id, 403);
+            return;
+        }
+
+        if ($exam->course_id) {
+            abort_if($exam->course->teacher_id !== $this->teacher()->id, 403);
+        }
     }
 
     public function index(Request $request)
@@ -41,8 +56,9 @@ class ExamController extends Controller
     {
         $courses  = Course::where('teacher_id', $this->teacher()->id)->get();
         $subjects = $this->teacherSubjects();
+        $classes  = SchoolClass::where('is_active', true)->orderBy('name')->get();
 
-        return view('teacher.exams.create', compact('courses', 'subjects'));
+        return view('teacher.exams.create', compact('courses', 'subjects', 'classes'));
     }
 
     public function store(Request $request)
@@ -50,6 +66,7 @@ class ExamController extends Controller
         $data = $request->validate([
             'course_id'               => 'nullable|exists:courses,id',
             'subject_id'              => 'nullable|exists:subjects,id',
+            'class_id'                => 'nullable|exists:classes,id',
             'title_ar'                => 'required|string|max:255',
             'title_en'                => 'required|string|max:255',
             'description_ar'          => 'nullable|string',
@@ -74,6 +91,7 @@ class ExamController extends Controller
             abort_unless($this->teacher()->subjects()->where('subjects.id', $data['subject_id'])->exists(), 403);
         }
 
+        $data['teacher_id']              = $this->teacher()->id;
         $data['is_published']            = $request->boolean('is_published');
         $data['shuffle_questions']       = $request->boolean('shuffle_questions');
         $data['shuffle_options']         = $request->boolean('shuffle_options');
@@ -89,9 +107,7 @@ class ExamController extends Controller
     {
         $exam = $this->exams->find($id);
 
-        if ($exam->course_id) {
-            abort_if($exam->course->teacher_id !== $this->teacher()->id, 403);
-        }
+        $this->authorizeOwnership($exam);
 
         return view('teacher.exams.show', compact('exam'));
     }
@@ -100,27 +116,25 @@ class ExamController extends Controller
     {
         $exam = Exam::findOrFail($id);
 
-        if ($exam->course_id) {
-            abort_if($exam->course->teacher_id !== $this->teacher()->id, 403);
-        }
+        $this->authorizeOwnership($exam);
 
         $courses  = Course::where('teacher_id', $this->teacher()->id)->get();
         $subjects = $this->teacherSubjects();
+        $classes  = SchoolClass::where('is_active', true)->orderBy('name')->get();
 
-        return view('teacher.exams.edit', compact('exam', 'courses', 'subjects'));
+        return view('teacher.exams.edit', compact('exam', 'courses', 'subjects', 'classes'));
     }
 
     public function update(Request $request, int $id)
     {
         $exam = Exam::findOrFail($id);
 
-        if ($exam->course_id) {
-            abort_if($exam->course->teacher_id !== $this->teacher()->id, 403);
-        }
+        $this->authorizeOwnership($exam);
 
         $data = $request->validate([
             'course_id'               => 'nullable|exists:courses,id',
             'subject_id'              => 'nullable|exists:subjects,id',
+            'class_id'                => 'nullable|exists:classes,id',
             'title_ar'                => 'required|string|max:255',
             'title_en'                => 'required|string|max:255',
             'description_ar'          => 'nullable|string',
@@ -155,9 +169,7 @@ class ExamController extends Controller
     {
         $exam = Exam::findOrFail($id);
 
-        if ($exam->course_id) {
-            abort_if($exam->course->teacher_id !== $this->teacher()->id, 403);
-        }
+        $this->authorizeOwnership($exam);
 
         $this->exams->delete($exam);
 

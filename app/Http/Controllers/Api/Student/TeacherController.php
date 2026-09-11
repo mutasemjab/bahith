@@ -13,11 +13,16 @@ class TeacherController extends Controller
 {
     use ApiResponse;
 
-    // GET /teachers
+    // GET /teachers  [auth] — only teachers assigned to the student's class are returned
     public function index(Request $request): JsonResponse
     {
         $query = Teacher::where('is_active', true)
             ->orderByDesc('total_students');
+
+        if ($request->user('sanctum')?->class_id) {
+            $classId = $request->user()->class_id;
+            $query->whereHas('teacherClasses', fn ($q) => $q->where('class_id', $classId));
+        }
 
         if ($request->filled('search')) {
             $s = $request->search;
@@ -44,13 +49,14 @@ class TeacherController extends Controller
     }
 
     // GET /teachers/{id}
-    public function show(int $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
         $teacher = Teacher::where('is_active', true)->findOrFail($id);
 
         $courses = Course::with(['subject', 'category'])
             ->published()
             ->where('teacher_id', $id)
+            ->when($request->user('sanctum')?->class_id, fn ($q, $classId) => $q->where('class_id', $classId))
             ->latest()
             ->get()
             ->map(fn ($c) => [

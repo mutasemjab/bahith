@@ -64,6 +64,33 @@
                     @endforeach
                 </select>
             </div>
+            <div class="col-md-4">
+                <label class="form-label">{{ __('messages.subject') }}</label>
+                <select name="subject_id" class="form-select">
+                    <option value="">— {{ __('messages.select_subject') }} —</option>
+                    @foreach($subjects as $sub)
+                        <option value="{{ $sub->id }}" @selected(old('subject_id') == $sub->id)>{{ $sub->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">{{ __('messages.teacher') }}</label>
+                <select name="teacher_id" class="form-select">
+                    <option value="">— {{ __('messages.t_none') }} —</option>
+                    @foreach($teachers as $t)
+                        <option value="{{ $t->id }}" @selected(old('teacher_id') == $t->id)>{{ $t->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">الصف الدراسي</label>
+                <select name="class_id" class="form-select">
+                    <option value="">— اختر الصف —</option>
+                    @foreach($classes as $class)
+                        <option value="{{ $class->id }}" @selected(old('class_id') == $class->id)>{{ $class->name }}</option>
+                    @endforeach
+                </select>
+            </div>
 
             {{-- ── Course Placement ── --}}
             <div class="col-12" id="placementPanel" style="display:none;">

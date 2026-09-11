@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Category, Course, Subject, Teacher};
+use App\Models\{Category, Course, SchoolClass, Subject, Teacher};
 use App\Models\AdminActivityLog;
 use App\Services\CourseService;
 use Illuminate\Http\Request;
@@ -32,8 +32,9 @@ class CourseController extends Controller
         $categories = Category::roots()->active()->get();
         $subjects   = $this->subjectsWithPath();
         $teachers   = Teacher::where('is_active', true)->get();
+        $classes    = SchoolClass::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.courses.create', compact('categories', 'subjects', 'teachers'));
+        return view('admin.courses.create', compact('categories', 'subjects', 'teachers', 'classes'));
     }
 
     public function store(Request $request)
@@ -42,6 +43,7 @@ class CourseController extends Controller
             'teacher_id'       => 'required|exists:teachers,id',
             'category_id'      => 'nullable|exists:categories,id',
             'subject_id'       => 'nullable|exists:subjects,id',
+            'class_id'         => 'nullable|exists:classes,id',
             'title_ar'         => 'required|string|max:255',
             'title_en'         => 'required|string|max:255',
             'description_ar'   => 'nullable|string',
@@ -86,8 +88,9 @@ class CourseController extends Controller
         $categories = Category::roots()->active()->get();
         $subjects   = $this->subjectsWithPath();
         $teachers   = Teacher::where('is_active', true)->get();
+        $classes    = SchoolClass::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.courses.edit', compact('course', 'categories', 'subjects', 'teachers'));
+        return view('admin.courses.edit', compact('course', 'categories', 'subjects', 'teachers', 'classes'));
     }
 
     public function update(Request $request, int $id)
@@ -98,6 +101,7 @@ class CourseController extends Controller
             'teacher_id'       => 'required|exists:teachers,id',
             'category_id'      => 'nullable|exists:categories,id',
             'subject_id'       => 'nullable|exists:subjects,id',
+            'class_id'         => 'nullable|exists:classes,id',
             'title_ar'         => 'required|string|max:255',
             'title_en'         => 'required|string|max:255',
             'description_ar'   => 'nullable|string',

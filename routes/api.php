@@ -60,7 +60,6 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
     Route::get('subjects/{id}',     [CategoryController::class, 'subject']);
 
     // ── Courses ────────────────────────────────────────────────────────────
-    Route::get('courses',       [CourseController::class, 'index']);
     Route::get('courses/{id}',  [CourseController::class, 'show'])->middleware('optional.auth:sanctum');
 
     // ── Course units + lesson content (auth optional — needed for locked check) ──
@@ -72,11 +71,9 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
     Route::get('units/{id}/exams',   [LessonController::class, 'unitExams'])->middleware('auth:sanctum');
 
     // ── Teachers ───────────────────────────────────────────────────────────
-    Route::get('teachers',      [TeacherController::class, 'index']);
-    Route::get('teachers/{id}', [TeacherController::class, 'show']);
+    Route::get('teachers/{id}', [TeacherController::class, 'show'])->middleware('optional.auth:sanctum');
 
-    // ── Exams (public list + detail) ───────────────────────────────────────
-    Route::get('exams',      [ExamController::class, 'index']);
+    // ── Exams (public detail) ────────────────────────────────────────────
     Route::get('exams/{id}', [ExamController::class, 'show']);
 
     // ── Files (3 types: previous_year_exams / question_banks / worksheets) ─
@@ -101,6 +98,11 @@ Route::prefix('v1/student')->middleware('api.locale')->group(function () {
         // Switch to a linked sibling account without re-entering credentials
         // (the sibling link is created by an admin from the dashboard)
         Route::post('auth/switch-sibling/{siblingId}', [AuthController::class, 'switchSibling']);
+
+        // Courses list, teachers list, exams list — filtered by the student's class
+        Route::get('courses',  [CourseController::class, 'index']);
+        Route::get('teachers', [TeacherController::class, 'index']);
+        Route::get('exams',    [ExamController::class, 'index']);
 
         // Profile
         Route::get('profile', [ProfileController::class, 'show']);

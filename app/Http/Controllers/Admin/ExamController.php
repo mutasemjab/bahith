@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Course, Exam, Question, Subject};
+use App\Models\{Course, Exam, Question, SchoolClass, Subject, Teacher};
 use App\Services\ExamService;
 use Illuminate\Http\{JsonResponse, Request};
 
@@ -29,8 +29,10 @@ class ExamController extends Controller
     {
         $courses  = Course::where('is_published', true)->get();
         $subjects = Subject::active()->get();
+        $teachers = Teacher::orderBy('name')->get();
+        $classes  = SchoolClass::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.exams.create', compact('courses', 'subjects'));
+        return view('admin.exams.create', compact('courses', 'subjects', 'teachers', 'classes'));
     }
 
     public function getCourseStructure(int $id): JsonResponse
@@ -60,6 +62,8 @@ class ExamController extends Controller
             'unit_id'                 => 'nullable|exists:units,id',
             'lesson_id'               => 'nullable|exists:lessons,id',
             'subject_id'              => 'nullable|exists:subjects,id',
+            'teacher_id'              => 'nullable|exists:teachers,id',
+            'class_id'                => 'nullable|exists:classes,id',
             'title_ar'                => 'required|string|max:255',
             'title_en'                => 'required|string|max:255',
             'description_ar'          => 'nullable|string',
@@ -115,8 +119,10 @@ class ExamController extends Controller
         $exam     = Exam::findOrFail($id);
         $courses  = Course::where('is_published', true)->get();
         $subjects = Subject::active()->get();
+        $teachers = Teacher::orderBy('name')->get();
+        $classes  = SchoolClass::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.exams.edit', compact('exam', 'courses', 'subjects'));
+        return view('admin.exams.edit', compact('exam', 'courses', 'subjects', 'teachers', 'classes'));
     }
 
     public function update(Request $request, int $id)
@@ -128,6 +134,8 @@ class ExamController extends Controller
             'unit_id'                 => 'nullable|exists:units,id',
             'lesson_id'               => 'nullable|exists:lessons,id',
             'subject_id'              => 'nullable|exists:subjects,id',
+            'teacher_id'              => 'nullable|exists:teachers,id',
+            'class_id'                => 'nullable|exists:classes,id',
             'title_ar'                => 'required|string|max:255',
             'title_en'                => 'required|string|max:255',
             'description_ar'          => 'nullable|string',

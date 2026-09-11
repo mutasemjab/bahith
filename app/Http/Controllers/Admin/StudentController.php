@@ -131,7 +131,7 @@ class StudentController extends Controller
 
     public function resetDevice(Student $student)
     {
-        $student->update(['deviceId' => null]);
+        $student->update(['device_uuid' => null]);
 
         return back()->with('success', 'تم إعادة تعيين الجهاز. يمكن للطالب الآن تسجيل الدخول من جهاز جديد.');
     }

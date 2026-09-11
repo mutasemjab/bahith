@@ -95,9 +95,9 @@
     <div class="panel-card">
         <div class="panel-card-header"><h2 class="panel-card-title">معلومات الجهاز</h2></div>
         <div class="panel-card-body">
-            @if($student->deviceId)
+            @if($student->device_uuid)
                 <p class="text-muted mb-1" style="font-size:13px">الجهاز المسجّل:</p>
-                <code class="d-block mb-3" style="font-size:11px;word-break:break-all">{{ $student->deviceId }}</code>
+                <code class="d-block mb-3" style="font-size:11px;word-break:break-all">{{ $student->device_uuid }}</code>
                 <form action="{{ route('admin.students.reset-device', $student->id) }}" method="POST"
                       onsubmit="return confirm('هل أنت متأكد؟ سيتمكن الطالب من تسجيل الدخول من أي جهاز.')">
                     @csrf

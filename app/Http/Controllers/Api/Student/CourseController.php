@@ -16,12 +16,16 @@ class CourseController extends Controller
 
     public function __construct(private CourseService $service) {}
 
-    // GET /courses
+    // GET /courses  [auth] — only courses matching the student's class are returned
     public function index(Request $request): JsonResponse
     {
         $filters = array_merge($request->only(['category_id', 'subject_id', 'teacher_id', 'search']), [
             'is_published' => true,
         ]);
+
+        if ($request->user()?->class_id) {
+            $filters['class_id'] = $request->user()->class_id;
+        }
 
         if ($request->filled('featured')) {
             $filters['is_featured'] = true;
@@ -86,6 +90,8 @@ class CourseController extends Controller
             'price'            => $course->price,
             'old_price'        => $course->old_price,
             'is_free'          => $course->is_free,
+            // Free courses can't be purchased — hide any "activate via App Store" label/button when false
+            'can_purchase_via_store' => ! $course->is_free,
             'discount'         => $course->discount_percentage,
             'average_rating'   => $course->average_rating,
             'total_students'   => $course->total_students,
@@ -99,6 +105,7 @@ class CourseController extends Controller
             ],
             'category' => ['id' => $course->category?->id, 'name' => $course->category?->name],
             'subject'  => ['id' => $course->subject?->id,  'name' => $course->subject?->name],
+            'class'    => ['id' => $course->schoolClass?->id, 'name' => $course->schoolClass?->name],
         ];
     }
 

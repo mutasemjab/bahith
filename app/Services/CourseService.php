@@ -11,11 +11,14 @@ class CourseService
 
     public function list(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        $query = Course::with(['teacher', 'category', 'subject'])
+        $query = Course::with(['teacher', 'category', 'subject', 'schoolClass'])
             ->withCount('enrollments');
 
         if (! empty($filters['teacher_id'])) {
             $query->where('teacher_id', $filters['teacher_id']);
+        }
+        if (! empty($filters['class_id'])) {
+            $query->where('class_id', $filters['class_id']);
         }
         if (! empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
@@ -40,7 +43,7 @@ class CourseService
     public function find(int $id): Course
     {
         return Course::with([
-            'teacher', 'category', 'subject',
+            'teacher', 'category', 'subject', 'schoolClass',
             'units.lessons', 'units.materials', 'units.exam',
         ])->withCount('enrollments')->findOrFail($id);
     }

@@ -10,7 +10,7 @@ class Course extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'teacher_id', 'category_id', 'subject_id',
+        'teacher_id', 'category_id', 'subject_id', 'class_id',
         'title_ar', 'title_en',
         'description_ar', 'description_en',
         'what_you_learn_ar', 'what_you_learn_en',
@@ -66,6 +66,11 @@ class Course extends Model
         return $this->belongsTo(Subject::class);
     }
 
+    public function schoolClass()
+    {
+        return $this->belongsTo(SchoolClass::class, 'class_id');
+    }
+
     public function units()
     {
         return $this->hasMany(Unit::class)->orderBy('order_index');
@@ -118,5 +123,45 @@ class Course extends Model
         }
 
         return (int) round((($this->old_price - $this->price) / $this->old_price) * 100);
+    }
+
+    // Returns the IDs of lessons that are locked because sequential_videos is
+    // on and an earlier lesson (by unit order, then lesson order) hasn't been
+    // completed by the student yet. Empty when sequential_videos is off.
+    public function sequentialLockedLessonIds(?int $studentId): \Illuminate\Support\Collection
+    {
+        if (! $this->sequential_videos) {
+            return collect();
+        }
+
+        $ordered = Lesson::query()
+            ->whereHas('unit', fn ($q) => $q->where('course_id', $this->id)->where('is_published', true))
+            ->where('is_published', true)
+            ->with('unit:id,order_index')
+            ->get(['id', 'unit_id', 'order_index'])
+            ->sort(fn ($a, $b) => [$a->unit->order_index, $a->order_index] <=> [$b->unit->order_index, $b->order_index])
+            ->values();
+
+        $completedIds = $studentId
+            ? LessonProgress::where('student_id', $studentId)
+                ->where('is_completed', true)
+                ->whereIn('lesson_id', $ordered->pluck('id'))
+                ->pluck('lesson_id')
+                ->all()
+            : [];
+
+        $locked = collect();
+        $allPreviousCompleted = true;
+
+        foreach ($ordered as $lesson) {
+            if (! $allPreviousCompleted) {
+                $locked->push($lesson->id);
+            }
+            if (! in_array($lesson->id, $completedIds, true)) {
+                $allPreviousCompleted = false;
+            }
+        }
+
+        return $locked;
     }
 }

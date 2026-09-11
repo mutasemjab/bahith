@@ -23,7 +23,7 @@ class AuthController extends Controller
             'phone'       => ['nullable', 'string', 'max:20'],
             'password'    => ['required', 'confirmed', Password::min(8)],
             'class_id'    => ['nullable', 'exists:classes,id'],
-            'deviceId' => ['required', 'string', 'max:36', 'unique:students,deviceId'],
+            'deviceId' => ['required', 'string', 'max:36', 'unique:students,device_uuid'],
         ]);
 
         $student = Student::create([
@@ -33,7 +33,7 @@ class AuthController extends Controller
             'phone'       => $validated['phone'] ?? null,
             'password'    => $validated['password'],
             'class_id'    => $validated['class_id'] ?? null,
-            'deviceId' => $validated['deviceId'],
+            'device_uuid' => $validated['deviceId'],
             'is_active'   => true,
         ]);
 
@@ -64,13 +64,13 @@ class AuthController extends Controller
         }
 
         // // Device lock: if student already has a uuid, it must match
-        // if ($student->deviceId && $student->deviceId !== $request->deviceId) {
+        // if ($student->device_uuid && $student->device_uuid !== $request->deviceId) {
         //     return $this->error('هذا الحساب مسجّل على جهاز آخر، لا يمكن تسجيل الدخول من جهاز مختلف. تواصل مع الإدارة لإعادة تعيين الجهاز.', 403);
         // }
 
         // First login after migration: save the uuid
-        if (! $student->deviceId) {
-            $student->update(['deviceId' => $request->deviceId]);
+        if (! $student->device_uuid) {
+            $student->update(['device_uuid' => $request->deviceId]);
         }
 
         $token = $student->createToken('student-app')->plainTextToken;

@@ -35,6 +35,8 @@ class RoleController extends Controller
             'أوراق العمل'          => ['worksheet-table', 'worksheet-add', 'worksheet-edit', 'worksheet-delete'],
             'المفكرة التعليمية'    => ['educational-note-table', 'educational-note-add', 'educational-note-edit', 'educational-note-delete'],
             'المفكرة الأسبوعية'    => ['weekly-planner-table', 'weekly-planner-add', 'weekly-planner-edit', 'weekly-planner-delete'],
+            'جدول الحصص'           => ['class-schedule-table', 'class-schedule-add', 'class-schedule-edit', 'class-schedule-delete'],
+            'جدول الامتحانات'      => ['exam-schedule-table', 'exam-schedule-add', 'exam-schedule-edit', 'exam-schedule-delete'],
             'التسجيلات'            => ['enrollment-table', 'enrollment-edit', 'enrollment-delete'],
             'البطاقات'             => ['card-table', 'card-add', 'card-edit', 'card-delete', 'card-number-table', 'card-number-add', 'card-number-edit', 'card-number-delete'],
             'البانرات'             => ['banner-table', 'banner-add', 'banner-edit', 'banner-delete'],

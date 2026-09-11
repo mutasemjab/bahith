@@ -41,4 +41,11 @@ class Lesson extends Model
     {
         return $this->hasMany(LessonProgress::class);
     }
+
+    // A lesson is free either on its own, or because its whole course is free.
+    // Pass the course's is_free flag when already loaded to avoid an extra query.
+    public function isEffectivelyFree(?bool $courseIsFree = null): bool
+    {
+        return (bool) $this->is_free || (bool) ($courseIsFree ?? $this->course?->is_free);
+    }
 }

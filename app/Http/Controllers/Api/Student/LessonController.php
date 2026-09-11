@@ -35,6 +35,8 @@ class LessonController extends Controller
                     'exams'   => fn ($q) => $q->where('is_published', true)])
             ->get();
 
+        $sequenceLocked = $course->sequentialLockedLessonIds($request->user()?->id);
+
         $data = $units->map(fn ($unit) => [
             'id'          => $unit->id,
             'title'       => $unit->title,
@@ -42,7 +44,9 @@ class LessonController extends Controller
             'title_en'    => $unit->title_en,
             'description' => $unit->description,
             'order_index' => $unit->order_index,
-            'lessons'     => $unit->lessons->map(fn ($lesson) => $this->lessonCard($lesson, $isEnrolled)),
+            'lessons'     => $unit->lessons->map(fn ($lesson) => $this->lessonCard(
+                $lesson, $isEnrolled, $course->is_free, $sequenceLocked->contains($lesson->id)
+            )),
             'exams'       => $unit->exams->map(fn ($exam) => [
                 'id'               => $exam->id,
                 'title'            => $exam->title,
@@ -77,9 +81,15 @@ class LessonController extends Controller
                 ->exists();
         }
 
-        // Block paid content if not enrolled
-        if (! $lesson->is_free && ! $isEnrolled) {
+        // Block paid content if not enrolled (a lesson is free if it's marked
+        // free itself, or if the whole course it belongs to is free)
+        if (! $lesson->isEffectivelyFree($course?->is_free) && ! $isEnrolled) {
             return $this->error('يجب تفعيل الدورة للوصول إلى هذا الدرس', 403);
+        }
+
+        // Block skipping ahead when the course requires watching lessons in order
+        if ($course && $course->sequentialLockedLessonIds($request->user()?->id)->contains($lesson->id)) {
+            return $this->error('يجب إكمال الدروس السابقة أولاً', 403);
         }
 
         return $this->success([
@@ -131,9 +141,9 @@ class LessonController extends Controller
         ]);
     }
 
-    private function lessonCard(Lesson $lesson, bool $isEnrolled): array
+    private function lessonCard(Lesson $lesson, bool $isEnrolled, bool $courseIsFree = false, bool $sequenceLocked = false): array
     {
-        $locked = ! $lesson->is_free && ! $isEnrolled;
+        $locked = (! $lesson->isEffectivelyFree($courseIsFree) && ! $isEnrolled) || $sequenceLocked;
 
         return [
             'id'               => $lesson->id,
@@ -145,6 +155,7 @@ class LessonController extends Controller
             'order_index'      => $lesson->order_index,
             'is_free'          => $lesson->is_free,
             'is_locked'        => $locked,
+            'is_locked_by_sequence' => $sequenceLocked,
             // Only expose URLs for accessible lessons
             'video_url'        => $locked ? null : $lesson->video_url,
             'file_url'         => ($locked || ! $lesson->file_path) ? null : asset('assets/uploads/lessons/' . $lesson->file_path),
