@@ -23,6 +23,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping, WithS
             ->when(isset($this->filters['is_active']) && $this->filters['is_active'] !== '',
                 fn ($q) => $q->where('is_active', (bool) $this->filters['is_active'])
             )
+            ->when($this->filters['class_id'] ?? null, fn ($q, $classId) => $q->where('class_id', $classId))
             ->orderBy('name')
             ->get();
     }

@@ -41,7 +41,7 @@
     <div class="panel-card-body">
         <form method="GET" class="row g-2 align-items-end">
             <div class="col-12 col-md-5">
-                <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="{{ __('messages.search_name_email_ph') }}">
+                <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="بحث بالاسم أو البريد الإلكتروني أو الرقم الوطني">
             </div>
             <div class="col-6 col-md-3">
                 <select name="is_active" class="form-select form-select-sm">

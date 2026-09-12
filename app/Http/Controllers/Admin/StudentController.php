@@ -28,6 +28,9 @@ class StudentController extends Controller
                 ->where('name', 'like', "%{$s}%")
                 ->orWhere('email', 'like', "%{$s}%")
             )
+            ->when($request->filled('class_id'), fn ($q) =>
+                $q->where('class_id', $request->class_id)
+            )
             ->when($request->is_active !== null && $request->is_active !== '', fn ($q) =>
                 $q->where('is_active', $request->boolean('is_active'))
             )
@@ -35,7 +38,9 @@ class StudentController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.students.index', compact('students'));
+        $classes = SchoolClass::where('is_active', true)->orderBy('name')->get();
+
+        return view('admin.students.index', compact('students', 'classes'));
     }
 
     public function create()
@@ -147,7 +152,7 @@ class StudentController extends Controller
 
     public function export(Request $request)
     {
-        $filters = $request->only(['search', 'is_active']);
+        $filters = $request->only(['search', 'is_active', 'class_id']);
         $filename = 'students_' . now()->format('Y-m-d') . '.xlsx';
 
         return Excel::download(new StudentsExport($filters), $filename);

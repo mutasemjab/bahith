@@ -28,6 +28,7 @@ class TeacherController extends Controller
             ->when($request->search, fn ($q, $s) => $q
                 ->where('name', 'like', "%{$s}%")
                 ->orWhere('email', 'like', "%{$s}%")
+                ->orWhere('national_id', 'like', "%{$s}%")
             )
             ->when($request->is_active !== null && $request->is_active !== '', fn ($q) =>
                 $q->where('is_active', $request->boolean('is_active'))

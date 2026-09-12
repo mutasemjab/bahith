@@ -42,8 +42,16 @@
 <div class="panel-card mb-3">
     <div class="panel-card-body">
         <form method="GET" class="row g-2 align-items-end">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
                 <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="{{ __('messages.search_name_email_ph') }}">
+            </div>
+            <div class="col-6 col-md-3">
+                <select name="class_id" class="form-select form-select-sm">
+                    <option value="">— كل الصفوف —</option>
+                    @foreach($classes as $class)
+                        <option value="{{ $class->id }}" @selected(request('class_id') == $class->id)>{{ $class->name }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="col-6 col-md-3">
                 <select name="is_active" class="form-select form-select-sm">
