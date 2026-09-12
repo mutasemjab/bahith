@@ -28,18 +28,26 @@
 @if(session('error'))
     <div class="alert alert-danger alert-dismissible fade show mb-3">{{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
+@if($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show mb-3">
+        <ul class="mb-0">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+@php $hasErrors = $errors->any(); @endphp
 
 {{-- Tabs --}}
 <ul class="nav nav-tabs mb-3" id="courseTabs">
-    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-content">📚 {{ __('messages.course_content') }}</a></li>
+    <li class="nav-item"><a class="nav-link {{ $hasErrors ? '' : 'active' }}" data-bs-toggle="tab" href="#tab-content">📚 {{ __('messages.course_content') }}</a></li>
     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-overview">📋 {{ __('messages.overview') }}</a></li>
-    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-add-unit">➕ {{ __('messages.add_unit') }}</a></li>
+    <li class="nav-item"><a class="nav-link {{ $hasErrors ? 'active' : '' }}" data-bs-toggle="tab" href="#tab-add-unit">➕ {{ __('messages.add_unit') }}</a></li>
 </ul>
 
 <div class="tab-content">
 
     {{-- ── TAB: Content ────────────────────────────────────────────── --}}
-    <div class="tab-pane fade show active" id="tab-content">
+    <div class="tab-pane fade {{ $hasErrors ? '' : 'show active' }}" id="tab-content">
         @forelse($course->units->sortBy('order_index') as $unit)
         <div class="panel-card mb-3">
             <div class="panel-card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -342,7 +350,7 @@
     </div>
 
     {{-- ── TAB: Add Unit ───────────────────────────────────────────── --}}
-    <div class="tab-pane fade" id="tab-add-unit">
+    <div class="tab-pane fade {{ $hasErrors ? 'show active' : '' }}" id="tab-add-unit">
         <div class="row g-3">
         <div class="col-12 col-xl-6">
         <div class="panel-card">

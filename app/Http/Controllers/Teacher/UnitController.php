@@ -22,7 +22,7 @@ class UnitController extends Controller
 
         $data = $request->validate([
             'title_ar'       => 'required|string|max:255',
-            'title_en'       => 'required|string|max:255',
+            'title_en'       => 'nullable|string|max:255',
             'description_ar' => 'nullable|string',
             'description_en' => 'nullable|string',
             'order_index'    => 'nullable|integer|min:0',
@@ -46,7 +46,7 @@ class UnitController extends Controller
 
         $data = $request->validate([
             'title_ar'       => 'required|string|max:255',
-            'title_en'       => 'required|string|max:255',
+            'title_en'       => 'nullable|string|max:255',
             'description_ar' => 'nullable|string',
             'description_en' => 'nullable|string',
             'order_index'    => 'nullable|integer|min:0',
