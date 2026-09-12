@@ -44,7 +44,7 @@ class QuestionBankController extends Controller
             'class_id' => 'nullable|exists:classes,id',
 
             'title_ar' => 'required',
-            'title_en' => 'required',
+            'title_en' => 'nullable',
 
             'tag_ar' => 'nullable',
             'tag_en' => 'nullable',
@@ -66,7 +66,7 @@ class QuestionBankController extends Controller
             'class_id' => $request->class_id,
 
             'title_ar' => $request->title_ar,
-            'title_en' => $request->title_en,
+            'title_en' => $request->title_en ?: $request->title_ar,
 
             'tag_ar' => $request->tag_ar,
             'tag_en' => $request->tag_en,
@@ -101,7 +101,7 @@ class QuestionBankController extends Controller
             'class_id' => 'nullable|exists:classes,id',
 
             'title_ar' => 'required',
-            'title_en' => 'required',
+            'title_en' => 'nullable',
 
             'tag_ar' => 'nullable',
             'tag_en' => 'nullable',
@@ -127,7 +127,7 @@ class QuestionBankController extends Controller
             'class_id' => $request->class_id,
 
             'title_ar' => $request->title_ar,
-            'title_en' => $request->title_en,
+            'title_en' => $request->title_en ?: $request->title_ar,
 
             'tag_ar' => $request->tag_ar,
             'tag_en' => $request->tag_en,

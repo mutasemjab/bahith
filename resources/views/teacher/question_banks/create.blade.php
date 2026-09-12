@@ -29,6 +29,7 @@
                         <div class="col-md-6">
                             <label class="form-label">{{ __('messages.title_en_short') }}</label>
                             <input type="text" name="title_en" class="form-control" value="{{ old('title_en') }}">
+                            <small class="text-muted">اتركه فارغاً ليأخذ نفس العنوان بالعربي</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">{{ __('messages.tag_ar') }}</label>

@@ -43,7 +43,7 @@ class PreviousYearExamController extends Controller
             'year' => 'required|integer',
 
             'title_ar' => 'required|string|max:255',
-            'title_en' => 'required|string|max:255',
+            'title_en' => 'nullable|string|max:255',
 
             'tag_ar' => 'nullable|string|max:255',
             'tag_en' => 'nullable|string|max:255',
@@ -70,7 +70,7 @@ class PreviousYearExamController extends Controller
             'year' => $request->year,
 
             'title_ar' => $request->title_ar,
-            'title_en' => $request->title_en,
+            'title_en' => $request->title_en ?: $request->title_ar,
 
             'tag_ar' => $request->tag_ar,
             'tag_en' => $request->tag_en,
@@ -105,7 +105,7 @@ class PreviousYearExamController extends Controller
             'year' => 'required|integer',
 
             'title_ar' => 'required|string|max:255',
-            'title_en' => 'required|string|max:255',
+            'title_en' => 'nullable|string|max:255',
 
             'tag_ar' => 'nullable|string|max:255',
             'tag_en' => 'nullable|string|max:255',
@@ -131,7 +131,7 @@ class PreviousYearExamController extends Controller
             'year' => $request->year,
 
             'title_ar' => $request->title_ar,
-            'title_en' => $request->title_en,
+            'title_en' => $request->title_en ?: $request->title_ar,
 
             'tag_ar' => $request->tag_ar,
             'tag_en' => $request->tag_en,

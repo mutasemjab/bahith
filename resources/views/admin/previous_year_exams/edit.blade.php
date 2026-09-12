@@ -20,9 +20,9 @@
     <div class="card-body">
 
         <div class="mb-3">
-            <label>{{ __('messages.subject') }}</label>
+            <label>{{ __('messages.subject') }} <span class="text-danger">*</span></label>
 
-            <select name="subject_id" class="form-control">
+            <select name="subject_id" class="form-control" required>
                 <option value="">— اختر المادة —</option>
                 @foreach($subjects as $subject)
                     <option value="{{ $subject->id }}"
@@ -49,21 +49,23 @@
         </div>
 
         <div class="mb-3">
-            <label>{{ __('messages.year_label') }}</label>
+            <label>{{ __('messages.year_label') }} <span class="text-danger">*</span></label>
 
             <input type="number"
                    name="year"
                    class="form-control"
-                   value="{{ old('year',$previousYearExam->year ?? '') }}">
+                   value="{{ old('year',$previousYearExam->year ?? '') }}"
+                   required>
         </div>
 
         <div class="mb-3">
-            <label>{{ __('messages.title_ar_short') }}</label>
+            <label>{{ __('messages.title_ar_short') }} <span class="text-danger">*</span></label>
 
             <input type="text"
                    name="title_ar"
                    class="form-control"
-                   value="{{ old('title_ar',$previousYearExam->title_ar ?? '') }}">
+                   value="{{ old('title_ar',$previousYearExam->title_ar ?? '') }}"
+                   required>
         </div>
 
         <div class="mb-3">
@@ -73,6 +75,7 @@
                    name="title_en"
                    class="form-control"
                    value="{{ old('title_en',$previousYearExam->title_en ?? '') }}">
+            <small class="text-muted">اتركه فارغاً ليأخذ نفس العنوان بالعربي</small>
         </div>
 
         <div class="mb-3">

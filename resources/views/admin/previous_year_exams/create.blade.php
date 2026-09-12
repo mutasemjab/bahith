@@ -15,9 +15,9 @@
             <div class="card-body">
 
                 <div class="mb-3">
-                    <label>{{ __('messages.subject') }}</label>
+                    <label>{{ __('messages.subject') }} <span class="text-danger">*</span></label>
 
-                    <select name="subject_id" class="form-control">
+                    <select name="subject_id" class="form-control" required>
                         <option value="">— اختر المادة —</option>
                         @foreach ($subjects as $subject)
                             <option value="{{ $subject->id }}"
@@ -43,21 +43,22 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>{{ __('messages.year_label') }}</label>
+                    <label>{{ __('messages.year_label') }} <span class="text-danger">*</span></label>
 
-                    <input type="number" name="year" class="form-control">
+                    <input type="number" name="year" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
-                    <label>{{ __('messages.title_ar_short') }}</label>
+                    <label>{{ __('messages.title_ar_short') }} <span class="text-danger">*</span></label>
 
-                    <input type="text" name="title_ar" class="form-control">
+                    <input type="text" name="title_ar" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
                     <label>{{ __('messages.title_en_short') }}</label>
 
                     <input type="text" name="title_en" class="form-control">
+                    <small class="text-muted">اتركه فارغاً ليأخذ نفس العنوان بالعربي</small>
                 </div>
 
                 <div class="mb-3">
@@ -91,9 +92,9 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>{{ __('messages.pdf_file_label') }}</label>
+                    <label>{{ __('messages.pdf_file_label') }} <span class="text-danger">*</span></label>
 
-                    <input type="file" name="pdf_file" class="form-control">
+                    <input type="file" name="pdf_file" class="form-control" required>
 
                 </div>
 
