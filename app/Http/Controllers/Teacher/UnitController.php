@@ -112,6 +112,7 @@ class UnitController extends Controller
 
         unset($data['lesson_file']);
         $unit->lessons()->create($data);
+        $unit->increment('total_videos');
 
         ContentNotificationService::onNewLesson($unit->course, $data['title_ar'], $data['lesson_type']);
 
