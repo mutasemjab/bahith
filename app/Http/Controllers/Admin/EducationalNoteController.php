@@ -46,14 +46,15 @@ class EducationalNoteController extends Controller
             'type'        => 'required|in:lesson,homework',
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'attachment'  => 'nullable|file|max:20480',
+            'images'      => 'nullable|array',
+            'images.*'    => 'file|image|max:20480',
             'date'        => 'required|date',
         ]);
 
-        $attachment = null;
-        if ($request->hasFile('attachment')) {
-            $attachment = uploadImage('assets/uploads/educational_notes', $request->file('attachment'));
-        }
+        $images = collect($request->file('images', []))
+            ->map(fn ($file) => uploadImage('assets/uploads/educational_notes', $file))
+            ->values()
+            ->all();
 
         EducationalNote::create([
             'teacher_id'  => $request->teacher_id,
@@ -61,7 +62,8 @@ class EducationalNoteController extends Controller
             'type'        => $request->type,
             'title'       => $request->title,
             'description' => $request->description,
-            'attachment'  => $attachment,
+            'attachment'  => $images[0] ?? null,
+            'images'      => $images,
             'date'        => $request->date,
         ]);
 
@@ -78,14 +80,26 @@ class EducationalNoteController extends Controller
     public function update(Request $request, EducationalNote $educationalNote)
     {
         $request->validate([
-            'teacher_id'  => 'nullable|exists:teachers,id',
-            'class_id'    => 'nullable|exists:classes,id',
-            'type'        => 'required|in:lesson,homework',
-            'title'       => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'attachment'  => 'nullable|file|max:20480',
-            'date'        => 'required|date',
+            'teacher_id'     => 'nullable|exists:teachers,id',
+            'class_id'       => 'nullable|exists:classes,id',
+            'type'           => 'required|in:lesson,homework',
+            'title'          => 'required|string|max:255',
+            'description'    => 'nullable|string',
+            'images'         => 'nullable|array',
+            'images.*'       => 'file|image|max:20480',
+            'remove_images'  => 'nullable|array',
+            'date'           => 'required|date',
         ]);
+
+        $currentImages = $educationalNote->image_list;
+        $keptImages    = array_values(array_diff($currentImages, $request->input('remove_images', [])));
+
+        $newImages = collect($request->file('images', []))
+            ->map(fn ($file) => uploadImage('assets/uploads/educational_notes', $file))
+            ->values()
+            ->all();
+
+        $allImages = array_values(array_merge($keptImages, $newImages));
 
         $data = [
             'teacher_id'  => $request->teacher_id,
@@ -93,12 +107,10 @@ class EducationalNoteController extends Controller
             'type'        => $request->type,
             'title'       => $request->title,
             'description' => $request->description,
+            'attachment'  => $allImages[0] ?? null,
+            'images'      => $allImages,
             'date'        => $request->date,
         ];
-
-        if ($request->hasFile('attachment')) {
-            $data['attachment'] = uploadImage('assets/uploads/educational_notes', $request->file('attachment'));
-        }
 
         $educationalNote->update($data);
 

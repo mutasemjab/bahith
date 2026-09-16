@@ -75,7 +75,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label">{{ __('messages.attachment_label') }}</label>
-                            <input type="file" name="attachment" class="form-control">
+                            <input type="file" name="images[]" class="form-control" multiple accept="image/*">
                             <small class="text-muted" style="font-size:.75rem">{{ __('messages.attachment_hint') }}</small>
                         </div>
                     </div>

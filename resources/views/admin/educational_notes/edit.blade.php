@@ -81,16 +81,23 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label">{{ __('messages.attachment_label') }}</label>
-                            <input type="file" name="attachment" class="form-control">
-                            @if($educationalNote->attachment)
-                                <div class="mt-1" style="font-size:.8rem">
-                                    {{ __('messages.current_file') }}:
-                                    <a href="{{ asset('assets/uploads/educational_notes/'.$educationalNote->attachment) }}" target="_blank">
-                                        <i class="bi bi-paperclip"></i> {{ $educationalNote->attachment }}
-                                    </a>
+                            @if($educationalNote->image_list)
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    @foreach($educationalNote->image_list as $img)
+                                        <div class="text-center" style="font-size:.75rem">
+                                            <a href="{{ asset('assets/uploads/educational_notes/'.$img) }}" target="_blank">
+                                                <img src="{{ asset('assets/uploads/educational_notes/'.$img) }}" style="width:70px;height:70px;object-fit:cover;border-radius:6px;border:1px solid var(--border)">
+                                            </a>
+                                            <div class="form-check mt-1">
+                                                <input class="form-check-input" type="checkbox" name="remove_images[]" value="{{ $img }}" id="rm-{{ $loop->index }}">
+                                                <label class="form-check-label" for="rm-{{ $loop->index }}">{{ __('messages.remove_image') }}</label>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             @endif
-                            <small class="text-muted" style="font-size:.75rem">{{ __('messages.leave_empty_keep_file') }}</small>
+                            <input type="file" name="images[]" class="form-control" multiple accept="image/*">
+                            <small class="text-muted" style="font-size:.75rem">{{ __('messages.attachment_hint') }}</small>
                         </div>
                     </div>
                 </div>

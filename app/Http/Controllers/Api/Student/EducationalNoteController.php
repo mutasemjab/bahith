@@ -40,6 +40,7 @@ class EducationalNoteController extends Controller
             'type'        => $note->type,
             'date'        => $note->date?->format('Y-m-d'),
             'attachment'  => $note->attachment ? asset('assets/uploads/educational_notes/' . $note->attachment) : null,
+            'images'      => collect($note->image_list)->map(fn ($img) => asset('assets/uploads/educational_notes/' . $img))->values(),
             'teacher' => [
                 'id'     => $note->teacher?->id,
                 'name'   => $note->teacher?->name,

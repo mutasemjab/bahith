@@ -39,11 +39,14 @@
                 @if($note->description)
                     <p style="font-size:.85rem;color:var(--muted);margin-bottom:10px">{{ $note->description }}</p>
                 @endif
-                @if($note->attachment)
-                    <a href="{{ asset('assets/uploads/educational_notes/'.$note->attachment) }}" target="_blank"
-                       style="font-size:.8rem;color:var(--primary)">
-                        <i class="bi bi-paperclip"></i> {{ __('messages.view_attachment') }}
-                    </a>
+                @if($note->image_list)
+                    <div class="d-flex flex-wrap gap-1">
+                        @foreach($note->image_list as $img)
+                            <a href="{{ asset('assets/uploads/educational_notes/'.$img) }}" target="_blank" title="{{ __('messages.view_attachment') }}">
+                                <img src="{{ asset('assets/uploads/educational_notes/'.$img) }}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--border)">
+                            </a>
+                        @endforeach
+                    </div>
                 @endif
             </div>
             <div class="panel-card-footer d-flex gap-2" style="padding:10px 16px;border-top:1px solid var(--border)">
