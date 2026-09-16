@@ -13,7 +13,7 @@ class ExamController extends Controller
     {
         $this->middleware($this->perm('exam-table'))->only(['index', 'show', 'getCourseStructure']);
         $this->middleware($this->perm('exam-add'))->only(['create', 'store']);
-        $this->middleware($this->perm('exam-edit'))->only(['edit', 'update', 'storeQuestion', 'destroyQuestion']);
+        $this->middleware($this->perm('exam-edit'))->only(['edit', 'update', 'storeQuestion', 'updateQuestion', 'destroyQuestion']);
         $this->middleware($this->perm('exam-delete'))->only(['destroy']);
     }
 
@@ -230,6 +230,54 @@ class ExamController extends Controller
         ], $options);
 
         return back()->with('success', 'Question added successfully.');
+    }
+
+    public function updateQuestion(Request $request, int $questionId)
+    {
+        $question = Question::findOrFail($questionId);
+
+        $data = $request->validate([
+            'question_text_ar'  => 'required|string',
+            'question_text_en'  => 'nullable|string',
+            'question_image'    => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+            'remove_image'      => 'nullable|boolean',
+            'question_type'     => 'required|in:mcq,true_false,short_answer,essay',
+            'difficulty'        => 'nullable|in:easy,medium,hard',
+            'marks'             => 'required|integer|min:1',
+            'explanation_ar'    => 'nullable|string',
+            'explanation_en'    => 'nullable|string',
+            'options'           => 'required_if:question_type,mcq,true_false|array|min:2',
+            'options.*.text_ar' => 'required_with:options|string',
+            'options.*.text_en' => 'nullable|string',
+            'options.*.correct' => 'nullable|boolean',
+        ]);
+
+        $imagePath = $question->image;
+        if ($request->hasFile('question_image')) {
+            $imagePath = uploadImage('assets/uploads/questions', $request->file('question_image'));
+        } elseif ($request->boolean('remove_image')) {
+            $imagePath = null;
+        }
+
+        $options = collect($data['options'] ?? [])->map(fn ($o, $i) => [
+            'option_text_ar' => $o['text_ar'],
+            'option_text_en' => $o['text_en'] ?? null,
+            'is_correct'     => isset($o['correct']) && $o['correct'],
+            'order_index'    => $i,
+        ])->all();
+
+        $this->exams->updateQuestion($question, [
+            'question_ar'    => $data['question_text_ar'],
+            'question_en'    => $data['question_text_en'] ?? null,
+            'image'          => $imagePath,
+            'question_type'  => $data['question_type'],
+            'difficulty'     => $data['difficulty'] ?? 'medium',
+            'marks'          => $data['marks'],
+            'explanation_ar' => $data['explanation_ar'] ?? null,
+            'explanation_en' => $data['explanation_en'] ?? null,
+        ], $options);
+
+        return back()->with('success', 'Question updated successfully.');
     }
 
     public function destroyQuestion(int $questionId)

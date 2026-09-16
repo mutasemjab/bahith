@@ -105,6 +105,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('courses/{id}/exam-structure',   [ExamController::class, 'getCourseStructure'])->name('admin.courses.exam-structure');
         Route::resource('exams', ExamController::class, ['as' => 'admin']);
         Route::post('exams/{examId}/questions',     [ExamController::class, 'storeQuestion'])->name('admin.exams.questions.store');
+        Route::put('questions/{questionId}',        [ExamController::class, 'updateQuestion'])->name('admin.exams.questions.update');
         Route::delete('questions/{questionId}',     [ExamController::class, 'destroyQuestion'])->name('admin.exams.questions.destroy');
 
         // ── Cities ────────────────────────────────────────────────────

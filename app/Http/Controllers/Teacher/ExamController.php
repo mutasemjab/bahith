@@ -206,9 +206,12 @@ class ExamController extends Controller
     {
         $exam = Exam::findOrFail($examId);
 
+        $this->authorizeOwnership($exam);
+
         $data = $request->validate([
             'question_text_ar'  => 'required|string',
             'question_text_en'  => 'nullable|string',
+            'question_image'    => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'question_type'     => 'required|in:mcq,true_false,short_answer,essay',
             'difficulty'        => 'nullable|in:easy,medium,hard',
             'marks'             => 'required|integer|min:1',
@@ -218,6 +221,11 @@ class ExamController extends Controller
             'options.*.text_en' => 'nullable|string',
             'options.*.correct' => 'nullable',
         ]);
+
+        $imagePath = null;
+        if ($request->hasFile('question_image')) {
+            $imagePath = uploadImage('assets/uploads/questions', $request->file('question_image'));
+        }
 
         $options = collect($data['options'] ?? [])->map(fn ($o, $i) => [
             'option_text_ar' => $o['text_ar'],
@@ -229,6 +237,7 @@ class ExamController extends Controller
         $this->exams->addQuestion($exam, [
             'question_ar'    => $data['question_text_ar'],
             'question_en'    => $data['question_text_en'] ?? null,
+            'image'          => $imagePath,
             'question_type'  => $data['question_type'],
             'difficulty'     => $data['difficulty'] ?? 'medium',
             'marks'          => $data['marks'],
@@ -238,9 +247,60 @@ class ExamController extends Controller
         return back()->with('success', 'Question added.');
     }
 
+    public function updateQuestion(Request $request, int $questionId)
+    {
+        $question = Question::with('exam')->findOrFail($questionId);
+
+        $this->authorizeOwnership($question->exam);
+
+        $data = $request->validate([
+            'question_text_ar'  => 'required|string',
+            'question_text_en'  => 'nullable|string',
+            'question_image'    => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+            'remove_image'      => 'nullable|boolean',
+            'question_type'     => 'required|in:mcq,true_false,short_answer,essay',
+            'difficulty'        => 'nullable|in:easy,medium,hard',
+            'marks'             => 'required|integer|min:1',
+            'explanation_ar'    => 'nullable|string',
+            'options'           => 'required_if:question_type,mcq,true_false|array|min:2',
+            'options.*.text_ar' => 'required_with:options|string',
+            'options.*.text_en' => 'nullable|string',
+            'options.*.correct' => 'nullable',
+        ]);
+
+        $imagePath = $question->image;
+        if ($request->hasFile('question_image')) {
+            $imagePath = uploadImage('assets/uploads/questions', $request->file('question_image'));
+        } elseif ($request->boolean('remove_image')) {
+            $imagePath = null;
+        }
+
+        $options = collect($data['options'] ?? [])->map(fn ($o, $i) => [
+            'option_text_ar' => $o['text_ar'],
+            'option_text_en' => $o['text_en'] ?? null,
+            'is_correct'     => ! empty($o['correct']),
+            'order_index'    => $i,
+        ])->all();
+
+        $this->exams->updateQuestion($question, [
+            'question_ar'    => $data['question_text_ar'],
+            'question_en'    => $data['question_text_en'] ?? null,
+            'image'          => $imagePath,
+            'question_type'  => $data['question_type'],
+            'difficulty'     => $data['difficulty'] ?? 'medium',
+            'marks'          => $data['marks'],
+            'explanation_ar' => $data['explanation_ar'] ?? null,
+        ], $options);
+
+        return back()->with('success', 'Question updated.');
+    }
+
     public function destroyQuestion(int $questionId)
     {
-        $question = Question::findOrFail($questionId);
+        $question = Question::with('exam')->findOrFail($questionId);
+
+        $this->authorizeOwnership($question->exam);
+
         $this->exams->deleteQuestion($question);
 
         return back()->with('success', 'Question deleted.');
