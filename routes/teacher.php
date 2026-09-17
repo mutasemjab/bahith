@@ -77,6 +77,7 @@ Route::group([
 
         // ── Exams ─────────────────────────────────────────────────────
         Route::resource('exams', ExamController::class, ['as' => 'teacher']);
+        Route::get('exams/{examId}/results',       [ExamController::class, 'results'])->name('teacher.exams.results');
         Route::post('exams/{examId}/questions',    [ExamController::class, 'storeQuestion'])->name('teacher.exams.questions.store');
         Route::put('questions/{questionId}',       [ExamController::class, 'updateQuestion'])->name('teacher.exams.questions.update');
         Route::delete('questions/{questionId}',    [ExamController::class, 'destroyQuestion'])->name('teacher.exams.questions.destroy');

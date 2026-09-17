@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\{Category, ContactMessage, Course, Enrollment, ExamAttempt, Order, Student, Teacher};
+use App\Models\{Category, ContactMessage, Course, Enrollment, ExamAttempt, Order, Student, Teacher, TeacherClass};
 
 class StatsService
 {
@@ -24,13 +24,11 @@ class StatsService
     public function teacherStats(int $teacherId): array
     {
         $courseIds = Course::where('teacher_id', $teacherId)->pluck('id');
+        $classIds  = TeacherClass::where('teacher_id', $teacherId)->distinct()->pluck('class_id');
 
         return [
             'total_courses'    => $courseIds->count(),
-            'total_students'   => Enrollment::whereIn('course_id', $courseIds)
-                                    ->where('is_active', true)
-                                    ->distinct('student_id')
-                                    ->count('student_id'),
+            'total_students'   => Student::whereIn('class_id', $classIds)->where('is_active', true)->count(),
             'avg_rating'       => round(Course::whereIn('id', $courseIds)->avg('average_rating') ?? 0, 1),
         ];
     }

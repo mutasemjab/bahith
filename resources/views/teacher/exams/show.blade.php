@@ -9,6 +9,7 @@
         <p class="page-sub">{{ $exam->questions->count() }} {{ __('messages.t_questions') }} · {{ $exam->duration_minutes }} {{ __('messages.t_min') }} · {{ __('messages.t_pass') }}: {{ $exam->pass_marks }}/{{ $exam->total_marks }}</p>
     </div>
     <div class="d-flex gap-2">
+        <a href="{{ route('teacher.exams.results', $exam->id) }}" class="btn-primary-sm"><i class="bi bi-bar-chart"></i> نتائج الطلاب</a>
         <a href="{{ route('teacher.exams.edit', $exam->id) }}" class="btn-outline-sm"><i class="bi bi-pencil"></i> {{ __('messages.t_edit') }}</a>
         <a href="{{ route('teacher.exams.index') }}" class="btn-outline-sm"><i class="bi bi-arrow-left"></i> {{ __('messages.t_back') }}</a>
     </div>

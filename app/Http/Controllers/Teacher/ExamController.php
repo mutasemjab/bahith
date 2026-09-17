@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Course, Exam, Question, SchoolClass, Subject};
+use App\Models\{Course, Exam, ExamAttempt, Question, SchoolClass, Subject};
 use App\Services\ExamService;
 use Illuminate\Http\Request;
 
@@ -304,5 +304,20 @@ class ExamController extends Controller
         $this->exams->deleteQuestion($question);
 
         return back()->with('success', 'Question deleted.');
+    }
+
+    public function results(int $id)
+    {
+        $exam = $this->exams->find($id);
+
+        $this->authorizeOwnership($exam);
+
+        $attempts = ExamAttempt::with(['student', 'answers.question', 'answers.selectedOption'])
+            ->where('exam_id', $id)
+            ->where('status', 'submitted')
+            ->orderByDesc('submitted_at')
+            ->get();
+
+        return view('teacher.exams.results', compact('exam', 'attempts'));
     }
 }
