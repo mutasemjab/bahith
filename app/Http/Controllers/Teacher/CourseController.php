@@ -68,7 +68,8 @@ class CourseController extends Controller
         $data = $request->validate([
             'category_id'      => 'required|exists:categories,id',
             'subject_id'       => 'nullable|exists:subjects,id',
-            'class_id'         => 'nullable|exists:classes,id',
+            'class_ids'        => 'nullable|array',
+            'class_ids.*'      => 'exists:classes,id',
             'title_ar'         => 'required|string|max:255',
             'title_en'         => 'required|string|max:255',
             'description_ar'   => 'nullable|string',
@@ -87,12 +88,15 @@ class CourseController extends Controller
             'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        $classIds = $data['class_ids'] ?? [];
+        unset($data['class_ids']);
+
         $data['teacher_id']         = $this->teacher()->id;
         $data['is_published']       = $request->boolean('is_published');
         $data['is_free']            = $request->boolean('is_free');
         $data['sequential_videos']  = $request->boolean('sequential_videos');
 
-        $course = $this->courses->create($data, $request->file('thumbnail'));
+        $course = $this->courses->create($data, $request->file('thumbnail'), $classIds);
 
         return redirect()->route('teacher.courses.show', $course->id)
             ->with('success', 'Course created. Now add units and lessons.');
@@ -129,7 +133,8 @@ class CourseController extends Controller
         $data = $request->validate([
             'category_id'      => 'required|exists:categories,id',
             'subject_id'       => 'nullable|exists:subjects,id',
-            'class_id'         => 'nullable|exists:classes,id',
+            'class_ids'        => 'nullable|array',
+            'class_ids.*'      => 'exists:classes,id',
             'title_ar'         => 'required|string|max:255',
             'title_en'         => 'required|string|max:255',
             'description_ar'   => 'nullable|string',
@@ -148,11 +153,14 @@ class CourseController extends Controller
             'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        $classIds = $data['class_ids'] ?? [];
+        unset($data['class_ids']);
+
         $data['is_published']      = $request->boolean('is_published');
         $data['is_free']           = $request->boolean('is_free');
         $data['sequential_videos'] = $request->boolean('sequential_videos');
 
-        $this->courses->update($course, $data, $request->file('thumbnail'));
+        $this->courses->update($course, $data, $request->file('thumbnail'), $classIds);
 
         return redirect()->route('teacher.courses.show', $id)
             ->with('success', 'Course updated successfully.');

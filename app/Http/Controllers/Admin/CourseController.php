@@ -43,7 +43,8 @@ class CourseController extends Controller
             'teacher_id'       => 'required|exists:teachers,id',
             'category_id'      => 'nullable|exists:categories,id',
             'subject_id'       => 'nullable|exists:subjects,id',
-            'class_id'         => 'nullable|exists:classes,id',
+            'class_ids'        => 'nullable|array',
+            'class_ids.*'      => 'exists:classes,id',
             'title_ar'         => 'required|string|max:255',
             'title_en'         => 'required|string|max:255',
             'description_ar'   => 'nullable|string',
@@ -63,12 +64,15 @@ class CourseController extends Controller
             'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        $classIds = $data['class_ids'] ?? [];
+        unset($data['class_ids']);
+
         $data['is_published']      = $request->boolean('is_published');
         $data['is_featured']       = $request->boolean('is_featured');
         $data['is_free']           = $request->boolean('is_free');
         $data['sequential_videos'] = $request->boolean('sequential_videos');
 
-        $course = $this->courses->create($data, $request->file('thumbnail'));
+        $course = $this->courses->create($data, $request->file('thumbnail'), $classIds);
         AdminActivityLog::log('create', "إضافة دورة: {$data['title_ar']}", 'courses', $course->id);
 
         return redirect()->route('admin.courses.index')
@@ -101,7 +105,8 @@ class CourseController extends Controller
             'teacher_id'       => 'required|exists:teachers,id',
             'category_id'      => 'nullable|exists:categories,id',
             'subject_id'       => 'nullable|exists:subjects,id',
-            'class_id'         => 'nullable|exists:classes,id',
+            'class_ids'        => 'nullable|array',
+            'class_ids.*'      => 'exists:classes,id',
             'title_ar'         => 'required|string|max:255',
             'title_en'         => 'required|string|max:255',
             'description_ar'   => 'nullable|string',
@@ -121,12 +126,15 @@ class CourseController extends Controller
             'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        $classIds = $data['class_ids'] ?? [];
+        unset($data['class_ids']);
+
         $data['is_published']      = $request->boolean('is_published');
         $data['is_featured']       = $request->boolean('is_featured');
         $data['is_free']           = $request->boolean('is_free');
         $data['sequential_videos'] = $request->boolean('sequential_videos');
 
-        $this->courses->update($course, $data, $request->file('thumbnail'));
+        $this->courses->update($course, $data, $request->file('thumbnail'), $classIds);
         AdminActivityLog::log('update', "تعديل دورة: {$course->title_ar}", 'courses', $course->id);
 
         return redirect()->route('admin.courses.index')

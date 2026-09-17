@@ -18,7 +18,7 @@ class CourseService
             $query->where('teacher_id', $filters['teacher_id']);
         }
         if (! empty($filters['class_id'])) {
-            $query->where('class_id', $filters['class_id']);
+            $query->whereHas('classes', fn ($q) => $q->where('classes.id', $filters['class_id']));
         }
         if (! empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
@@ -48,23 +48,31 @@ class CourseService
         ])->withCount('enrollments')->findOrFail($id);
     }
 
-    public function create(array $data, $thumbnail = null): Course
+    public function create(array $data, $thumbnail = null, array $classIds = []): Course
     {
         if ($thumbnail) {
             $data['thumbnail'] = uploadImage($this->uploadFolder, $thumbnail);
         }
 
-        return Course::create($data);
+        $data['class_id'] = $classIds[0] ?? null;
+
+        $course = Course::create($data);
+        $course->classes()->sync($classIds);
+
+        return $course;
     }
 
-    public function update(Course $course, array $data, $thumbnail = null): Course
+    public function update(Course $course, array $data, $thumbnail = null, array $classIds = []): Course
     {
         if ($thumbnail) {
             $this->deleteThumbnail($course->getRawOriginal('thumbnail'));
             $data['thumbnail'] = uploadImage($this->uploadFolder, $thumbnail);
         }
 
+        $data['class_id'] = $classIds[0] ?? null;
+
         $course->update($data);
+        $course->classes()->sync($classIds);
 
         return $course->fresh();
     }

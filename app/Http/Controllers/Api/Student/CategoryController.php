@@ -57,7 +57,7 @@ class CategoryController extends Controller
         $courses = Course::with(['teacher'])
             ->published()
             ->where('subject_id', $id)
-            ->when($request->user('sanctum')?->class_id, fn ($q, $classId) => $q->where('class_id', $classId))
+            ->when($request->user('sanctum')?->class_id, fn ($q, $classId) => $q->whereHas('classes', fn ($cq) => $cq->where('classes.id', $classId)))
             ->latest()
             ->get()
             ->map(fn ($c) => [
