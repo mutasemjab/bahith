@@ -187,7 +187,7 @@ function buildStructureUrl(id) {
 const initUnitId   = '{{ old("unit_id", $exam->unit_id) }}';
 const initLessonId = '{{ old("lesson_id", $exam->lesson_id) }}';
 
-document.getElementById('courseSelect').addEventListener('change', function () {
+jQuery('#courseSelect').on('change', function () {
     loadCourseStructure(this.value);
 });
 
@@ -232,7 +232,11 @@ function refreshSubjectOptions(preselect) {
     }
 }
 
-document.getElementById('teacherSelect').addEventListener('change', function () {
+// Select2 (applied to every .form-select in admin.layouts.app) fires its
+// selection change through jQuery's own event system, not a real DOM 'change'
+// event — a native addEventListener('change', ...) here never sees it, so this
+// has to be bound through jQuery too.
+jQuery('#teacherSelect').on('change', function () {
     refreshSubjectOptions('');
 });
 
