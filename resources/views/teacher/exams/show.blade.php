@@ -96,11 +96,16 @@
                 @csrf
                     <div class="mb-3">
                         <label class="form-label">{{ __('messages.t_question_ar') }} <span class="text-danger">*</span></label>
-                        <textarea name="question_text_ar" rows="2" class="form-control" dir="rtl" required></textarea>
+                        <div class="d-flex flex-wrap gap-1 mb-1">
+                            @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
+                                <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
+                            @endforeach
+                        </div>
+                        <textarea name="question_text_ar" id="question_text_ar" rows="2" class="form-control" dir="rtl" required></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">{{ __('messages.t_question_en') }}</label>
-                        <textarea name="question_text_en" rows="2" class="form-control"></textarea>
+                        <textarea name="question_text_en" id="question_text_en" rows="2" class="form-control"></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">{{ __('messages.question_image') }} <span style="color:var(--muted);font-size:.8rem">({{ __('messages.optional') }})</span></label>
@@ -197,6 +202,11 @@
         <div class="modal-body">
             <div class="mb-3">
                 <label class="form-label">{{ __('messages.t_question_ar') }} <span class="text-danger">*</span></label>
+                <div class="d-flex flex-wrap gap-1 mb-1">
+                    @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
+                        <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="edit-question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
+                    @endforeach
+                </div>
                 <textarea name="question_text_ar" id="edit-question_text_ar" rows="2" class="form-control" dir="rtl" required></textarea>
             </div>
             <div class="mb-3">
@@ -287,6 +297,23 @@ function previewImg(input, imgId) {
         img.style.display = 'none';
     }
 }
+
+// Insert a math symbol at the cursor position in whichever textarea the button targets,
+// so symbols that aren't on a normal keyboard (√, π, ≤, ≥ ...) can be typed without
+// copy-pasting them from elsewhere, which was garbling the text.
+document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.math-symbol-btn');
+    if (!btn) return;
+    var target = document.getElementById(btn.dataset.target);
+    if (!target) return;
+    var start = target.selectionStart ?? target.value.length;
+    var end   = target.selectionEnd ?? target.value.length;
+    var symbol = btn.dataset.symbol;
+    target.value = target.value.slice(0, start) + symbol + target.value.slice(end);
+    var newPos = start + symbol.length;
+    target.focus();
+    target.setSelectionRange(newPos, newPos);
+});
 
 // Update the correct-flag hidden input whenever a correct_option radio changes,
 // scoped to whichever prefix (add form = '', edit modal = 'edit-') it belongs to.
