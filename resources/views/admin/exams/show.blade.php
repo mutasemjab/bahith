@@ -95,11 +95,7 @@
                 @csrf
                     <div class="mb-3">
                         <label class="form-label">{{ __('messages.question_ar') }} <span class="text-danger">*</span></label>
-                        <div class="d-flex flex-wrap gap-1 mb-1">
-                            @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
-                                <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
-                            @endforeach
-                        </div>
+                        @include('partials.symbol_picker', ['target' => 'question_text_ar'])
                         <textarea name="question_text_ar" id="question_text_ar" rows="2" class="form-control symbol-target" dir="rtl" required></textarea>
                     </div>
                     <div class="mb-3">
@@ -138,11 +134,6 @@
                     {{-- Options section --}}
                     <div id="options-section">
                         <label class="form-label">{{ __('messages.options_label') }}</label>
-                        <div class="d-flex flex-wrap gap-1 mb-2">
-                            @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
-                                <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
-                            @endforeach
-                        </div>
 
                         {{-- MCQ: dynamic rows, 4 to start --}}
                         <div id="mcq-rows" data-next-index="4">
@@ -179,11 +170,6 @@
 
                     <div class="mb-3">
                         <label class="form-label">{{ __('messages.explanation_ar') }}</label>
-                        <div class="d-flex flex-wrap gap-1 mb-1">
-                            @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
-                                <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
-                            @endforeach
-                        </div>
                         <textarea name="explanation_ar" rows="2" class="form-control symbol-target" dir="rtl"></textarea>
                     </div>
 
@@ -211,11 +197,7 @@
         <div class="modal-body">
             <div class="mb-3">
                 <label class="form-label">{{ __('messages.question_ar') }} <span class="text-danger">*</span></label>
-                <div class="d-flex flex-wrap gap-1 mb-1">
-                    @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
-                        <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="edit-question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
-                    @endforeach
-                </div>
+                @include('partials.symbol_picker', ['target' => 'edit-question_text_ar'])
                 <textarea name="question_text_ar" id="edit-question_text_ar" rows="2" class="form-control symbol-target" dir="rtl" required></textarea>
             </div>
             <div class="mb-3">
@@ -258,11 +240,6 @@
 
             <div id="edit-options-section">
                 <label class="form-label">{{ __('messages.options_label') }}</label>
-                <div class="d-flex flex-wrap gap-1 mb-2">
-                    @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
-                        <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="edit-question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
-                    @endforeach
-                </div>
                 <div id="edit-mcq-rows" data-next-index="0"></div>
                 <button type="button" class="btn-outline-sm mb-3" onclick="addOptionRow('edit-')"><i class="bi bi-plus-lg"></i> {{ __('messages.add_option') }}</button>
 
@@ -286,11 +263,6 @@
 
             <div class="mb-3">
                 <label class="form-label">{{ __('messages.explanation_ar') }}</label>
-                <div class="d-flex flex-wrap gap-1 mb-1">
-                    @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
-                        <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="edit-question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
-                    @endforeach
-                </div>
                 <textarea name="explanation_ar" id="edit-explanation_ar" rows="2" class="form-control symbol-target" dir="rtl"></textarea>
             </div>
         </div>
