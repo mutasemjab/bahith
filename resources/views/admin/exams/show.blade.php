@@ -41,11 +41,12 @@
                             {{ $q->question_ar ?: $q->question_en }}
                         </div>
                         <div class="d-flex gap-1" style="flex-shrink:0">
+                            @php
+                                $qEditData = $q->only(['id','question_ar','question_en','image','question_type','difficulty','marks','explanation_ar','explanation_en']);
+                                $qEditOpts = $q->options->map(fn($o) => ['text_ar' => $o->option_text_ar, 'text_en' => $o->option_text_en, 'correct' => (bool) $o->is_correct])->values()->all();
+                            @endphp
                             <button type="button" class="btn-outline-sm" style="padding:3px 7px"
-                                    onclick='openEditQuestion(
-                                        @json($q->only(["id","question_ar","question_en","image","question_type","difficulty","marks","explanation_ar","explanation_en"])),
-                                        @json($q->options->map(fn($o) => ["text_ar" => $o->option_text_ar, "text_en" => $o->option_text_en, "correct" => (bool) $o->is_correct]))
-                                    )'>
+                                    onclick='openEditQuestion(@json($qEditData), @json($qEditOpts))'>
                                 <i class="bi bi-pencil"></i>
                             </button>
                             <form action="{{ route('admin.exams.questions.destroy', $q->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.delete_question_confirm') }}')">
