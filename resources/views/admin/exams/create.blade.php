@@ -69,7 +69,7 @@
                 <select name="subject_id" id="subjectSelect" class="form-select">
                     <option value="">— {{ __('messages.select_subject') }} —</option>
                     @foreach($subjects as $sub)
-                        <option value="{{ $sub->id }}" @selected(old('subject_id') == $sub->id)>{{ $sub->name }}</option>
+                        <option value="{{ $sub->id }}" @selected(old('subject_id') == $sub->id)>{{ $sub->full_path }}</option>
                     @endforeach
                 </select>
             </div>

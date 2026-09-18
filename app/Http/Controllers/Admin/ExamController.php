@@ -28,12 +28,20 @@ class ExamController extends Controller
     public function create()
     {
         $courses         = Course::where('is_published', true)->get();
-        $subjects        = Subject::active()->get();
+        $subjects        = $this->subjectsWithPath();
         $teachers        = Teacher::orderBy('name')->get();
         $classes         = SchoolClass::where('is_active', true)->orderBy('name')->get();
         $teacherSubjects = $this->teacherSubjectsMap();
 
         return view('admin.exams.create', compact('courses', 'subjects', 'teachers', 'classes', 'teacherSubjects'));
+    }
+
+    private function subjectsWithPath(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Subject::with(['category.parent.parent.parent'])
+            ->active()
+            ->get()
+            ->sortBy(fn ($s) => $s->full_path);
     }
 
     // Maps every teacher_id to the subject_ids assigned to them in teacher_classes,
@@ -130,7 +138,7 @@ class ExamController extends Controller
     {
         $exam            = Exam::findOrFail($id);
         $courses         = Course::where('is_published', true)->get();
-        $subjects        = Subject::active()->get();
+        $subjects        = $this->subjectsWithPath();
         $teachers        = Teacher::orderBy('name')->get();
         $classes         = SchoolClass::where('is_active', true)->orderBy('name')->get();
         $teacherSubjects = $this->teacherSubjectsMap();
