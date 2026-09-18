@@ -223,6 +223,13 @@ function refreshSubjectOptions(preselect) {
     if (currentValue && kept.some(o => String(o.value) === String(currentValue))) {
         subjectSelect.value = currentValue;
     }
+
+    // The select is enhanced by Select2 (see admin.layouts.app), which builds its
+    // own dropdown UI from the options at init time and doesn't notice plain DOM
+    // mutations on its own — it has to be told to re-read the <option> list.
+    if (window.jQuery && jQuery.fn.select2) {
+        jQuery(subjectSelect).trigger('change');
+    }
 }
 
 document.getElementById('teacherSelect').addEventListener('change', function () {
