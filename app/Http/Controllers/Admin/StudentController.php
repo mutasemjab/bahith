@@ -144,7 +144,7 @@ class StudentController extends Controller
     public function destroy(Student $student)
     {
         AdminActivityLog::log('delete', "حذف طالب: {$student->name}", 'students', $student->id);
-        $student->delete();
+        $student->forceDelete();
 
         return redirect()->route('admin.students.index')
             ->with('success', 'Student deleted successfully.');

@@ -143,8 +143,13 @@ class TeacherController extends Controller
 
     public function destroy(Teacher $teacher)
     {
+        if ($teacher->courses()->exists()) {
+            return redirect()->route('admin.teachers.index')
+                ->with('error', 'لا يمكن حذف المعلم لأن لديه دورات — احذف أو أعد إسناد دوراته أولاً.');
+        }
+
         AdminActivityLog::log('delete', "حذف معلم: {$teacher->name}", 'teachers', $teacher->id);
-        $teacher->delete();
+        $teacher->forceDelete();
 
         return redirect()->route('admin.teachers.index')
             ->with('success', 'Teacher deleted successfully.');

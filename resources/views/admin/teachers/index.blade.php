@@ -36,6 +36,9 @@
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show mb-3">{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show mb-3">{{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+@endif
 
 <div class="panel-card mb-3">
     <div class="panel-card-body">
