@@ -69,7 +69,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">{{ __('messages.subject') }}</label>
-                <select name="subject_id" class="form-select">
+                <select name="subject_id" id="subjectSelect" class="form-select">
                     <option value="">— {{ __('messages.select_subject') }} —</option>
                     @foreach($subjects as $sub)
                         <option value="{{ $sub->id }}" @selected(old('subject_id', $exam->subject_id) == $sub->id)>{{ $sub->name }}</option>
@@ -78,7 +78,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label">{{ __('messages.teacher') }}</label>
-                <select name="teacher_id" class="form-select">
+                <select name="teacher_id" id="teacherSelect" class="form-select">
                     <option value="">— {{ __('messages.t_none') }} —</option>
                     @foreach($teachers as $t)
                         <option value="{{ $t->id }}" @selected(old('teacher_id', $exam->teacher_id) == $t->id)>{{ $t->name }}</option>
@@ -191,11 +191,50 @@ document.getElementById('courseSelect').addEventListener('change', function () {
     loadCourseStructure(this.value);
 });
 
+// teacher_id -> [subject_id, ...] — only teachers with at least one assigned
+// subject appear here, so an unlisted teacher means "no subjects assigned".
+const teacherSubjectsMap = @json($teacherSubjects);
+const initSubjectId = '{{ old("subject_id", $exam->subject_id) }}';
+
+function refreshSubjectOptions(preselect) {
+    const teacherSelect  = document.getElementById('teacherSelect');
+    const subjectSelect  = document.getElementById('subjectSelect');
+    const teacherId      = teacherSelect.value;
+    const currentValue   = preselect !== undefined ? preselect : subjectSelect.value;
+
+    const allOptions = Array.from(subjectSelect.querySelectorAll('option[value]:not([value=""])'));
+    if (!subjectSelect.dataset.allOptionsHtml) {
+        subjectSelect.dataset.allOptionsHtml = allOptions.map(o => o.outerHTML).join('');
+    }
+
+    let allowedIds = null;
+    if (teacherId) {
+        allowedIds = Object.prototype.hasOwnProperty.call(teacherSubjectsMap, teacherId)
+            ? teacherSubjectsMap[teacherId].map(String)
+            : [];
+    }
+
+    const placeholder = subjectSelect.options[0].outerHTML;
+    const temp = document.createElement('div');
+    temp.innerHTML = subjectSelect.dataset.allOptionsHtml;
+    const kept = Array.from(temp.children).filter(o => !allowedIds || allowedIds.includes(String(o.value)));
+
+    subjectSelect.innerHTML = placeholder + kept.map(o => o.outerHTML).join('');
+    if (currentValue && kept.some(o => String(o.value) === String(currentValue))) {
+        subjectSelect.value = currentValue;
+    }
+}
+
+document.getElementById('teacherSelect').addEventListener('change', function () {
+    refreshSubjectOptions('');
+});
+
 window.addEventListener('DOMContentLoaded', function () {
     const courseId = document.getElementById('courseSelect').value;
     if (courseId) {
         loadCourseStructure(courseId, initUnitId, initLessonId);
     }
+    refreshSubjectOptions(initSubjectId);
     updatePlacementUI();
 });
 

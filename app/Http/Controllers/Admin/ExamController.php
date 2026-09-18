@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Course, Exam, Question, SchoolClass, Subject, Teacher};
+use App\Models\{Course, Exam, Question, SchoolClass, Subject, Teacher, TeacherClass};
 use App\Services\ExamService;
 use Illuminate\Http\{JsonResponse, Request};
 
@@ -27,12 +27,24 @@ class ExamController extends Controller
 
     public function create()
     {
-        $courses  = Course::where('is_published', true)->get();
-        $subjects = Subject::active()->get();
-        $teachers = Teacher::orderBy('name')->get();
-        $classes  = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $courses         = Course::where('is_published', true)->get();
+        $subjects        = Subject::active()->get();
+        $teachers        = Teacher::orderBy('name')->get();
+        $classes         = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $teacherSubjects = $this->teacherSubjectsMap();
 
-        return view('admin.exams.create', compact('courses', 'subjects', 'teachers', 'classes'));
+        return view('admin.exams.create', compact('courses', 'subjects', 'teachers', 'classes', 'teacherSubjects'));
+    }
+
+    // Maps every teacher_id to the subject_ids assigned to them in teacher_classes,
+    // so the exam form can restrict the subject list to the selected teacher's
+    // own subjects — same as what the teacher sees in their own panel.
+    private function teacherSubjectsMap(): \Illuminate\Support\Collection
+    {
+        return TeacherClass::whereNotNull('subject_id')
+            ->get(['teacher_id', 'subject_id'])
+            ->groupBy('teacher_id')
+            ->map(fn ($rows) => $rows->pluck('subject_id')->unique()->values());
     }
 
     public function getCourseStructure(int $id): JsonResponse
@@ -116,13 +128,14 @@ class ExamController extends Controller
 
     public function edit(int $id)
     {
-        $exam     = Exam::findOrFail($id);
-        $courses  = Course::where('is_published', true)->get();
-        $subjects = Subject::active()->get();
-        $teachers = Teacher::orderBy('name')->get();
-        $classes  = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $exam            = Exam::findOrFail($id);
+        $courses         = Course::where('is_published', true)->get();
+        $subjects        = Subject::active()->get();
+        $teachers        = Teacher::orderBy('name')->get();
+        $classes         = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $teacherSubjects = $this->teacherSubjectsMap();
 
-        return view('admin.exams.edit', compact('exam', 'courses', 'subjects', 'teachers', 'classes'));
+        return view('admin.exams.edit', compact('exam', 'courses', 'subjects', 'teachers', 'classes', 'teacherSubjects'));
     }
 
     public function update(Request $request, int $id)
