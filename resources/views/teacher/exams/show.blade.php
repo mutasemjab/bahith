@@ -101,11 +101,11 @@
                                 <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
                             @endforeach
                         </div>
-                        <textarea name="question_text_ar" id="question_text_ar" rows="2" class="form-control" dir="rtl" required></textarea>
+                        <textarea name="question_text_ar" id="question_text_ar" rows="2" class="form-control symbol-target" dir="rtl" required></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">{{ __('messages.t_question_en') }}</label>
-                        <textarea name="question_text_en" id="question_text_en" rows="2" class="form-control"></textarea>
+                        <textarea name="question_text_en" id="question_text_en" rows="2" class="form-control symbol-target"></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">{{ __('messages.question_image') }} <span style="color:var(--muted);font-size:.8rem">({{ __('messages.optional') }})</span></label>
@@ -139,14 +139,19 @@
                     {{-- Options section --}}
                     <div id="options-section">
                         <label class="form-label">{{ __('messages.t_options') }}</label>
+                        <div class="d-flex flex-wrap gap-1 mb-2">
+                            @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
+                                <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
+                            @endforeach
+                        </div>
 
                         {{-- اختيار متعدد: صفوف ديناميكية، 4 بالبداية --}}
                         <div id="mcq-rows" data-next-index="4">
                             @for($i = 0; $i < 4; $i++)
                             <div class="option-row d-flex align-items-center gap-2 mb-2">
                                 <input type="radio" name="correct_option" value="{{ $i }}" {{ $i === 0 ? 'checked' : '' }}>
-                                <input type="text" name="options[{{ $i }}][text_ar]" class="form-control form-control-sm" placeholder="{{ __('messages.t_option') }} {{ $i+1 }} ({{ __('messages.t_arabic') }})" dir="rtl">
-                                <input type="text" name="options[{{ $i }}][text_en]" class="form-control form-control-sm" placeholder="{{ __('messages.t_english') }}">
+                                <input type="text" name="options[{{ $i }}][text_ar]" class="form-control form-control-sm symbol-target" placeholder="{{ __('messages.t_option') }} {{ $i+1 }} ({{ __('messages.t_arabic') }})" dir="rtl">
+                                <input type="text" name="options[{{ $i }}][text_en]" class="form-control form-control-sm symbol-target" placeholder="{{ __('messages.t_english') }}">
                                 <input type="hidden" name="options[{{ $i }}][correct]" value="{{ $i === 0 ? '1' : '0' }}" class="correct-flag">
                                 <button type="button" class="btn-outline-sm" style="padding:3px 8px;color:#dc2626;flex-shrink:0" onclick="removeOptionRow(this, '')"><i class="bi bi-x-lg"></i></button>
                             </div>
@@ -175,7 +180,12 @@
 
                     <div class="mb-3">
                         <label class="form-label">{{ __('messages.t_explanation_ar') }}</label>
-                        <textarea name="explanation_ar" rows="2" class="form-control" dir="rtl"></textarea>
+                        <div class="d-flex flex-wrap gap-1 mb-1">
+                            @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
+                                <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
+                            @endforeach
+                        </div>
+                        <textarea name="explanation_ar" rows="2" class="form-control symbol-target" dir="rtl"></textarea>
                     </div>
 
                     <button type="submit" class="btn-primary-sm w-100 justify-content-center">
@@ -207,11 +217,11 @@
                         <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="edit-question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
                     @endforeach
                 </div>
-                <textarea name="question_text_ar" id="edit-question_text_ar" rows="2" class="form-control" dir="rtl" required></textarea>
+                <textarea name="question_text_ar" id="edit-question_text_ar" rows="2" class="form-control symbol-target" dir="rtl" required></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">{{ __('messages.t_question_en') }}</label>
-                <textarea name="question_text_en" id="edit-question_text_en" rows="2" class="form-control"></textarea>
+                <textarea name="question_text_en" id="edit-question_text_en" rows="2" class="form-control symbol-target"></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">{{ __('messages.question_image') }} <span style="color:var(--muted);font-size:.8rem">({{ __('messages.optional') }})</span></label>
@@ -249,6 +259,11 @@
 
             <div id="edit-options-section">
                 <label class="form-label">{{ __('messages.t_options') }}</label>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                    @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
+                        <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="edit-question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
+                    @endforeach
+                </div>
                 <div id="edit-mcq-rows" data-next-index="0"></div>
                 <button type="button" class="btn-outline-sm mb-3" onclick="addOptionRow('edit-')"><i class="bi bi-plus-lg"></i> {{ __('messages.add_option') }}</button>
 
@@ -272,7 +287,12 @@
 
             <div class="mb-3">
                 <label class="form-label">{{ __('messages.t_explanation_ar') }}</label>
-                <textarea name="explanation_ar" id="edit-explanation_ar" rows="2" class="form-control" dir="rtl"></textarea>
+                <div class="d-flex flex-wrap gap-1 mb-1">
+                    @foreach(['√','π','±','×','÷','≤','≥','≠','°','²','³','½','∞','Δ'] as $sym)
+                        <button type="button" class="btn btn-outline-secondary math-symbol-btn" style="padding:2px 8px;font-size:.85rem;line-height:1.4" data-target="edit-question_text_ar" data-symbol="{{ $sym }}">{{ $sym }}</button>
+                    @endforeach
+                </div>
+                <textarea name="explanation_ar" id="edit-explanation_ar" rows="2" class="form-control symbol-target" dir="rtl"></textarea>
             </div>
         </div>
         <div class="modal-footer">
@@ -298,13 +318,23 @@ function previewImg(input, imgId) {
     }
 }
 
-// Insert a math symbol at the cursor position in whichever textarea the button targets,
-// so symbols that aren't on a normal keyboard (√, π, ≤, ≥ ...) can be typed without
-// copy-pasting them from elsewhere, which was garbling the text.
+// Insert a math symbol at the cursor position of whichever question/option/explanation
+// field was last focused (so one toolbar can serve every field in the form), falling
+// back to the button's own data-target when nothing has been focused yet. This avoids
+// copy-pasting symbols in from elsewhere, which was garbling the text.
+var lastFocusedSymbolTarget = null;
+document.addEventListener('focusin', function (e) {
+    if (e.target.classList && e.target.classList.contains('symbol-target')) {
+        lastFocusedSymbolTarget = e.target;
+    }
+});
 document.addEventListener('click', function (e) {
     var btn = e.target.closest('.math-symbol-btn');
     if (!btn) return;
-    var target = document.getElementById(btn.dataset.target);
+    var form = btn.closest('form');
+    var target = (lastFocusedSymbolTarget && form && form.contains(lastFocusedSymbolTarget))
+        ? lastFocusedSymbolTarget
+        : document.getElementById(btn.dataset.target);
     if (!target) return;
     var start = target.selectionStart ?? target.value.length;
     var end   = target.selectionEnd ?? target.value.length;
@@ -313,6 +343,7 @@ document.addEventListener('click', function (e) {
     var newPos = start + symbol.length;
     target.focus();
     target.setSelectionRange(newPos, newPos);
+    lastFocusedSymbolTarget = target;
 });
 
 // Update the correct-flag hidden input whenever a correct_option radio changes,
@@ -370,8 +401,8 @@ function optionRowHtml(prefix, index, textAr, textEn, correct) {
     return '' +
         '<div class="option-row d-flex align-items-center gap-2 mb-2">' +
             '<input type="radio" name="' + prefix + 'correct_option" value="' + index + '"' + (correct ? ' checked' : '') + '>' +
-            '<input type="text" name="options[' + index + '][text_ar]" class="form-control form-control-sm" placeholder="{{ __('messages.option_ar_placeholder') }}" dir="rtl" value="' + (textAr || '').replace(/"/g, '&quot;') + '">' +
-            '<input type="text" name="options[' + index + '][text_en]" class="form-control form-control-sm" placeholder="{{ __('messages.t_english') }}" value="' + (textEn || '').replace(/"/g, '&quot;') + '">' +
+            '<input type="text" name="options[' + index + '][text_ar]" class="form-control form-control-sm symbol-target" placeholder="{{ __('messages.option_ar_placeholder') }}" dir="rtl" value="' + (textAr || '').replace(/"/g, '&quot;') + '">' +
+            '<input type="text" name="options[' + index + '][text_en]" class="form-control form-control-sm symbol-target" placeholder="{{ __('messages.t_english') }}" value="' + (textEn || '').replace(/"/g, '&quot;') + '">' +
             '<input type="hidden" name="options[' + index + '][correct]" value="' + (correct ? '1' : '0') + '" class="correct-flag">' +
             '<button type="button" class="btn-outline-sm" style="padding:3px 8px;color:#dc2626;flex-shrink:0" onclick="removeOptionRow(this, \'' + prefix + '\')"><i class="bi bi-x-lg"></i></button>' +
         '</div>';
