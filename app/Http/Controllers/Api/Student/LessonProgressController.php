@@ -21,13 +21,15 @@ class LessonProgressController extends Controller
      * POST /lessons/{id}/progress
      *
      * Called by the mobile app:
-     *   - Periodically every ~30s while watching (watch_seconds only)
-     *   - Once when the video ends (is_completed = true)
+     *   - Periodically every ~30s while watching a video (watch_seconds only)
+     *   - Once when a video ends (is_completed = true)
+     *   - Once when the student taps "mark as complete" on a PDF lesson
+     *     (is_completed = true; watch_seconds is meaningless here and can be omitted)
      */
     public function update(Request $request, int $lessonId): JsonResponse
     {
         $request->validate([
-            'watch_seconds' => ['required', 'integer', 'min:0'],
+            'watch_seconds' => ['sometimes', 'integer', 'min:0'],
             'is_completed'  => ['sometimes', 'boolean'],
         ]);
 
@@ -56,11 +58,21 @@ class LessonProgressController extends Controller
 
         $isCompleted = $request->boolean('is_completed', false);
 
+        // If watch_seconds is omitted (e.g. marking a PDF lesson complete, where
+        // it's meaningless), keep whatever was already recorded instead of
+        // resetting a video's watch position back to 0.
+        $existing = LessonProgress::where('student_id', $student->id)
+            ->where('lesson_id', $lessonId)
+            ->first();
+        $watchSeconds = $request->has('watch_seconds')
+            ? $request->input('watch_seconds')
+            : ($existing->watch_seconds ?? 0);
+
         // Upsert progress record
         $record = LessonProgress::updateOrCreate(
             ['student_id' => $student->id, 'lesson_id' => $lessonId],
             [
-                'watch_seconds' => $request->watch_seconds,
+                'watch_seconds' => $watchSeconds,
                 'is_completed'  => $isCompleted,
                 'completed_at'  => $isCompleted ? now() : null,
             ]
