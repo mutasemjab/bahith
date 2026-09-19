@@ -17,6 +17,41 @@
     <div class="alert alert-success alert-dismissible fade show mb-3">{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 @endif
 
+<div class="panel-card mb-3">
+    <div class="panel-card-body">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-6 col-md-3">
+                <label class="form-label" style="font-size:.78rem">{{ __('messages.class_label') }}</label>
+                <select name="class_id" class="form-select form-select-sm">
+                    <option value="">— {{ __('messages.select_class') }} —</option>
+                    @foreach($classes as $class)
+                        <option value="{{ $class->id }}" @selected(request('class_id') == $class->id)>{{ $class->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-6 col-md-3">
+                <label class="form-label" style="font-size:.78rem">{{ __('messages.teacher') }}</label>
+                <select name="teacher_id" class="form-select form-select-sm">
+                    <option value="">— {{ __('messages.select_teacher') }} —</option>
+                    @foreach($teachers as $teacher)
+                        <option value="{{ $teacher->id }}" @selected(request('teacher_id') == $teacher->id)>{{ $teacher->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-6 col-md-3">
+                <label class="form-label" style="font-size:.78rem">{{ __('messages.date_label') }}</label>
+                <input type="date" name="date" value="{{ request('date') }}" class="form-control form-control-sm">
+            </div>
+            <div class="col-6 col-md-3 d-flex gap-2">
+                <button type="submit" class="btn-primary-sm w-100 justify-content-center"><i class="bi bi-search"></i> {{ __('messages.Search') }}</button>
+                @if(request()->anyFilled(['class_id', 'teacher_id', 'date']))
+                    <a href="{{ route('admin.educational-notes.index') }}" class="btn-outline-sm" title="{{ __('messages.Reset') }}"><i class="bi bi-x-lg"></i></a>
+                @endif
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="panel-card">
     <div class="panel-card-body p-0">
         <div class="table-responsive">
@@ -26,6 +61,7 @@
                         <th>#</th>
                         <th>{{ __('messages.note_type') }}</th>
                         <th>{{ __('messages.title') }}</th>
+                        <th>{{ __('messages.descriptions') }}</th>
                         <th>{{ __('messages.teacher') }}</th>
                         <th>{{ __('messages.class_label') }}</th>
                         <th>{{ __('messages.date_label') }}</th>
@@ -45,6 +81,7 @@
                             @endif
                         </td>
                         <td>{{ $note->title }}</td>
+                        <td style="max-width:260px;white-space:normal">{{ Str::limit($note->description, 120) ?: '—' }}</td>
                         <td>{{ $note->teacher?->name ?? '—' }}</td>
                         <td>{{ $note->schoolClass?->name ?? '—' }}</td>
                         <td>{{ $note->date?->format('Y-m-d') }}</td>
@@ -74,7 +111,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="8" class="text-center py-4" style="color:var(--muted)">{{ __('messages.no_records') }}</td></tr>
+                    <tr><td colspan="9" class="text-center py-4" style="color:var(--muted)">{{ __('messages.no_records') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>

@@ -25,11 +25,19 @@ class EducationalNoteController extends Controller
         return compact('teachers', 'classes');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $notes = EducationalNote::with(['teacher', 'schoolClass'])
-            ->latest()->paginate(20);
-        return view('admin.educational_notes.index', compact('notes'));
+            ->when($request->filled('class_id'), fn ($q) => $q->where('class_id', $request->class_id))
+            ->when($request->filled('teacher_id'), fn ($q) => $q->where('teacher_id', $request->teacher_id))
+            ->when($request->filled('date'), fn ($q) => $q->whereDate('date', $request->date))
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        extract($this->formData());
+
+        return view('admin.educational_notes.index', compact('notes', 'teachers', 'classes'));
     }
 
     public function create()
