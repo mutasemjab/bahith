@@ -151,7 +151,7 @@ return [
 'edit_student' => 'تعديل طالب',
 'student_info' => 'معلومات الطالب',
 'create_student' => 'إنشاء طالب',
-'search_name_email_ph' => 'البحث بالاسم أو البريد الإلكتروني...',
+'search_name_email_ph' => 'البحث بالاسم أو البريد الإلكتروني أو الرقم الوطني...',
 'table_grade_level' => 'الصف/المستوى',
 'no_students_found' => 'لا يوجد طلاب.',
 'enrolled_courses' => 'الدورات المسجلة',

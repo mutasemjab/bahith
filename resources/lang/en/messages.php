@@ -151,7 +151,7 @@ return [
 'edit_student' => 'Edit Student',
 'student_info' => 'Student Info',
 'create_student' => 'Create Student',
-'search_name_email_ph' => 'Search name or email...',
+'search_name_email_ph' => 'Search name, email, or national ID...',
 'table_grade_level' => 'Grade/Level',
 'no_students_found' => 'No students found.',
 'enrolled_courses' => 'Enrolled Courses',

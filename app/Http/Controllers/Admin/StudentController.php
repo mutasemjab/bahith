@@ -25,8 +25,11 @@ class StudentController extends Controller
     {
         $students = Student::withCount('enrollments')
             ->when($request->search, fn ($q, $s) => $q
-                ->where('name', 'like', "%{$s}%")
-                ->orWhere('email', 'like', "%{$s}%")
+                ->where(fn ($sub) => $sub
+                    ->where('name', 'like', "%{$s}%")
+                    ->orWhere('email', 'like', "%{$s}%")
+                    ->orWhere('national_id', 'like', "%{$s}%")
+                )
             )
             ->when($request->filled('class_id'), fn ($q) =>
                 $q->where('class_id', $request->class_id)
