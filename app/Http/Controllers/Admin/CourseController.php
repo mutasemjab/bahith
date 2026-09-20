@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Category, Course, SchoolClass, Subject, Teacher};
+use App\Models\{Category, Course, Enrollment, LessonProgress, SchoolClass, Subject, Teacher};
 use App\Models\AdminActivityLog;
 use App\Services\CourseService;
 use Illuminate\Http\Request;
@@ -149,6 +149,29 @@ class CourseController extends Controller
             ->active()
             ->get()
             ->sortBy(fn ($s) => $s->full_path);
+    }
+
+    public function progress(int $id)
+    {
+        $course = Course::with(['units.lessons'])->findOrFail($id);
+
+        $lessonIds    = $course->units->flatMap->lessons->pluck('id');
+        $totalLessons = $lessonIds->count();
+
+        $enrollments = Enrollment::with('student')
+            ->where('course_id', $id)
+            ->where('is_active', true)
+            ->orderByDesc('progress_percentage')
+            ->get();
+
+        $completedByStudent = LessonProgress::whereIn('lesson_id', $lessonIds)
+            ->whereIn('student_id', $enrollments->pluck('student_id'))
+            ->where('is_completed', true)
+            ->selectRaw('student_id, COUNT(*) as cnt')
+            ->groupBy('student_id')
+            ->pluck('cnt', 'student_id');
+
+        return view('admin.courses.progress', compact('course', 'enrollments', 'completedByStudent', 'totalLessons'));
     }
 
     public function destroy(int $id)

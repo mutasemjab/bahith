@@ -62,6 +62,7 @@
                     <a href="{{ route('teacher.courses.show', $course->id) }}" class="btn-primary-sm flex-1 justify-content-center">
                         <i class="bi bi-layout-text-sidebar"></i> {{ __('messages.t_manage') }}
                     </a>
+                    <a href="{{ route('teacher.courses.progress', $course->id) }}" class="btn-outline-sm" style="padding:6px 10px" title="تقدم الطلاب"><i class="bi bi-bar-chart-line"></i></a>
                     <a href="{{ route('teacher.courses.edit', $course->id) }}" class="btn-outline-sm" style="padding:6px 10px"><i class="bi bi-pencil"></i></a>
                     <form action="{{ route('teacher.courses.destroy', $course->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.t_confirm_delete') }}')">
                         @csrf @method('DELETE')

@@ -107,6 +107,9 @@
                                 <a href="{{ route('admin.courses.show', $course->id) }}" class="btn-outline-sm" style="padding:4px 8px" title="{{ __('messages.View') }}">
                                     <i class="bi bi-eye"></i>
                                 </a>
+                                <a href="{{ route('admin.courses.progress', $course->id) }}" class="btn-outline-sm" style="padding:4px 8px" title="تقدم الطلاب">
+                                    <i class="bi bi-bar-chart-line"></i>
+                                </a>
                                 <a href="{{ route('admin.courses.edit', $course->id) }}" class="btn-outline-sm" style="padding:4px 8px" title="{{ __('messages.Edit') }}">
                                     <i class="bi bi-pencil"></i>
                                 </a>

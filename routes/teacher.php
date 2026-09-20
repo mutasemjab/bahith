@@ -44,6 +44,7 @@ Route::group([
         Route::post('/profile', [ProfileController::class, 'update'])->name('teacher.profile.update');
 
         // ── Courses ───────────────────────────────────────────────────
+        Route::get('courses/{id}/progress', [CourseController::class, 'progress'])->name('teacher.courses.progress');
         Route::resource('courses', CourseController::class, ['as' => 'teacher']);
 
         // ── Units (under a course) ────────────────────────────────────

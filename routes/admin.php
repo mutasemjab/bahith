@@ -64,6 +64,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         });
 
         // ── Courses ───────────────────────────────────────────────────
+        Route::get('courses/{id}/progress', [CourseController::class, 'progress'])->name('admin.courses.progress');
         Route::resource('courses', CourseController::class, ['as' => 'admin']);
 
         // ── Previous Year Exam ───────────────────────────────────────────────────

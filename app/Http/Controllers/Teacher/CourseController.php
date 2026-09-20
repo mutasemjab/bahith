@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Category, Course, SchoolClass, Subject};
+use App\Models\{Category, Course, Enrollment, LessonProgress, SchoolClass, Subject};
 use App\Services\CourseService;
 use Illuminate\Http\Request;
 
@@ -164,6 +164,31 @@ class CourseController extends Controller
 
         return redirect()->route('teacher.courses.show', $id)
             ->with('success', 'Course updated successfully.');
+    }
+
+    public function progress(int $id)
+    {
+        $course = Course::with(['units.lessons'])->findOrFail($id);
+
+        abort_if($course->teacher_id !== $this->teacher()->id, 403);
+
+        $lessonIds    = $course->units->flatMap->lessons->pluck('id');
+        $totalLessons = $lessonIds->count();
+
+        $enrollments = Enrollment::with('student')
+            ->where('course_id', $id)
+            ->where('is_active', true)
+            ->orderByDesc('progress_percentage')
+            ->get();
+
+        $completedByStudent = LessonProgress::whereIn('lesson_id', $lessonIds)
+            ->whereIn('student_id', $enrollments->pluck('student_id'))
+            ->where('is_completed', true)
+            ->selectRaw('student_id, COUNT(*) as cnt')
+            ->groupBy('student_id')
+            ->pluck('cnt', 'student_id');
+
+        return view('teacher.courses.progress', compact('course', 'enrollments', 'completedByStudent', 'totalLessons'));
     }
 
     public function destroy(int $id)
