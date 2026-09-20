@@ -153,25 +153,51 @@ class CourseController extends Controller
 
     public function progress(int $id)
     {
-        $course = Course::with(['units.lessons'])->findOrFail($id);
+        $course = Course::with(['units.lessons', 'classes'])->findOrFail($id);
 
         $lessonIds    = $course->units->flatMap->lessons->pluck('id');
         $totalLessons = $lessonIds->count();
 
-        $enrollments = Enrollment::with('student')
-            ->where('course_id', $id)
-            ->where('is_active', true)
-            ->orderByDesc('progress_percentage')
-            ->get();
+        // 1) students in linked school classes (course_classes pivot + direct class_id)
+        $classIds = $course->classes->pluck('id');
+        if ($course->class_id && ! $classIds->contains($course->class_id)) {
+            $classIds->push($course->class_id);
+        }
+        $classStudentIds = $classIds->isNotEmpty()
+            ? \App\Models\Student::whereIn('class_id', $classIds)->where('is_active', true)->pluck('id')
+            : collect();
 
-        $completedByStudent = LessonProgress::whereIn('lesson_id', $lessonIds)
-            ->whereIn('student_id', $enrollments->pluck('student_id'))
-            ->where('is_completed', true)
-            ->selectRaw('student_id, COUNT(*) as cnt')
-            ->groupBy('student_id')
-            ->pluck('cnt', 'student_id');
+        // 2) students who already have lesson progress (catch-all for free access)
+        $progressStudentIds = $lessonIds->isNotEmpty()
+            ? LessonProgress::whereIn('lesson_id', $lessonIds)->distinct()->pluck('student_id')
+            : collect();
 
-        return view('admin.courses.progress', compact('course', 'enrollments', 'completedByStudent', 'totalLessons'));
+        // 3) enrolled students (for paid courses)
+        $enrolledIds = Enrollment::where('course_id', $id)->pluck('student_id');
+
+        $allStudentIds = $classStudentIds
+            ->merge($progressStudentIds)
+            ->merge($enrolledIds)
+            ->unique()->filter()->values();
+
+        $students = \App\Models\Student::whereIn('id', $allStudentIds)->orderBy('name')->get();
+
+        // Enrollment record per student (progress_percentage / is_completed)
+        $enrollmentsByStudent = $enrolledIds->isNotEmpty()
+            ? Enrollment::where('course_id', $id)->whereIn('student_id', $allStudentIds)->get()->keyBy('student_id')
+            : collect();
+
+        // Completed lesson count per student
+        $completedByStudent = $lessonIds->isNotEmpty()
+            ? LessonProgress::whereIn('lesson_id', $lessonIds)
+                ->whereIn('student_id', $allStudentIds)
+                ->where('is_completed', true)
+                ->selectRaw('student_id, COUNT(*) as cnt')
+                ->groupBy('student_id')
+                ->pluck('cnt', 'student_id')
+            : collect();
+
+        return view('admin.courses.progress', compact('course', 'students', 'enrollmentsByStudent', 'completedByStudent', 'totalLessons'));
     }
 
     public function destroy(int $id)
