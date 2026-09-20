@@ -4,15 +4,36 @@ namespace App\Services;
 
 use App\Models\Course;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class CourseService
 {
     private string $uploadFolder = 'assets/uploads/courses';
 
+    private function withStudentCount($query)
+    {
+        return $query->addSelect([
+            'class_students_count' => DB::table('students')
+                ->selectRaw('COUNT(DISTINCT students.id)')
+                ->where('students.is_active', true)
+                ->whereNull('students.deleted_at')
+                ->where(function ($q) {
+                    $q->whereColumn('students.class_id', 'courses.class_id')
+                      ->orWhereIn('students.class_id', function ($sub) {
+                          $sub->select('class_id')
+                              ->from('course_classes')
+                              ->whereColumn('course_id', 'courses.id');
+                      });
+                }),
+        ]);
+    }
+
     public function list(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         $query = Course::with(['teacher', 'category', 'subject', 'schoolClass'])
             ->withCount('enrollments');
+
+        $this->withStudentCount($query);
 
         if (! empty($filters['teacher_id'])) {
             $query->where('teacher_id', $filters['teacher_id']);
@@ -42,10 +63,14 @@ class CourseService
 
     public function find(int $id): Course
     {
-        return Course::with([
+        $query = Course::with([
             'teacher', 'category', 'subject', 'schoolClass',
             'units.lessons', 'units.materials', 'units.exam',
-        ])->withCount('enrollments')->findOrFail($id);
+        ])->withCount('enrollments');
+
+        $this->withStudentCount($query);
+
+        return $query->findOrFail($id);
     }
 
     public function create(array $data, $thumbnail = null, array $classIds = []): Course

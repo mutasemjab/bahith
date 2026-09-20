@@ -158,7 +158,7 @@
                     <tbody>
                         @forelse($student->examAttempts->take(10) as $attempt)
                         <tr>
-                            <td style="font-size:.85rem">{{ Str::limit($attempt->exam->title_en ?: $attempt->exam->title_ar, 35) }}</td>
+                            <td style="font-size:.85rem">{{ Str::limit($attempt->exam?->title_en ?: $attempt->exam?->title_ar ?? '—', 35) }}</td>
                             <td style="font-size:.85rem">{{ $attempt->score }}/{{ $attempt->total_marks }}</td>
                             <td style="font-size:.85rem">{{ $attempt->percentage }}%</td>
                             <td><span class="pill {{ $attempt->is_passed ? 'pill-success' : 'pill-warning' }}">{{ $attempt->is_passed ? __('messages.passed') : __('messages.failed') }}</span></td>

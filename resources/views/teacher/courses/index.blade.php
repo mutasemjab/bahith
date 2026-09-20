@@ -54,7 +54,7 @@
                     </span>
                 </div>
                 <div class="d-flex gap-3 mb-3" style="font-size:.8rem;color:var(--muted)">
-                    <span><i class="bi bi-people"></i> {{ $course->enrollments_count }} {{ __('messages.t_students_enrolled') }}</span>
+                    <span><i class="bi bi-people"></i> {{ $course->class_students_count ?? $course->enrollments_count }} {{ __('messages.t_students_enrolled') }}</span>
                     <span><i class="bi bi-star-fill" style="color:#ea580c"></i> {{ number_format($course->average_rating, 1) }}</span>
                     <span><i class="bi bi-currency-dollar"></i> {{ $course->is_free ? __('messages.t_free') : number_format($course->price) }}</span>
                 </div>

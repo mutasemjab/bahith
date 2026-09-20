@@ -93,7 +93,7 @@
                                 @endif
                             @endif
                         </td>
-                        <td>{{ $course->enrollments_count }}</td>
+                        <td>{{ $course->class_students_count ?? $course->enrollments_count }}</td>
                         <td>
                             <span class="pill {{ $course->is_published ? 'pill-success' : 'pill-neutral' }}">
                                 {{ $course->is_published ? __('messages.published') : __('messages.draft') }}
