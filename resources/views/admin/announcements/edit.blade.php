@@ -34,11 +34,13 @@
                 @error('body')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
             <div class="col-md-6">
-                <label class="form-label">الصف المستهدف</label>
-                <select name="class_id" class="form-select">
-                    <option value="">— للجميع —</option>
+                <label class="form-label">الصفوف المستهدفة (اتركها فارغة للجميع)</label>
+                @php
+                    $selectedClassIds = old('class_ids', $announcement->classes->pluck('id')->all() ?: array_filter([$announcement->class_id]));
+                @endphp
+                <select name="class_ids[]" class="form-select" multiple data-placeholder="— للجميع —">
                     @foreach($classes as $class)
-                        <option value="{{ $class->id }}" @selected(old('class_id', $announcement->class_id) == $class->id)>{{ $class->name }}</option>
+                        <option value="{{ $class->id }}" @selected(in_array($class->id, $selectedClassIds))>{{ $class->name }}</option>
                     @endforeach
                 </select>
             </div>

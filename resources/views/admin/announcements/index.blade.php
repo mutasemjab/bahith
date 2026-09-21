@@ -47,7 +47,18 @@
                             <div class="fw-semibold">{{ $a->title }}</div>
                             <small class="text-muted">{{ Str::limit($a->body, 60) }}</small>
                         </td>
-                        <td>{{ $a->schoolClass?->name ?? '<span class="badge bg-secondary">عام</span>' }}</td>
+                        <td>
+                            @php
+                                $targetClasses = $a->classes->isNotEmpty()
+                                    ? $a->classes
+                                    : collect([$a->schoolClass])->filter();
+                            @endphp
+                            @forelse($targetClasses as $c)
+                                <span class="badge bg-primary me-1 mb-1">{{ $c->name }}</span>
+                            @empty
+                                <span class="badge bg-secondary">عام</span>
+                            @endforelse
+                        </td>
                         <td>
                             @if($a->is_active)
                                 <span class="badge bg-success">نشط</span>
