@@ -163,6 +163,13 @@ class ExamController extends Controller
             $isPassed    = $percentage >= ($exam->pass_marks ?? 50);
             // store as seconds (matches actual column name)
             $timeTakenSeconds = now()->diffInSeconds($attempt->started_at);
+            
+            if ($exam->duration_minutes) {
+                $timeTakenSeconds = min(
+                    $timeTakenSeconds,
+                    $exam->duration_minutes * 60
+                );
+            }
 
             $attempt->update([
                 'score'               => $score,
