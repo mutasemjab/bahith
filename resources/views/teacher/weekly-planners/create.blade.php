@@ -64,14 +64,26 @@
                 @error('end_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
-            <div class="col-12">
-                <label class="form-label">صورة المفكرة <span class="text-danger">*</span></label>
-                <input type="file" name="image" accept="image/*"
-                       class="form-control @error('image') is-invalid @enderror"
-                       onchange="previewImage(this)" required>
-                @error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                <div id="imgPreview" class="mt-2" style="display:none">
-                    <img id="previewEl" src="" alt="معاينة"
+            <div class="col-md-6">
+                <label class="form-label">صورة المفكرة (عربي) <span class="text-danger">*</span></label>
+                <input type="file" name="image_ar" accept="image/*"
+                       class="form-control @error('image_ar') is-invalid @enderror"
+                       onchange="previewImage(this, 'imgPreviewAr', 'previewElAr')" required>
+                @error('image_ar')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                <div id="imgPreviewAr" class="mt-2" style="display:none">
+                    <img id="previewElAr" src="" alt="معاينة"
+                         style="max-width:100%;max-height:300px;border-radius:8px;object-fit:contain;">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">صورة المفكرة (إنجليزي) <span class="text-muted">(اختياري)</span></label>
+                <input type="file" name="image_en" accept="image/*"
+                       class="form-control @error('image_en') is-invalid @enderror"
+                       onchange="previewImage(this, 'imgPreviewEn', 'previewElEn')">
+                @error('image_en')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                <div id="imgPreviewEn" class="mt-2" style="display:none">
+                    <img id="previewElEn" src="" alt="معاينة"
                          style="max-width:100%;max-height:300px;border-radius:8px;object-fit:contain;">
                 </div>
             </div>
@@ -102,12 +114,12 @@
 
 @push('scripts')
 <script>
-function previewImage(input) {
+function previewImage(input, wrapId, imgId) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = e => {
-            document.getElementById('previewEl').src = e.target.result;
-            document.getElementById('imgPreview').style.display = '';
+            document.getElementById(imgId).src = e.target.result;
+            document.getElementById(wrapId).style.display = '';
         };
         reader.readAsDataURL(input.files[0]);
     }

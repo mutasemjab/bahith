@@ -25,7 +25,8 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>الصورة</th>
+                    <th>صورة (عربي)</th>
+                    <th>صورة (إنجليزي)</th>
                     <th>العنوان</th>
                     <th>المعلم</th>
                     <th>الصف</th>
@@ -40,8 +41,20 @@
                 <tr>
                     <td>{{ $planner->id }}</td>
                     <td>
-                        <img src="{{ asset('assets/uploads/weekly-planners/'. $planner->image) }}" alt="مفكرة"
-                             style="width:80px;height:55px;object-fit:cover;border-radius:6px;">
+                        @if($planner->image_ar)
+                            <img src="{{ asset('assets/uploads/weekly-planners/'. $planner->image_ar) }}" alt="مفكرة عربي"
+                                 style="width:80px;height:55px;object-fit:cover;border-radius:6px;">
+                        @else
+                            —
+                        @endif
+                    </td>
+                    <td>
+                        @if($planner->image_en)
+                            <img src="{{ asset('assets/uploads/weekly-planners/'. $planner->image_en) }}" alt="مفكرة إنجليزي"
+                                 style="width:80px;height:55px;object-fit:cover;border-radius:6px;">
+                        @else
+                            —
+                        @endif
                     </td>
                     <td>{{ $planner->title ?: '—' }}</td>
                     <td style="font-size:.85rem">{{ $planner->teacher?->name ?: '—' }}</td>
@@ -73,7 +86,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" class="text-center text-muted py-4">لا توجد مفكرات بعد.</td>
+                    <td colspan="10" class="text-center text-muted py-4">لا توجد مفكرات بعد.</td>
                 </tr>
                 @endforelse
             </tbody>

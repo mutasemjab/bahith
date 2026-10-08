@@ -23,9 +23,13 @@
     @forelse($planners as $planner)
     <div class="col-12 col-md-6 col-xl-4">
         <div class="panel-card h-100">
-            <div style="position:relative">
-                <img src="{{ asset($planner->image) }}" alt="مفكرة"
-                     style="width:100%;height:180px;object-fit:cover;border-radius:12px 12px 0 0;">
+            <div style="position:relative;display:flex">
+                <img src="{{ asset('assets/uploads/weekly-planners/' . $planner->image_ar) }}" alt="مفكرة عربي"
+                     style="width:50%;height:180px;object-fit:cover;border-radius:12px 0 0 0;">
+                @if($planner->image_en)
+                <img src="{{ asset('assets/uploads/weekly-planners/' . $planner->image_en) }}" alt="مفكرة إنجليزي"
+                     style="width:50%;height:180px;object-fit:cover;border-radius:0 12px 0 0;">
+                @endif
                 @if($planner->is_active)
                     <span class="pill pill-success" style="position:absolute;top:10px;right:10px">نشط</span>
                 @else

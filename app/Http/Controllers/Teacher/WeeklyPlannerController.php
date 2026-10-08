@@ -44,19 +44,25 @@ class WeeklyPlannerController extends Controller
         $request->validate([
             'class_id'   => 'nullable|exists:classes,id',
             'title'      => 'nullable|string|max:255',
-            'image'      => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
+            'image_ar'   => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
+            'image_en'   => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
             'start_date' => 'required|date',
             'end_date'   => 'required|date|after_or_equal:start_date',
             'is_active'  => 'boolean',
         ]);
 
-        $path = uploadImage('assets/uploads/weekly-planners', $request->file('image'));
+        $imageAr = uploadImage('assets/uploads/weekly-planners', $request->file('image_ar'));
+        $imageEn = $request->hasFile('image_en')
+            ? uploadImage('assets/uploads/weekly-planners', $request->file('image_en'))
+            : null;
 
         WeeklyPlanner::create([
             'teacher_id' => $this->teacherId(),
             'class_id'   => $request->input('class_id'),
             'title'      => $request->input('title'),
-            'image'      => $path,
+            'image'      => $imageAr,
+            'image_ar'   => $imageAr,
+            'image_en'   => $imageEn,
             'start_date' => $request->input('start_date'),
             'end_date'   => $request->input('end_date'),
             'is_active'  => $request->boolean('is_active', true),
@@ -80,7 +86,8 @@ class WeeklyPlannerController extends Controller
         $request->validate([
             'class_id'   => 'nullable|exists:classes,id',
             'title'      => 'nullable|string|max:255',
-            'image'      => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
+            'image_ar'   => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
+            'image_en'   => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
             'start_date' => 'required|date',
             'end_date'   => 'required|date|after_or_equal:start_date',
             'is_active'  => 'boolean',
@@ -94,8 +101,12 @@ class WeeklyPlannerController extends Controller
             'is_active'  => $request->boolean('is_active'),
         ];
 
-        if ($request->hasFile('image')) {
-            $data['image'] = uploadImage('assets/uploads/weekly-planners', $request->file('image'));
+        if ($request->hasFile('image_ar')) {
+            $data['image_ar'] = uploadImage('assets/uploads/weekly-planners', $request->file('image_ar'));
+            $data['image']    = $data['image_ar']; // keep legacy column in sync
+        }
+        if ($request->hasFile('image_en')) {
+            $data['image_en'] = uploadImage('assets/uploads/weekly-planners', $request->file('image_en'));
         }
 
         $weeklyPlanner->update($data);

@@ -63,18 +63,38 @@
                 @error('end_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
-            <div class="col-12">
-                <label class="form-label">صورة المفكرة <span class="text-muted">(اتركه فارغاً للإبقاء على الحالية)</span></label>
+            <div class="col-md-6">
+                <label class="form-label">صورة المفكرة (عربي) <span class="text-muted">(اتركه فارغاً للإبقاء على الحالية)</span></label>
+                @if($weeklyPlanner->image_ar)
                 <div class="mb-2">
-                    <img src="{{ asset($weeklyPlanner->image) }}" alt="الصورة الحالية"
+                    <img src="{{ asset('assets/uploads/weekly-planners/'. $weeklyPlanner->image_ar) }}" alt="الصورة الحالية"
                          style="max-width:250px;max-height:180px;border-radius:8px;object-fit:contain;border:1px solid #e2e8f0;">
                 </div>
-                <input type="file" name="image" accept="image/*"
-                       class="form-control @error('image') is-invalid @enderror"
-                       onchange="previewImage(this)">
-                @error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                <div id="imgPreview" class="mt-2" style="display:none">
-                    <img id="previewEl" src="" alt="معاينة"
+                @endif
+                <input type="file" name="image_ar" accept="image/*"
+                       class="form-control @error('image_ar') is-invalid @enderror"
+                       onchange="previewImage(this, 'imgPreviewAr', 'previewElAr')">
+                @error('image_ar')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                <div id="imgPreviewAr" class="mt-2" style="display:none">
+                    <img id="previewElAr" src="" alt="معاينة"
+                         style="max-width:100%;max-height:300px;border-radius:8px;object-fit:contain;">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">صورة المفكرة (إنجليزي) <span class="text-muted">(اختياري — اتركه فارغاً للإبقاء على الحالية)</span></label>
+                @if($weeklyPlanner->image_en)
+                <div class="mb-2">
+                    <img src="{{ asset('assets/uploads/weekly-planners/'. $weeklyPlanner->image_en) }}" alt="الصورة الحالية"
+                         style="max-width:250px;max-height:180px;border-radius:8px;object-fit:contain;border:1px solid #e2e8f0;">
+                </div>
+                @endif
+                <input type="file" name="image_en" accept="image/*"
+                       class="form-control @error('image_en') is-invalid @enderror"
+                       onchange="previewImage(this, 'imgPreviewEn', 'previewElEn')">
+                @error('image_en')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                <div id="imgPreviewEn" class="mt-2" style="display:none">
+                    <img id="previewElEn" src="" alt="معاينة"
                          style="max-width:100%;max-height:300px;border-radius:8px;object-fit:contain;">
                 </div>
             </div>
@@ -105,12 +125,12 @@
 
 @push('scripts')
 <script>
-function previewImage(input) {
+function previewImage(input, wrapId, imgId) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = e => {
-            document.getElementById('previewEl').src = e.target.result;
-            document.getElementById('imgPreview').style.display = '';
+            document.getElementById(imgId).src = e.target.result;
+            document.getElementById(wrapId).style.display = '';
         };
         reader.readAsDataURL(input.files[0]);
     }

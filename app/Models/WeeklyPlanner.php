@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WeeklyPlanner extends Model
 {
-    protected $fillable = ['teacher_id', 'class_id', 'title', 'image', 'start_date', 'end_date', 'is_active'];
+    protected $fillable = ['teacher_id', 'class_id', 'title', 'image', 'image_ar', 'image_en', 'start_date', 'end_date', 'is_active'];
 
     public function teacher()
     {

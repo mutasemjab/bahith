@@ -30,10 +30,16 @@ class WeeklyPlannerController extends Controller
             return $this->success(null, 'No active planner for this week.');
         }
 
+        // Arabic/English images; either one falls back to the other if only one was uploaded.
+        $imageAr = $planner->image_ar ?: $planner->image;
+        $imageEn = $planner->image_en ?: $imageAr;
+
         return $this->success([
             'id'         => $planner->id,
             'title'      => $planner->title,
             'image'      => asset('assets/uploads/weekly-planners/' . $planner->image),
+            'image_ar'   => $imageAr ? asset('assets/uploads/weekly-planners/' . $imageAr) : null,
+            'image_en'   => $imageEn ? asset('assets/uploads/weekly-planners/' . $imageEn) : null,
             'start_date' => $planner->start_date->toDateString(),
             'end_date'   => $planner->end_date->toDateString(),
         ]);
