@@ -15,13 +15,37 @@ class WorksheetController extends Controller
         return auth('teacher')->id();
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $worksheets = Worksheet::with('subject')
+        $query = Worksheet::with(['subject', 'schoolClass'])
             ->where('teacher_id', $this->teacherId())
-            ->latest()
-            ->paginate(20);
-        return view('teacher.worksheets.index', compact('worksheets'));
+            ->latest();
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(fn($q) => $q->where('title_ar', 'like', "%{$s}%")
+                                      ->orWhere('title_en', 'like', "%{$s}%"));
+        }
+        if ($request->filled('subject_id')) {
+            $query->where('subject_id', $request->subject_id);
+        }
+        if ($request->filled('class_id')) {
+            $query->where('class_id', $request->class_id);
+        }
+        if ($request->filled('year')) {
+            $query->where('year', $request->year);
+        }
+        if ($request->filled('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        $worksheets = $query->paginate(20)->withQueryString();
+        $subjects   = $this->subjectsWithPath();
+        $classes    = $this->myClasses();
+        $years      = Worksheet::where('teacher_id', $this->teacherId())
+                         ->whereNotNull('year')->distinct()->orderBy('year', 'desc')->pluck('year');
+
+        return view('teacher.worksheets.index', compact('worksheets', 'subjects', 'classes', 'years'));
     }
 
     public function create()

@@ -18,10 +18,34 @@ class WorksheetController extends Controller
         $this->middleware($this->perm('worksheet-delete'))->only(['destroy']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $worksheets = Worksheet::with('subject')->latest()->paginate(20);
-        return view('admin.worksheets.index', compact('worksheets'));
+        $query = Worksheet::with(['subject', 'schoolClass'])->latest();
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(fn($q) => $q->where('title_ar', 'like', "%{$s}%")
+                                      ->orWhere('title_en', 'like', "%{$s}%"));
+        }
+        if ($request->filled('subject_id')) {
+            $query->where('subject_id', $request->subject_id);
+        }
+        if ($request->filled('class_id')) {
+            $query->where('class_id', $request->class_id);
+        }
+        if ($request->filled('year')) {
+            $query->where('year', $request->year);
+        }
+        if ($request->filled('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        $worksheets = $query->paginate(20)->withQueryString();
+        $subjects   = $this->subjectsWithPath();
+        $classes    = SchoolClass::where('is_active', true)->orderBy('name')->get();
+        $years      = Worksheet::whereNotNull('year')->distinct()->orderBy('year', 'desc')->pluck('year');
+
+        return view('admin.worksheets.index', compact('worksheets', 'subjects', 'classes', 'years'));
     }
 
     public function create()
